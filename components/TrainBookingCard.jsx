@@ -97,7 +97,7 @@ const TrainBookingCard = ({ _id, name, travel_date, train_booking_date, remarks,
     return (
         <>
             <CardView actions={actions}>
-                <View className="flex-row gap-4 p-4">
+                <View className="flex-row gap-4 p-1">
                     <View className="items-center justify-center">
                         <Train size={64} color="#1C2B3A" strokeWidth={1.5} />
                     </View>
