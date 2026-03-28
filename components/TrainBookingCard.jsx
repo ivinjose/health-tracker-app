@@ -1,6 +1,7 @@
 import * as Calendar from "expo-calendar";
 import { useCallback, useMemo } from "react";
 import { Alert, Linking, Platform, Text, View } from "react-native";
+import Toast from "react-native-toast-message";
 
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -8,7 +9,6 @@ import { useToast } from "@/hooks/use-toast";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { BellRing } from "lucide-react-native";
-
 
 import useTrainBookingApiManager from "@/api-managers/TrainBookingApiManager";
 import CardView from "@/components/CardView";
@@ -99,7 +99,7 @@ const TrainBookingCard = ({ _id, name, travel_date, train_booking_date, remarks,
                         eventStart.getTime() + REMINDER_EVENT_DURATION_HOURS * MS_PER_HOUR
                     );
                     const defaultCal = await Calendar.getDefaultCalendarAsync();
-                    await Calendar.createEventAsync(defaultCal.id, {
+                    const event = await Calendar.createEventAsync(defaultCal.id, {
                         title,
                         startDate: eventStart,
                         endDate: eventEnd,
@@ -107,6 +107,13 @@ const TrainBookingCard = ({ _id, name, travel_date, train_booking_date, remarks,
                         timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
                         alarms: [{ relativeOffset: 0 }],
                     });
+                    if (event) {
+                        Toast.show({
+                            type: 'success',
+                            text1: 'Event created',
+                            text2: `${title} - ${format(eventStart, "PPPP")} at ${displayTimeSlot} am`,
+                        });
+                    }
                 }
             }
 

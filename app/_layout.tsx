@@ -9,6 +9,7 @@ import 'react-native-reanimated';
 
 import { PersistLogin } from '@/components/PersistLogin';
 import { useColorScheme } from '@/hooks/use-color-scheme';
+import Toast from 'react-native-toast-message';
 import { AuthProvider } from '../context/AuthProvider';
 
 const queryClient = new QueryClient();
@@ -33,6 +34,7 @@ export default function RootLayout() {
             <PortalHost />
             <StatusBar style="auto" />
           </PersistLogin>
+          <Toast />
         </ThemeProvider>
       </AuthProvider>
     </QueryClientProvider>
