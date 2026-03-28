@@ -1,4 +1,3 @@
-import { Separator } from "@/components/ui/separator";
 import { EllipsisVertical } from "lucide-react-native";
 import { Pressable, Text, View } from "react-native";
 
@@ -12,11 +11,11 @@ import {
 const CardView = ({ children, actions = [] }) => {
     return (
         <>
-            <View className="overflow-hidden bg-white">
-                {children}
+            <View className="overflow-hidden bg-white flex-row items-start justify-between gap-0">
+                <View className="flex-1 min-w-0">{children}</View>
 
                 {actions.length > 0 && (
-                    <View className="absolute right-2 top-2">
+                    <View className="shrink-0 pt-0.5">
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
                                 <Pressable className="p-1 -m-1">
@@ -35,7 +34,6 @@ const CardView = ({ children, actions = [] }) => {
                     </View>
                 )}
             </View>
-            <Separator className="my-4" />
         </>
     );
 };

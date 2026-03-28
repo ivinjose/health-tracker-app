@@ -1,17 +1,8 @@
-import {
-    AlertDialog,
-    AlertDialogAction,
-    AlertDialogCancel,
-    AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
-import { useCallback, useMemo, useState } from "react";
-import { Linking, Text, View } from "react-native";
+import { useCallback, useMemo } from "react";
+import { Alert, Linking, Text, View } from "react-native";
 
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { useToast } from "@/hooks/use-toast";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { format } from "date-fns";
@@ -27,7 +18,6 @@ const REMINDER_EVENT_DURATION_HOURS = 1;
 const REMINDER_HOURS_BEFORE = [0];
 
 const TrainBookingCard = ({ _id, name, travel_date, train_booking_date, remarks, is_tatkal, time_slot, isReadOnly }) => {
-    const [showConfirm, setShowConfirm] = useState(false);
     const { toast } = useToast();
     const trainBookingApiManager = useTrainBookingApiManager();
     const queryClient = useQueryClient();
@@ -38,6 +28,16 @@ const TrainBookingCard = ({ _id, name, travel_date, train_booking_date, remarks,
             ? new Date(train_booking_date)
             : train_booking_date
         : null;
+
+    const confirmDelete = () =>
+        Alert.alert('Are you sure?', 'Do you want to delete this record?', [
+            {
+                text: 'No',
+                // onPress: () => setShowConfirm(false),
+                style: 'cancel',
+            },
+            { text: 'Yes', onPress: () => onDelete() },
+        ]);
 
     /* delete op */
     const { mutateAsync: removeTrainBooking } = useMutation({
@@ -89,7 +89,7 @@ const TrainBookingCard = ({ _id, name, travel_date, train_booking_date, remarks,
         return [
             {
                 label: "Delete",
-                action: () => setShowConfirm(true),
+                action: () => confirmDelete(),
             },
         ];
     }, [isReadOnly]);
@@ -99,56 +99,43 @@ const TrainBookingCard = ({ _id, name, travel_date, train_booking_date, remarks,
             <CardView actions={actions}>
                 <View className="flex-row gap-4 p-1">
                     <View className="items-center justify-center">
-                        <Train size={64} color="#1C2B3A" strokeWidth={1.5} />
+                        <Train size={32} color="#1C2B3A" strokeWidth={1.5} />
                     </View>
                     <View className="flex-1 min-w-0 justify-start">
                         {!!name && <Text className="font-semibold my-1 text-[#111] text-base">{name}</Text>}
-                        {travelDate && (
+                        {!!is_tatkal &&
                             <View className="flex-row flex-wrap items-center gap-1 mb-1">
-                                <Text className="text-sm font-normal text-[#6b7280]">
-                                    Travel: {format(travelDate, "PPPP")}
-                                </Text>
-                                {!!is_tatkal && <Badge variant="destructive">
+                                <Badge variant="destructive">
                                     <Text className="text-white font-medium text-[13px]">Tatkal</Text>
-                                </Badge>}
+                                </Badge>
                             </View>
-                        )}
+                        }
                         {bookingDate && (
-                            <Text className="text-sm font-normal text-[#6b7280] mb-1">
+                            <Text className="text-sm font-normal text-[#6b7280] mt-2">
                                 Booking opens: {format(bookingDate, "PPPP")} at {displayTimeSlot} am
                             </Text>
                         )}
-                        {!!remarks && <Text className="text-[13px] text-[#6b7280] my-1">{remarks}</Text>}
+                        {travelDate && (
+                            <Text className="text-sm font-normal text-[#6b7280] mt-2">
+                                Travel: {format(travelDate, "PPPP")}
+                            </Text>
+                        )}
+                        {!!remarks && <Text className="text-[13px] text-[#6b7280] mt-2">{remarks}</Text>}
                         {!isReadOnly && (
-                            // <Pressable
-                            //     onPress={handleAddReminder}
-                            //     className="mt-4 items-center justify-center rounded-lg bg-[#7aaeee] px-4 py-3 active:opacity-90"
-                            // >
-                            <BellRing size={26} color="#3469d3" onPress={handleAddReminder} />
-                            // </Pressable>
+                            <Button
+                                onPress={handleAddReminder}
+                                className="mt-4 gap-3 mb-2"
+                                variant="outline"
+                            >
+                                <>
+                                    <BellRing size={18} color="#3469d3" />
+                                    <Text className="font-medium">Add reminder</Text>
+                                </>
+                            </Button>
                         )}
                     </View>
                 </View>
             </CardView>
-
-            <AlertDialog open={showConfirm} onOpenChange={setShowConfirm}>
-                <AlertDialogContent>
-                    <AlertDialogHeader>
-                        <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                        <AlertDialogDescription>
-                            This will permanently delete this train booking.
-                        </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                        <AlertDialogCancel onPress={() => setShowConfirm(false)}>
-                            <Text>Cancel</Text>
-                        </AlertDialogCancel>
-                        <AlertDialogAction onPress={onDelete}>
-                            <Text>Continue</Text>
-                        </AlertDialogAction>
-                    </AlertDialogFooter>
-                </AlertDialogContent>
-            </AlertDialog>
         </>
     );
 };

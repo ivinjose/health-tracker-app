@@ -5,6 +5,7 @@ import useTrainBookingApiManager from "@/api-managers/TrainBookingApiManager";
 import CardView from "@/components/CardView";
 import NewTrainBookingDialog from "@/components/NewTrainBookingDialog";
 import TrainBookingCard from "@/components/TrainBookingCard";
+import { Separator } from "@/components/ui/separator";
 
 export default function TrainBookingsPage() {
     const trainBookingApiManager = useTrainBookingApiManager();
@@ -33,13 +34,15 @@ export default function TrainBookingsPage() {
                         showsVerticalScrollIndicator={false}
                         contentContainerStyle={{ padding: 16, paddingTop: 16 }}
                     >
-                        <View className="gap-4">
+                        <View>
                             {trainBookings?.map((booking) => (
                                 <View
                                     key={booking._id ?? `${booking.travel_date}-${booking.name ?? ""}`}
                                 >
                                     <TrainBookingCard {...booking} />
+                                    <Separator className="my-4" />
                                 </View>
+
                             ))}
                         </View>
                     </ScrollView>
