@@ -1,12 +1,13 @@
+import * as Calendar from "expo-calendar";
 import { useCallback, useMemo } from "react";
-import { Alert, Linking, Text, View } from "react-native";
+import { Alert, Linking, Platform, Text, View } from "react-native";
 
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { useToast } from "@/hooks/use-toast";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { format } from "date-fns";
-import { BellRing, Train } from "lucide-react-native";
+import { BellRing } from "lucide-react-native";
 
 
 import useTrainBookingApiManager from "@/api-managers/TrainBookingApiManager";
@@ -14,6 +15,7 @@ import CardView from "@/components/CardView";
 import { buildGoogleCalendarUrl } from "@/lib/helpers";
 
 const REMINDER_EVENT_DURATION_HOURS = 1;
+const MS_PER_HOUR = 60 * 60 * 1000;
 /** Reminder offsets: 0 = exact time, 1 = 1hr before, 24 = 1 day before */
 const REMINDER_HOURS_BEFORE = [0];
 
@@ -58,7 +60,7 @@ const TrainBookingCard = ({ _id, name, travel_date, train_booking_date, remarks,
 
     const displayTimeSlot = time_slot;
 
-    const handleAddReminder = useCallback(() => {
+    const handleAddReminder = useCallback(async () => {
         if (!bookingDate) return;
         const [hours, minutes] = displayTimeSlot.split(":").map(Number);
         const dateTime = new Date(bookingDate);
@@ -70,17 +72,58 @@ const TrainBookingCard = ({ _id, name, travel_date, train_booking_date, remarks,
         if (remarks) descriptionParts.push(remarks);
         const description = descriptionParts.join("\n\n") || undefined;
 
-        REMINDER_HOURS_BEFORE.forEach((hoursBefore) => {
-            const url = buildGoogleCalendarUrl({
-                dateTime,
-                hoursBefore,
-                title,
-                description,
-                durationHours: REMINDER_EVENT_DURATION_HOURS,
+        if (Platform.OS !== "web") {
+            const { status } = await Calendar.requestCalendarPermissionsAsync();
+            if (status !== "granted") {
+                toast({
+                    variant: "destructive",
+                    description: "Calendar access is needed to add a reminder.",
+                });
+                return;
+            }
+        }
+
+        try {
+            for (const hoursBefore of REMINDER_HOURS_BEFORE) {
+                if (Platform.OS === "web") {
+                    const url = buildGoogleCalendarUrl({
+                        dateTime,
+                        hoursBefore,
+                        title,
+                        description,
+                    });
+                    await Linking.openURL(url);
+                } else {
+                    const eventStart = new Date(dateTime.getTime() - hoursBefore * MS_PER_HOUR);
+                    const eventEnd = new Date(
+                        eventStart.getTime() + REMINDER_EVENT_DURATION_HOURS * MS_PER_HOUR
+                    );
+                    const defaultCal = await Calendar.getDefaultCalendarAsync();
+                    await Calendar.createEventAsync(defaultCal.id, {
+                        title,
+                        startDate: eventStart,
+                        endDate: eventEnd,
+                        notes: description ?? "",
+                        timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+                        alarms: [{ relativeOffset: 0 }],
+                    });
+                }
+            }
+
+            if (Platform.OS !== "web") {
+                toast({
+                    variant: "",
+                    description: "Reminder added to your calendar.",
+                    className: "bg-green-600 text-white",
+                });
+            }
+        } catch {
+            toast({
+                variant: "destructive",
+                description: "Could not add the reminder. Try again.",
             });
-            Linking.openURL(url);
-        });
-    }, [bookingDate, name, travelDate, remarks, displayTimeSlot]);
+        }
+    }, [bookingDate, name, travelDate, remarks, displayTimeSlot, toast]);
 
     const actions = useMemo(() => {
         if (isReadOnly) {
@@ -98,9 +141,9 @@ const TrainBookingCard = ({ _id, name, travel_date, train_booking_date, remarks,
         <>
             <CardView actions={actions}>
                 <View className="flex-row gap-4 p-1">
-                    <View className="items-center justify-center">
+                    {/* <View className="items-center justify-center">
                         <Train size={32} color="#1C2B3A" strokeWidth={1.5} />
-                    </View>
+                    </View> */}
                     <View className="flex-1 min-w-0 justify-start">
                         {!!name && <Text className="font-semibold my-1 text-[#111] text-base">{name}</Text>}
                         {!!is_tatkal &&

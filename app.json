@@ -27,6 +27,13 @@
     },
     "plugins": [
       "expo-router",
+      "expo-secure-store",
+      [
+        "expo-calendar",
+        {
+          "calendarPermission": "The app needs to access your calendar."
+        }
+      ],
       [
         "expo-splash-screen",
         {
@@ -39,7 +46,6 @@
           }
         }
       ],
-      "expo-secure-store"
     ],
     "experiments": {
       "typedRoutes": true,
