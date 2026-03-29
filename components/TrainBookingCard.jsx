@@ -35,7 +35,6 @@ const TrainBookingCard = ({ _id, name, travel_date, train_booking_date, remarks,
         Alert.alert('Are you sure?', 'Do you want to delete this record?', [
             {
                 text: 'No',
-                // onPress: () => setShowConfirm(false),
                 style: 'cancel',
             },
             { text: 'Yes', onPress: () => onDelete() },

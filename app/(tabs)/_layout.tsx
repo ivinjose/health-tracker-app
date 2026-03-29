@@ -42,7 +42,7 @@ export default function AppLayout() {
 			<Tabs.Screen
 				name="index"
 				options={{
-					title: 'Home',
+					title: 'Manage Off Days',
 					tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />,
 					// headerRight: () => (
 					// 	<Pressable

@@ -1,27 +1,6 @@
-import { useCallback, useMemo, useState } from "react";
-import { Pressable, Text, View } from "react-native";
-
-import {
-    AlertDialog,
-    AlertDialogAction,
-    AlertDialogCancel,
-    AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
-
-import {
-    Dialog,
-    DialogContent,
-    DialogTitle,
-    DialogTrigger,
-} from "@/components/ui/dialog";
-
+import { useCallback, useMemo } from "react";
+import { Alert, Text, View } from "react-native";
 // import { Calendar } from "@/components/ui/calendar";
-
-import { CalendarPlus } from "lucide-react-native";
 
 import { useToast } from "@/hooks/use-toast";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -43,8 +22,6 @@ const OffDayCard = ({
     lastOffDay = {},
     nextOffDay = {},
 }) => {
-    const [showConfirm, setShowConfirm] = useState(false);
-
     const { toast } = useToast();
     const offDaysApiManager = useOffDaysApiManager();
     const queryClient = useQueryClient();
@@ -64,13 +41,22 @@ const OffDayCard = ({
         removeOffDay(_id);
     }, [_id, removeOffDay]);
 
+    const confirmDelete = () =>
+        Alert.alert('Are you sure?', 'Do you want to delete this record?', [
+            {
+                text: 'No',
+                style: 'cancel',
+            },
+            { text: 'Yes', onPress: () => onDelete() },
+        ]);
+
     const actions = useMemo(() => {
         if (isReadOnly) return [];
 
         return [
             {
                 label: "Delete",
-                action: () => setShowConfirm(true),
+                action: () => confirmDelete(),
             },
         ];
     }, [isReadOnly]);
@@ -78,80 +64,32 @@ const OffDayCard = ({
     return (
         <>
             <CardView actions={actions}>
-                <Dialog>
-                    <View className="flex-row items-center p-4">
-                        <DialogTrigger asChild>
-                            <Pressable className="active:opacity-80 mr-4">
-                                <CalendarPlus size={48} color="#212933" />
-                            </Pressable>
-                        </DialogTrigger>
-
-                        <View className="flex-1 min-w-0">
-                            <Text className="text-base font-semibold text-[#212933]">
-                                {offday_name}
-                            </Text>
-                            <Text className="mt-1 text-sm font-normal text-[#444]">
-                                {offday_owner}
-                            </Text>
-                            <OffDays start_date={start_date} end_date={end_date} />
-                            {remarks ? (
-                                <Text className="mt-1 text-sm text-[#555]">{remarks}</Text>
-                            ) : null}
-                        </View>
+                <View className="flex-row items-center p-4">
+                    <View className="flex-1 min-w-0">
+                        <Text className="text-base font-semibold text-[#212933]">
+                            {offday_name}
+                        </Text>
+                        <Text className="mt-1 text-sm font-normal text-[#444]">
+                            {offday_owner}
+                        </Text>
+                        <OffDays start_date={start_date} end_date={end_date} />
+                        {remarks ? (
+                            <Text className="mt-1 text-sm text-[#555]">{remarks}</Text>
+                        ) : null}
                     </View>
+                </View>
 
-                    <View className="px-4 pb-2">
-                        <WeekendProximityAlert
-                            weekendProximity={weekendProximity}
-                            start_date={start_date}
-                            end_date={end_date}
-                        />
-                        <PTORecommendationForWeekend datesToWeekend={datesToWeekend} />
-                        <OffDayRecommendation recommendation={lastOffDay} />
-                        <OffDayRecommendation recommendation={nextOffDay} />
-                    </View>
-
-                    <DialogTrigger asChild>
-                        <Pressable className="mx-4 mb-4 rounded-lg bg-[#212933] py-3 active:opacity-90">
-                            <Text className="text-center text-base font-medium text-white">
-                                View details
-                            </Text>
-                        </Pressable>
-                    </DialogTrigger>
-
-                    <DialogContent>
-                        <DialogTitle>
-                            <Text className="text-base font-medium pt-2 pl-2">
-                                {offday_name}
-                            </Text>
-                        </DialogTitle>
-                    </DialogContent>
-                </Dialog>
+                <View className="px-4 pb-2">
+                    <WeekendProximityAlert
+                        weekendProximity={weekendProximity}
+                        start_date={start_date}
+                        end_date={end_date}
+                    />
+                    <PTORecommendationForWeekend datesToWeekend={datesToWeekend} />
+                    <OffDayRecommendation recommendation={lastOffDay} />
+                    <OffDayRecommendation recommendation={nextOffDay} />
+                </View>
             </CardView>
-
-            <AlertDialog open={showConfirm} onOpenChange={setShowConfirm}>
-                <AlertDialogContent>
-                    <AlertDialogHeader>
-                        <AlertDialogTitle>
-                            Are you absolutely sure?
-                        </AlertDialogTitle>
-
-                        <AlertDialogDescription>
-                            This will permanently delete this off day.
-                        </AlertDialogDescription>
-                    </AlertDialogHeader>
-
-                    <AlertDialogFooter>
-                        <AlertDialogCancel onPress={() => setShowConfirm(false)}>
-                            <Text>Cancel</Text>
-                        </AlertDialogCancel>
-
-                        <AlertDialogAction onPress={onDelete}>
-                            <Text>Continue</Text>
-                        </AlertDialogAction>
-                    </AlertDialogFooter>
-                </AlertDialogContent>
-            </AlertDialog>
         </>
     );
 };
@@ -178,7 +116,7 @@ const WeekendProximityAlert = ({ weekendProximity, start_date, end_date }) => {
     if (start_date === end_date) {
         return (
             <View className={sectionClass}>
-                <Text className={rowClass}>Your date is next to a weekend</Text>
+                <Text className={rowClass}>This off day is next to a weekend</Text>
             </View>
         );
     } else {
@@ -203,7 +141,7 @@ const PTORecommendationForWeekend = ({ datesToWeekend }) => {
     }
     return (
         <View className={sectionClass}>
-            <Text className={rowClass}>You can combine this with weekend by taking off on these days:</Text>
+            <Text className={rowClass}>Combine this off day with weekend by taking off on these days:</Text>
             {datesToWeekend.map((suggestedDate, index) => (
                 <Text key={index} className={rowClass}>{format(suggestedDate, 'PPPP')}</Text>
             ))}
@@ -225,7 +163,7 @@ const OffDayRecommendation = ({ recommendation }) => {
 
     return (
         <View className={sectionClass}>
-            <Text className={rowClass}>You can combine this with {recommendation.day.offday_name} by taking off on these days:</Text>
+            <Text className={rowClass}>Combine this with {recommendation.day.offday_name} by taking off on these days:</Text>
             {recommendation.dates.map((suggestedDate, index) => (
                 <Text key={index} className={rowClass}>{format(suggestedDate, 'PPPP')}</Text>
             ))}

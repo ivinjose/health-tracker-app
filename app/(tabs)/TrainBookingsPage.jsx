@@ -36,13 +36,10 @@ export default function TrainBookingsPage() {
                     >
                         <View>
                             {trainBookings?.map((booking) => (
-                                <View
-                                    key={booking._id ?? `${booking.travel_date}-${booking.name ?? ""}`}
-                                >
+                                <View key={booking._id ?? `${booking.travel_date}-${booking.name ?? ""}`}>
                                     <TrainBookingCard {...booking} />
                                     <Separator className="my-4" />
                                 </View>
-
                             ))}
                         </View>
                     </ScrollView>
