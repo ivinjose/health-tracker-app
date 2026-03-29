@@ -59,7 +59,7 @@ export default function AppLayout() {
 			<Tabs.Screen
 				name="TrainBookingsPage"
 				options={{
-					title: 'Train Bookings',
+					title: 'Booking reminders',
 					tabBarIcon: ({ color }) => <Train size={28} color={color} strokeWidth={1.5} />,
 				}}
 			/>

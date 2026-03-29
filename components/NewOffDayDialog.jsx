@@ -1,28 +1,17 @@
-import {
-    Accordion,
-    AccordionContent,
-    AccordionItem,
-    AccordionTrigger,
-} from '@/components/ui/accordion';
 import { Button } from "@/components/ui/button";
 import {
-    Form,
-    FormControl,
-    FormField,
-    FormItem,
-    FormLabel,
-    FormMessage,
+    Form
 } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { differenceInCalendarDays, format, subDays } from "date-fns";
-import { Calendar as CalendarIcon, CircleX, Plus } from "lucide-react-native";
+import { CircleX, Plus } from "lucide-react-native";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
-import { Calendar } from "react-native-calendars";
 
 import FormFieldInput from "@/components/ui/form-field-input";
+import FormFieldSelect from "@/components/ui/form-field-select";
 import FormFieldTextarea from "@/components/ui/form-field-textarea";
 import { Text } from "@/components/ui/text";
 import {
@@ -30,15 +19,16 @@ import {
     TRAIN_NORMAL_BOOKING_OPENING_TIME,
     TRAIN_TATKAL_BOOKING_OPENING_TIME,
 } from "@/constants/trainBooking";
-import formSchema from "@/schemas/TrainBookingDay";
+import formSchema from "@/schemas/OffDay";
 import { Modal, Pressable, ScrollView, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import useTrainBookingApiManager from "../api-managers/TrainBookingApiManager";
 
 const defaultFormValues = {
-    name: "",
-    travel_date: new Date(),
-    train_booking_date: undefined,
+    offday_name: "",
+    offday_owner: "AV",
+    start_date: new Date(),
+    end_date: new Date(),
     remarks: "",
 };
 
@@ -141,62 +131,29 @@ export default function NewTrainBookingDialog() {
         <View className="mt">
             <Form {...form}>
                 <View>
-                    <FormLabel className="mb-2.5 block font-normal text-base text-[#4c4c4c]">
-                        When do you wish to travel?
-                    </FormLabel>
+                    {/* Name */}
                     <View className="mb-5 flex gap-2.5">
-                        <FormField
-                            control={form.control}
-                            name="travel_date"
-                            render={({ field }) => (
-                                <FormItem className="flex flex-col">
-                                    <FormControl>
-                                        <Accordion type='single' collapsible>
-                                            <AccordionItem value='item-1'>
-                                                <AccordionTrigger className="flex-row items-center gap-2 justify-start">
-                                                    <CalendarIcon size={24} color="#000" />
-                                                    {/* <Button
-                                                        variant={"outline"}
-                                                        className={cn(
-                                                            " pl-3 text-left font-light",
-                                                            !field.value && "text-muted-foreground"
-                                                        )}
-                                                    > */}
-                                                    {field.value ? <Text>{format(field.value, "PPP")}</Text> : <Text>Pick a date</Text>}
-
-                                                    {/* </Button> */}
-                                                </AccordionTrigger>
-                                                <AccordionContent>
-                                                    <Calendar
-                                                        initialDate={field.value ? format(field.value, "yyyy-MM-dd") : format(new Date(), "yyyy-MM-dd")}
-                                                        enableSwipeMonths={true}
-                                                        minDate={format(new Date(), "yyyy-MM-dd")}
-                                                        markedDates={
-                                                            field.value
-                                                                ? { [format(field.value, "yyyy-MM-dd")]: { selected: true } }
-                                                                : {}
-                                                        }
-                                                        onDayPress={(day) => {
-                                                            field.onChange(new Date(day.dateString));
-                                                        }}
-                                                    />
-                                                </AccordionContent>
-                                            </AccordionItem>
-                                        </Accordion>
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
+                        <FormFieldInput
+                            formControl={form.control}
+                            schemaProperty="offday_name"
+                            placeholder="Christmas holidays"
+                            labelText="Give a name to your off day"
+                            labelStyleClass="mb-2.5 block font-normal text-base text-[#4c4c4c]"
                         />
                     </View>
 
+                    {/* User */}
                     <View className="mb-5">
-                        <FormFieldInput
+                        <FormFieldSelect
                             formControl={form.control}
-                            schemaProperty="name"
-                            placeholder="Christmas holiday to Hometown"
-                            labelText="Do you want to give it a name?"
+                            schemaProperty="offday_owner"
+                            labelText="Who's off day is this"
                             labelStyleClass="mb-2.5 block font-normal text-base text-[#4c4c4c]"
+                            placeholder="Select a user"
+                            dropdownOptions={[
+                                { label: "Anju Varghese - AV", value: "AV" },
+                                { label: "Ivin Jose - IJ", value: "IJ" },
+                            ]}
                         />
                     </View>
 
@@ -207,7 +164,7 @@ export default function NewTrainBookingDialog() {
                             placeholder="Type anything you want to remember"
                             labelText="Remarks"
                             labelStyleClass="mb-2.5 block font-normal text-base text-[#4c4c4c]"
-                        // inputStyleClass="min-h-[100px] rounded-lg border border-gray-300 px-3 py-2 text-sm"
+                            inputStyleClass="min-h-[100px] rounded-lg border border-gray-300 px-3 py-2 text-sm"
                         />
                     </View>
 

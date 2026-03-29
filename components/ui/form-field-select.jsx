@@ -1,4 +1,11 @@
-import { Picker } from "@react-native-picker/picker";
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select"; // adjust path based on your setup
+
 import { Controller } from "react-hook-form";
 import { Text, View } from "react-native";
 
@@ -14,7 +21,7 @@ const FormFieldSelect = ({
         <Controller
             control={formControl}
             name={schemaProperty}
-            render={({ field: { onChange, value } }) => (
+            render={({ field: { onChange, value }, fieldState: { error } }) => (
                 <View className="w-full">
                     {!!labelText && (
                         <Text className={labelStyleClass}>
@@ -22,18 +29,25 @@ const FormFieldSelect = ({
                         </Text>
                     )}
 
-                    <View className="border border-gray-300 rounded-md mt-1">
-                        <Picker
-                            selectedValue={value}
-                            onValueChange={(itemValue) => onChange(itemValue)}
-                        >
-                            <Picker.Item label={placeholder} value={null} />
+                    <Select value={value} onValueChange={onChange}>
+                        <SelectTrigger className="mt-1">
+                            <SelectValue placeholder={placeholder} />
+                        </SelectTrigger>
 
-                            {dropdownOptions.map(({ value, label }) => (
-                                <Picker.Item key={value} label={label} value={value} />
+                        <SelectContent>
+                            {dropdownOptions.map(({ value: optionValue, label }) => (
+                                <SelectItem key={optionValue} value={optionValue}>
+                                    <Text className="text-black">{label}</Text>
+                                </SelectItem>
                             ))}
-                        </Picker>
-                    </View>
+                        </SelectContent>
+                    </Select>
+
+                    {error && (
+                        <Text className="text-red-500 mt-1">
+                            {error.message}
+                        </Text>
+                    )}
                 </View>
             )}
         />
