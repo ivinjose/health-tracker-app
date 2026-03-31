@@ -21,7 +21,24 @@ const FormFieldSelect = ({
         <Controller
             control={formControl}
             name={schemaProperty}
-            render={({ field: { onChange, value }, fieldState: { error } }) => (
+            render={({ field: { onChange, value }, fieldState: { error } }) => {
+                const stringValue =
+                    typeof value === "string"
+                        ? value
+                        : value && typeof value === "object" && "value" in value
+                          ? String(value.value)
+                          : "";
+                const selectedOption = dropdownOptions.find(
+                    (o) => o.value === stringValue
+                );
+                const selectValue = selectedOption
+                    ? {
+                          value: selectedOption.value,
+                          label: selectedOption.label,
+                      }
+                    : undefined;
+
+                return (
                 <View className="w-full">
                     {!!labelText && (
                         <Text className={labelStyleClass}>
@@ -29,7 +46,12 @@ const FormFieldSelect = ({
                         </Text>
                     )}
 
-                    <Select value={value} onValueChange={onChange}>
+                    <Select
+                        value={selectValue}
+                        onValueChange={(option) =>
+                            onChange(option?.value ?? "")
+                        }
+                    >
                         <SelectTrigger className="mt-1">
                             <SelectValue placeholder={placeholder} />
                         </SelectTrigger>
@@ -52,7 +74,8 @@ const FormFieldSelect = ({
                         </Text>
                     )}
                 </View>
-            )}
+                );
+            }}
         />
     );
 };

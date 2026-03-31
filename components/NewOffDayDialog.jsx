@@ -1,14 +1,26 @@
+import {
+    Accordion,
+    AccordionContent,
+    AccordionItem,
+    AccordionTrigger,
+} from '@/components/ui/accordion';
 import { Button } from "@/components/ui/button";
 import {
-    Form
+    Form,
+    FormControl,
+    FormField,
+    FormItem,
+    FormLabel,
+    FormMessage
 } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { differenceInCalendarDays, format, subDays } from "date-fns";
+import { format } from "date-fns";
 import { CircleX, Plus } from "lucide-react-native";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
+import useOffDaysApiManager from "../api-managers/OffDaysApiManager";
 
 import FormFieldInput from "@/components/ui/form-field-input";
 import FormFieldSelect from "@/components/ui/form-field-select";
@@ -20,9 +32,10 @@ import {
     TRAIN_TATKAL_BOOKING_OPENING_TIME,
 } from "@/constants/trainBooking";
 import formSchema from "@/schemas/OffDay";
+import { Calendar as CalendarIcon } from "lucide-react-native";
 import { Modal, Pressable, ScrollView, View } from "react-native";
+import { Calendar } from "react-native-calendars";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import useTrainBookingApiManager from "../api-managers/TrainBookingApiManager";
 
 const defaultFormValues = {
     offday_name: "",
@@ -42,76 +55,37 @@ export default function NewTrainBookingDialog() {
 
     const form = useForm({
         resolver: zodResolver(formSchema),
-        defaultValues: defaultFormValues,
     });
 
-    const travelDate = form.watch("travel_date");
-
-    useEffect(() => {
-        setIsCalculated(false);
-        setIsTatkalBooking(false);
-    }, [travelDate]);
-
-    const trainBookingApiManager = useTrainBookingApiManager();
+    const offDaysApiManager = useOffDaysApiManager();
     const queryClient = useQueryClient();
 
-    const { mutateAsync: addTrainBooking } = useMutation({
+    /* create op */
+    const { mutateAsync: addOffDay } = useMutation({
         mutationFn: (data) => {
-            const { name, travel_date, train_booking_date, remarks, is_tatkal } = data;
-            const travel_dateStr = format(travel_date, "yyyy-MM-dd");
-            const train_booking_dateStr = train_booking_date ? format(train_booking_date, "yyyy-MM-dd") : "";
-            const time_slot = is_tatkal ? TRAIN_TATKAL_BOOKING_OPENING_TIME : TRAIN_NORMAL_BOOKING_OPENING_TIME;
-            return trainBookingApiManager.createTrainBooking({
-                name,
-                travel_date: travel_dateStr,
-                train_booking_date: train_booking_dateStr,
+            console.log('DEBUG: data', data);
+            const {
+                offday_name,
+                offday_owner,
+                start_date,
+                end_date,
                 remarks,
-                is_tatkal,
-                time_slot,
-            });
+            } = data;
+            const startDayWithoutTime = format(start_date, 'yyyy-MM-dd');
+            const endDayWithoutTime = format(end_date, 'yyyy-MM-dd');
+            return offDaysApiManager.createOffDay({ offday_name, offday_owner, start_date: startDayWithoutTime, end_date: endDayWithoutTime, remarks })
         },
         onSuccess: async () => {
-            form.reset({ ...defaultFormValues, travel_date: new Date() });
-            setIsCalculated(false);
-            setIsOpen(false);
-            await queryClient.invalidateQueries(["trainBookings"]);
+            form.reset();
+
+            await queryClient.invalidateQueries(['processedOffdays']);
             toast({
                 variant: "",
-                description: "Your travel day was saved successfully!",
-                className: "bg-green-600 text-white",
+                description: "Your off day was saved successfully!",
+                className: "bg-green-600 text-white"
             });
-        },
-    });
-
-    const onSubmit = async (data) => {
-        if (!isCalculated) {
-            const { travel_date } = data;
-            const today = new Date();
-            const daysUntilTravel = differenceInCalendarDays(travel_date, today);
-
-            let trainBookingDate;
-            let tatkal = false;
-
-            if (daysUntilTravel < TRAIN_BOOKING_BUFFER) {
-                trainBookingDate = subDays(travel_date, 1);
-                tatkal = true;
-            } else {
-                trainBookingDate = subDays(travel_date, TRAIN_BOOKING_BUFFER);
-            }
-
-            form.setValue("train_booking_date", trainBookingDate, {
-                shouldValidate: true,
-                shouldDirty: true,
-            });
-            setIsTatkalBooking(tatkal);
-            setIsCalculated(true);
-            setTimeout(() => {
-                scrollViewRef.current?.scrollToEnd({ animated: true });
-            }, 100);
-            return;
         }
-        await addTrainBooking({ ...data, is_tatkal: isTatkalBooking });
-    };
+    });
 
     const onCancel = () => {
         form.reset({ ...defaultFormValues, travel_date: new Date() });
@@ -119,13 +93,6 @@ export default function NewTrainBookingDialog() {
         setIsTatkalBooking(false);
         setIsOpen(false);
     };
-
-    const calculated = useMemo(() => {
-        const td = form.getValues("travel_date");
-        const bd = form.getValues("train_booking_date");
-        return { travelDate: td, bookingDate: bd, isTatkal: isTatkalBooking };
-
-    }, [isCalculated, isTatkalBooking]);
 
     const formContent = (
         <View className="mt">
@@ -157,6 +124,88 @@ export default function NewTrainBookingDialog() {
                         />
                     </View>
 
+                    {/* Off day starts on */}
+                    <FormLabel className="mb-0 block font-normal text-base text-[#4c4c4c]">
+                        Off day starts on
+                    </FormLabel>
+                    <View className="mb-5 flex gap-2.5">
+                        <FormField
+                            control={form.control}
+                            name="start_date"
+                            render={({ field }) => (
+                                <FormItem className="flex flex-col">
+                                    <FormControl>
+                                        <Accordion type='single' collapsible>
+                                            <AccordionItem value='item-1'>
+                                                <AccordionTrigger className="flex-row items-center gap-2 justify-start">
+                                                    <CalendarIcon size={24} color="#000" />
+                                                    {field.value ? <Text>{format(field.value, "PPP")}</Text> : <Text>Pick a date</Text>}
+                                                </AccordionTrigger>
+                                                <AccordionContent>
+                                                    <Calendar
+                                                        initialDate={field.value ? format(field.value, "yyyy-MM-dd") : format(new Date(), "yyyy-MM-dd")}
+                                                        enableSwipeMonths={true}
+                                                        minDate={format(new Date(), "yyyy-MM-dd")}
+                                                        markedDates={
+                                                            field.value
+                                                                ? { [format(field.value, "yyyy-MM-dd")]: { selected: true } }
+                                                                : {}
+                                                        }
+                                                        onDayPress={(day) => {
+                                                            field.onChange(new Date(day.dateString));
+                                                        }}
+                                                    />
+                                                </AccordionContent>
+                                            </AccordionItem>
+                                        </Accordion>
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                    </View>
+
+                    {/* Off day ends on */}
+                    <FormLabel className="mb-0 block font-normal text-base text-[#4c4c4c]">
+                        Off day ends on
+                    </FormLabel>
+                    <View className="mb-5 flex gap-2.5">
+                        <FormField
+                            control={form.control}
+                            name="end_date"
+                            render={({ field }) => (
+                                <FormItem className="flex flex-col">
+                                    <FormControl>
+                                        <Accordion type='single' collapsible>
+                                            <AccordionItem value='item-1'>
+                                                <AccordionTrigger className="flex-row items-center gap-2 justify-start">
+                                                    <CalendarIcon size={24} color="#000" />
+                                                    {field.value ? <Text>{format(field.value, "PPP")}</Text> : <Text>Pick a date</Text>}
+                                                </AccordionTrigger>
+                                                <AccordionContent>
+                                                    <Calendar
+                                                        initialDate={field.value ? format(field.value, "yyyy-MM-dd") : format(new Date(), "yyyy-MM-dd")}
+                                                        enableSwipeMonths={true}
+                                                        minDate={format(new Date(), "yyyy-MM-dd")}
+                                                        markedDates={
+                                                            field.value
+                                                                ? { [format(field.value, "yyyy-MM-dd")]: { selected: true } }
+                                                                : {}
+                                                        }
+                                                        onDayPress={(day) => {
+                                                            field.onChange(new Date(day.dateString));
+                                                        }}
+                                                    />
+                                                </AccordionContent>
+                                            </AccordionItem>
+                                        </Accordion>
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                    </View>
+
                     <View className="mb-5">
                         <FormFieldTextarea
                             formControl={form.control}
@@ -167,15 +216,6 @@ export default function NewTrainBookingDialog() {
                             inputStyleClass="min-h-[100px] rounded-lg border border-gray-300 px-3 py-2 text-sm"
                         />
                     </View>
-
-                    {isCalculated && (
-                        <CalculatedBookingDate
-                            className="my-2.5 mb-5 rounded-[5px] border border-[#BEDBFF] bg-[#EEF6FF] px-3 py-4"
-                            travelDate={calculated.travelDate}
-                            trainBookingDate={calculated.bookingDate}
-                            isTatkalBooking={calculated.isTatkal}
-                        />
-                    )}
                 </View>
             </Form>
         </View>
@@ -240,8 +280,8 @@ export default function NewTrainBookingDialog() {
                         {formContent}
                     </ScrollView>
                     <View className="px-10 p-4">
-                        <Button onPress={form.handleSubmit(onSubmit)}>
-                            <Text>{isCalculated ? "Save date" : "Calculate train booking date"}</Text>
+                        <Button onPress={form.handleSubmit(addOffDay)}>
+                            <Text>{"Save off day"}</Text>
                         </Button>
                     </View>
                 </View>
