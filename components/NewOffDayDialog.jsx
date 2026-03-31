@@ -147,7 +147,7 @@ export default function NewTrainBookingDialog() {
                         <FormFieldSelect
                             formControl={form.control}
                             schemaProperty="offday_owner"
-                            labelText="Who's off day is this"
+                            labelText="Who's off day is this?"
                             labelStyleClass="mb-2.5 block font-normal text-base text-[#4c4c4c]"
                             placeholder="Select a user"
                             dropdownOptions={[

@@ -36,9 +36,12 @@ const FormFieldSelect = ({
 
                         <SelectContent>
                             {dropdownOptions.map(({ value: optionValue, label }) => (
-                                <SelectItem key={optionValue} value={optionValue}>
-                                    <Text className="text-black">{label}</Text>
-                                </SelectItem>
+                                <SelectItem
+                                    className="text-black"
+                                    key={optionValue}
+                                    value={optionValue}
+                                    label={label}
+                                />
                             ))}
                         </SelectContent>
                     </Select>
