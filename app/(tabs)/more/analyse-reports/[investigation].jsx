@@ -93,7 +93,7 @@ export default function AnalyseInvestigationScreen() {
 
 	return (
 		<View className="flex-1 bg-background">
-			<PageHeader text="View reports" />
+			<PageHeader text="View reports" showBack />
 			<ScrollView
 				className="flex-1"
 				contentContainerStyle={{ padding: 16, gap: 16, paddingBottom: 32 }}

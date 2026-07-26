@@ -11,7 +11,7 @@ import {
 const CardView = ({ children, actions = [] }) => {
     return (
         <>
-            <View className="overflow-hidden bg-white flex-row items-start justify-between gap-0">
+            <View className="overflow-hidden flex-row items-start justify-between gap-0 bg-card">
                 <View className="flex-1 min-w-0">{children}</View>
 
                 {actions.length > 0 && (

@@ -2,6 +2,7 @@ import NewReportDialog from '@/components/NewReportDialog';
 import PageHeader from '@/components/PageHeader';
 import ReportCard from '@/components/ReportCard';
 import { Button } from '@/components/ui/button';
+import { Skeleton } from '@/components/ui/skeleton';
 import { Text } from '@/components/ui/text';
 import { useToast } from '@/hooks/use-toast';
 import useInvestigationsApiManager from '@/api-managers/InvestigationsApiManager';
@@ -10,7 +11,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useLocalSearchParams } from 'expo-router';
 import { Plus } from 'lucide-react-native';
 import { useEffect, useState } from 'react';
-import { ScrollView, View } from 'react-native';
+import { RefreshControl, ScrollView, View } from 'react-native';
 
 export default function ReportsScreen() {
 	const { showNewReportDialog: showDialogParam, appointment } = useLocalSearchParams();
@@ -27,7 +28,13 @@ export default function ReportsScreen() {
 		}
 	}, [showDialogParam]);
 
-	const { data: reports = [], isLoading } = useQuery({
+	const {
+		data: reports = [],
+		isLoading,
+		isError,
+		refetch,
+		isRefetching,
+	} = useQuery({
 		queryKey: ['reports'],
 		queryFn: () => reportsApiManager.readReports({}),
 	});
@@ -57,15 +64,32 @@ export default function ReportsScreen() {
 			</View>
 
 			{isLoading ? (
-				<View className="flex-1 items-center justify-center">
-					<Text className="text-muted-foreground">Loading reports…</Text>
+				<View className="gap-4 p-4">
+					<Skeleton className="h-24 w-full rounded-lg" />
+					<Skeleton className="h-24 w-full rounded-lg" />
+				</View>
+			) : isError ? (
+				<View className="flex-1 items-center justify-center gap-3 px-6">
+					<Text className="text-center text-destructive">Could not load reports.</Text>
+					<Button variant="outline" onPress={() => refetch()}>
+						<Text>Try again</Text>
+					</Button>
 				</View>
 			) : reports.length === 0 ? (
-				<View className="flex-1 items-center justify-center px-6">
+				<View className="flex-1 items-center justify-center gap-4 px-6">
 					<Text className="text-center text-muted-foreground">No reports yet.</Text>
+					<Button onPress={() => setShowNewReportDialog(true)}>
+						<Text className="font-medium text-primary-foreground">Create report</Text>
+					</Button>
 				</View>
 			) : (
-				<ScrollView className="flex-1" contentContainerStyle={{ padding: 16, gap: 16 }}>
+				<ScrollView
+					className="flex-1"
+					contentContainerStyle={{ padding: 16, gap: 16 }}
+					refreshControl={
+						<RefreshControl refreshing={isRefetching} onRefresh={refetch} />
+					}
+				>
 					{reports.map((report) => (
 						<ReportCard
 							key={report._id}

@@ -21,7 +21,7 @@ export default function AnalyseReportsScreen() {
 
 	return (
 		<View className="flex-1 bg-background">
-			<PageHeader text="Analyse Reports" />
+			<PageHeader text="Analyse Reports" showBack />
 			<ScrollView
 				className="flex-1"
 				contentContainerStyle={{ padding: 16, gap: 16 }}

@@ -2,7 +2,7 @@
 
 Migrate features from **health-tracker** (Vite web app) into **health-tracker-app** (Expo app).
 
-**Decision:** Fully replace PTO/train booking features. The final app is health-tracking only.
+**Status: Migration complete (Phases 0–3, 5). Phase 4 (PDF/OCR) deferred.**
 
 ## How to use these plans
 
@@ -48,8 +48,8 @@ Use the existing Expo patterns (see git history for deleted PTO dialogs, or `app
 | Overview | 2 + 3 |
 | Appointments CRUD | 2 |
 | Reports CRUD | 2 |
-| Report upload / view | 4 |
-| OCR | 4 (web or deferred) |
+| Report upload / view | 4 (deferred) |
+| OCR | 4 (deferred) |
 | Analyse reports | 3 |
 | Compare reports | 3 |
 | Profiles CRUD | 2 |

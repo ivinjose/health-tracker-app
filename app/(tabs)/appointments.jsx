@@ -11,7 +11,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useLocalSearchParams } from 'expo-router';
 import { Plus } from 'lucide-react-native';
 import { useEffect, useState } from 'react';
-import { ScrollView, View } from 'react-native';
+import { RefreshControl, ScrollView, View } from 'react-native';
 
 export default function AppointmentsScreen() {
 	const { showNewAppointmentDialog: showDialogParam } = useLocalSearchParams();
@@ -26,7 +26,13 @@ export default function AppointmentsScreen() {
 		}
 	}, [showDialogParam]);
 
-	const { data: appointments = [], isLoading } = useQuery({
+	const {
+		data: appointments = [],
+		isLoading,
+		isError,
+		refetch,
+		isRefetching,
+	} = useQuery({
 		queryKey: ['appointments'],
 		queryFn: () => appointmentsApiManager.readAppointments({}),
 	});
@@ -52,12 +58,28 @@ export default function AppointmentsScreen() {
 
 			{isLoading ? (
 				<AppointmentsLoading />
+			) : isError ? (
+				<View className="flex-1 items-center justify-center gap-3 px-6">
+					<Text className="text-center text-destructive">Could not load appointments.</Text>
+					<Button variant="outline" onPress={() => refetch()}>
+						<Text>Try again</Text>
+					</Button>
+				</View>
 			) : appointments.length === 0 ? (
-				<View className="flex-1 items-center justify-center px-6">
+				<View className="flex-1 items-center justify-center gap-4 px-6">
 					<Text className="text-center text-muted-foreground">No appointments yet.</Text>
+					<Button onPress={() => setShowNewAppointmentDialog(true)}>
+						<Text className="font-medium text-primary-foreground">Create appointment</Text>
+					</Button>
 				</View>
 			) : (
-				<ScrollView className="flex-1" contentContainerStyle={{ padding: 16, gap: 16 }}>
+				<ScrollView
+					className="flex-1"
+					contentContainerStyle={{ padding: 16, gap: 16 }}
+					refreshControl={
+						<RefreshControl refreshing={isRefetching} onRefresh={refetch} />
+					}
+				>
 					{appointments.map((appointment) => (
 						<AppointmentCard
 							key={appointment._id}

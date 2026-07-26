@@ -94,7 +94,7 @@ export default function CompareScreen() {
 
 	return (
 		<View className="flex-1 bg-background">
-			<PageHeader text="Compare results" />
+			<PageHeader text="Compare results" showBack />
 			<ScrollView
 				className="flex-1"
 				contentContainerStyle={{ padding: 16, gap: 16, paddingBottom: 32 }}

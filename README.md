@@ -1,50 +1,71 @@
-# Welcome to your Expo app 👋
+# Health Tracker (Expo)
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Mobile and web client for the Health Tracker app, migrated from the Vite web app (`health-tracker`).
 
-## Get started
+## Features
 
-1. Install dependencies
+- Login, register, and email verification
+- Overview dashboard with appointments and health metric charts
+- Appointments, reports, and profiles CRUD
+- Analyse reports and compare investigations over time
+- Secure token storage on iOS/Android (SecureStore) and cookie auth on web
 
-   ```bash
-   npm install
-   ```
+## Deferred (not yet on mobile)
 
-2. Start the app
+- Report file upload and in-app PDF viewing
+- OCR auto-fill from uploaded reports
 
-   ```bash
-   npx expo start
-   ```
+See [docs/migration/phase-4-advanced.md](./docs/migration/phase-4-advanced.md) if you want to add these later.
 
-In the output, you'll find options to open the app in a
+## Prerequisites
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+- Node.js 18+
+- [health-tracker-server](https://github.com/your-org/health-tracker-server) or compatible API running (default: `http://localhost:4000`)
+- For physical devices: API reachable on your LAN
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
+## Setup
 
 ```bash
-npm run reset-project
+npm install
+cp .env.example .env
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+Configure `.env`:
 
-## Learn more
+```env
+EXPO_PUBLIC_API_URL=http://localhost:4000
+```
 
-To learn more about developing your project with Expo, look at the following resources:
+For Android emulator use `http://10.0.2.2:4000` (default when unset).  
+For a physical device use your machine IP, e.g. `http://192.168.1.10:4000`.
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+## Run
 
-## Join the community
+```bash
+npx expo start
+```
 
-Join our community of developers creating universal apps.
+Then press `i` (iOS simulator), `a` (Android emulator), or `w` (web).
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+## Project structure
+
+| Path | Purpose |
+|------|---------|
+| `app/` | Expo Router screens |
+| `api-managers/` | API hooks (reports, appointments, etc.) |
+| `components/` | UI and feature components |
+| `components/charts/` | SVG line charts (`react-native-svg`) |
+| `schemas/` | Zod form schemas |
+| `docs/migration/` | Migration plan from web app |
+
+## Tech stack
+
+- Expo 54 + Expo Router
+- React Native + NativeWind
+- TanStack Query + Axios
+- react-native-svg for charts
+
+## Migration notes
+
+This app was migrated from a PTO/train booking Expo template into a health-only app.  
+Historical phase-by-phase plans: [docs/migration/README.md](./docs/migration/README.md)

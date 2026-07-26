@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "pto-tracker-app",
-    "slug": "pto-tracker-app",
+    "name": "Health Tracker",
+    "slug": "health-tracker-app",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "ptotrackerapp",
+    "scheme": "healthtrackerapp",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
@@ -29,12 +29,6 @@
       "expo-router",
       "expo-secure-store",
       [
-        "expo-calendar",
-        {
-          "calendarPermission": "The app needs to access your calendar."
-        }
-      ],
-      [
         "expo-splash-screen",
         {
           "image": "./assets/images/splash-icon.png",
@@ -45,7 +39,7 @@
             "backgroundColor": "#000000"
           }
         }
-      ],
+      ]
     ],
     "experiments": {
       "typedRoutes": true,
