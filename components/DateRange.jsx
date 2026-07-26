@@ -1,0 +1,123 @@
+import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Label } from '@/components/ui/label';
+import { Text } from '@/components/ui/text';
+import { format } from 'date-fns';
+import { Calendar as CalendarIcon } from 'lucide-react-native';
+import { useEffect, useState } from 'react';
+import { Modal, Pressable, View } from 'react-native';
+import { Calendar } from 'react-native-calendars';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
+function DatePickerField({ enabled, value, onSelect, label }) {
+	const insets = useSafeAreaInsets();
+	const [showCalendar, setShowCalendar] = useState(false);
+	const dateValue = value ? new Date(Number(value)) : undefined;
+	const selectedKey = dateValue ? format(dateValue, 'yyyy-MM-dd') : undefined;
+	const maxDate = format(new Date(), 'yyyy-MM-dd');
+
+	return (
+		<View className="gap-2">
+			<Label>{label}</Label>
+			<View className="flex-row items-center gap-3">
+				<Pressable
+					onPress={() => enabled && setShowCalendar(true)}
+					disabled={!enabled}
+					className={`flex-1 flex-row items-center justify-between rounded-lg border border-input px-3 py-3 ${!enabled ? 'opacity-50' : ''}`}
+				>
+					<Text className={dateValue ? 'text-foreground' : 'text-muted-foreground'}>
+						{dateValue ? format(dateValue, 'PP') : 'Pick a date'}
+					</Text>
+					<CalendarIcon size={18} color="#6b7280" />
+				</Pressable>
+			</View>
+
+			<Modal visible={showCalendar} transparent animationType="slide">
+				<Pressable
+					className="flex-1 justify-end bg-black/50"
+					onPress={() => setShowCalendar(false)}
+				>
+					<Pressable
+						className="rounded-t-2xl bg-background"
+						style={{ paddingBottom: insets.bottom }}
+						onPress={(event) => event.stopPropagation()}
+					>
+						<View className="flex-row items-center justify-between border-b border-border px-4 py-3">
+							<Text className="text-lg font-semibold">{label}</Text>
+							<Button variant="ghost" onPress={() => setShowCalendar(false)}>
+								<Text>Done</Text>
+							</Button>
+						</View>
+						<Calendar
+							maxDate={maxDate}
+							onDayPress={(day) => {
+								onSelect(new Date(day.timestamp));
+								setShowCalendar(false);
+							}}
+							markedDates={
+								selectedKey ? { [selectedKey]: { selected: true } } : undefined
+							}
+						/>
+					</Pressable>
+				</Pressable>
+			</Modal>
+		</View>
+	);
+}
+
+export default function DateRange({
+	fromDate,
+	onFromDateSelect,
+	onFromDateReset,
+	toDate,
+	onToDateSelect,
+	onToDateReset,
+}) {
+	const [fromDateEnabled, setFromDateEnabled] = useState(false);
+	const [toDateEnabled, setToDateEnabled] = useState(false);
+
+	useEffect(() => {
+		if (!fromDateEnabled) {
+			onFromDateReset();
+		}
+	}, [fromDateEnabled, onFromDateReset]);
+
+	useEffect(() => {
+		if (!toDateEnabled) {
+			onToDateReset();
+		}
+	}, [toDateEnabled, onToDateReset]);
+
+	return (
+		<View className="gap-4">
+			<View className="gap-2">
+				<View className="flex-row items-center gap-2">
+					<Checkbox
+						checked={fromDateEnabled}
+						onCheckedChange={setFromDateEnabled}
+					/>
+					<Text className="text-sm text-foreground">Enable from date filter</Text>
+				</View>
+				<DatePickerField
+					enabled={fromDateEnabled}
+					value={fromDate}
+					onSelect={onFromDateSelect}
+					label="From Date"
+				/>
+			</View>
+
+			<View className="gap-2">
+				<View className="flex-row items-center gap-2">
+					<Checkbox checked={toDateEnabled} onCheckedChange={setToDateEnabled} />
+					<Text className="text-sm text-foreground">Enable to date filter</Text>
+				</View>
+				<DatePickerField
+					enabled={toDateEnabled}
+					value={toDate}
+					onSelect={onToDateSelect}
+					label="To Date"
+				/>
+			</View>
+		</View>
+	);
+}

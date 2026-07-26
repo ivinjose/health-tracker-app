@@ -1,6 +1,6 @@
 import PageHeader from '@/components/PageHeader';
 import AppointmentsWidget, { APPOINTMENT_TYPE } from '@/components/widgets/AppointmentsWidget';
-import LatestValueWidget from '@/components/widgets/LatestValueWidget';
+import HealthGraph from '@/components/widgets/HealthGraph';
 import { ScrollView, View } from 'react-native';
 
 export default function OverviewScreen() {
@@ -14,8 +14,8 @@ export default function OverviewScreen() {
 			>
 				<AppointmentsWidget />
 				<AppointmentsWidget type={APPOINTMENT_TYPE.PAST} count={2} />
-				<LatestValueWidget investigation="hba1c" count={5} />
-				<LatestValueWidget investigation="t4" count={5} />
+				<HealthGraph investigation="hba1c" count={5} />
+				<HealthGraph investigation="t4" count={5} />
 			</ScrollView>
 		</View>
 	);
