@@ -2,12 +2,13 @@ import React from 'react';
 
 import { Redirect, Tabs } from 'expo-router';
 import { ActivityIndicator, View } from 'react-native';
-import useAuth from '../../hooks/useAuth';
+import { CalendarPlus, FileText, LayoutGrid } from 'lucide-react-native';
 
 import { HapticTab } from '@/components/ui/haptic-tab';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { LogoutTabButton } from '@/components/ui/logout-tab-button';
 import { useColorScheme } from '@/hooks/use-color-scheme';
+import useAuth from '../../hooks/useAuth';
 import { Colors } from '@/lib/theme';
 
 export default function AppLayout() {
@@ -38,6 +39,28 @@ export default function AppLayout() {
 				options={{
 					title: 'Overview',
 					tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />,
+				}}
+			/>
+			<Tabs.Screen
+				name="appointments"
+				options={{
+					title: 'Appointments',
+					tabBarIcon: ({ color }) => <CalendarPlus size={26} color={color} strokeWidth={1.5} />,
+				}}
+			/>
+			<Tabs.Screen
+				name="reports"
+				options={{
+					title: 'Reports',
+					tabBarIcon: ({ color }) => <FileText size={26} color={color} strokeWidth={1.5} />,
+				}}
+			/>
+			<Tabs.Screen
+				name="more"
+				options={{
+					title: 'More',
+					headerShown: false,
+					tabBarIcon: ({ color }) => <LayoutGrid size={26} color={color} strokeWidth={1.5} />,
 				}}
 			/>
 			<Tabs.Screen
