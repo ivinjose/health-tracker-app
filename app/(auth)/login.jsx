@@ -22,8 +22,8 @@ export default function LoginScreen() {
 	const router = useRouter();
 
 	const usernameRef = useRef(null);
-	const [username, setUsername] = useState('ivinjose@gmail.com');
-	const [password, setPassword] = useState('ivin1989');
+	const [username, setUsername] = useState('');
+	const [password, setPassword] = useState('');
 	const [errorMessage, setErrorMessage] = useState('');
 	const [successMessage, setSuccessMessage] = useState('');
 	const [shouldPersist, setShouldPersist] = useState(false);
@@ -174,7 +174,7 @@ export default function LoginScreen() {
 
 					<View className="mt-6 flex-row items-center justify-center gap-1">
 						<Text className="text-muted-foreground">Don&apos;t have an account? </Text>
-						<Link href="/register" asChild>
+						<Link href="/(auth)/register" asChild>
 							<Pressable>
 								<Text className="font-medium text-primary">Sign up!</Text>
 							</Pressable>

@@ -3,7 +3,7 @@ import useAuth from '../../hooks/useAuth';
 
 /**
  * Auth layout: redirect to main app when already logged in.
- * Shows login/register when not authenticated.
+ * Shows login/register/verify when not authenticated.
  */
 export default function AuthLayout() {
   const { auth } = useAuth();
@@ -15,6 +15,8 @@ export default function AuthLayout() {
   return (
     <Stack screenOptions={{ headerShown: false }}>
       <Stack.Screen name="login" />
+      <Stack.Screen name="register" />
+      <Stack.Screen name="verify/[emailToken]" />
     </Stack>
   );
 }
