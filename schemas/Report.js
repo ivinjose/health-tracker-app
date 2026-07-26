@@ -11,14 +11,17 @@ const formSchema = z.object({
     }),
     appointment: z.string().optional(),
     remarks: z.string().optional(),
-    report: z.any()
+    report: z
+        .any()
+        .optional()
         .refine((file) => {
-            return file?.size <= MAX_UPLOAD_SIZE
+            if (!file) return true;
+            return file.size <= MAX_UPLOAD_SIZE;
         }, `Max image size is 5MB.`)
         .refine((file) => {
+            if (!file) return true;
             return ACCEPTED_FILE_TYPES.includes(file.type);
         }, 'Report must be an image, or PDF')
-        .optional()
 });
 
 export default formSchema;
