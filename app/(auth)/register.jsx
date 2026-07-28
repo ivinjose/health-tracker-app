@@ -12,7 +12,7 @@ import {
 	TextInput,
 	View,
 } from 'react-native';
-import axios from '../../api/axios';
+import axios from '@/api/axios';
 
 const PROFILE_NAME_REGEX = /^[a-zA-Z][a-zA-Z0-9 ]{3,10}$/;
 const USER_EMAIL_REGEX = /^[a-zA-Z0-9_.±]+@[a-zA-Z0-9-]+.[a-zA-Z0-9-.]+$/;

@@ -3,7 +3,7 @@ import { Link, useLocalSearchParams } from 'expo-router';
 import { CircleCheckBig } from 'lucide-react-native';
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, Pressable, View } from 'react-native';
-import axios from '../../api/axios';
+import axios from '@/api/axios';
 
 const VERIFY_URL = '/api/verify';
 
