@@ -1,12 +1,30 @@
 import { Button } from '@/components/ui/button';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Text } from '@/components/ui/text';
+import * as PopoverPrimitive from '@rn-primitives/popover';
 import { format } from 'date-fns';
 import { Calendar as CalendarIcon } from 'lucide-react-native';
-import { useState } from 'react';
 import { Controller } from 'react-hook-form';
-import { Modal, Pressable, View } from 'react-native';
+import { Pressable, View } from 'react-native';
 import { Calendar } from 'react-native-calendars';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
+function CalendarPicker({ selectedDateKey, minDate, maxDate, onSelect }) {
+	const { onOpenChange } = PopoverPrimitive.useRootContext();
+
+	return (
+		<Calendar
+			onDayPress={(day) => {
+				onSelect(new Date(day.timestamp));
+				onOpenChange(false);
+			}}
+			markedDates={
+				selectedDateKey ? { [selectedDateKey]: { selected: true } } : undefined
+			}
+			minDate={minDate}
+			maxDate={maxDate}
+		/>
+	);
+}
 
 export default function FormDateField({
 	formControl,
@@ -15,9 +33,6 @@ export default function FormDateField({
 	minDate,
 	maxDate,
 }) {
-	const insets = useSafeAreaInsets();
-	const [showCalendar, setShowCalendar] = useState(false);
-
 	return (
 		<Controller
 			control={formControl}
@@ -30,48 +45,37 @@ export default function FormDateField({
 						{labelText ? (
 							<Text className="mb-1 text-base font-medium text-foreground">{labelText}</Text>
 						) : null}
-						<Pressable
-							onPress={() => setShowCalendar(true)}
-							className="flex-row items-center justify-between rounded-lg border border-gray-300 px-3 py-3"
-						>
-							<Text className={value ? 'text-foreground' : 'text-muted-foreground'}>
-								{value ? format(value, 'PPP') : 'Pick a date'}
-							</Text>
-							<CalendarIcon size={18} color="#6b7280" />
-						</Pressable>
-
-						<Modal visible={showCalendar} transparent animationType="slide">
-							<Pressable
-								className="flex-1 justify-end bg-black/50"
-								onPress={() => setShowCalendar(false)}
+						<Popover>
+							<PopoverTrigger asChild>
+								<Pressable className="flex-row items-center justify-between rounded-lg border border-gray-300 px-3 py-3">
+									<Text className={value ? 'text-foreground' : 'text-muted-foreground'}>
+										{value ? format(value, 'PPP') : 'Pick a date'}
+									</Text>
+									<CalendarIcon size={18} color="#6b7280" />
+								</Pressable>
+							</PopoverTrigger>
+							<PopoverContent
+								className="w-[min(100vw-2rem,400px)] p-0"
+								align="start"
+								side="bottom"
+								sideOffset={8}
 							>
-								<Pressable
-									className="rounded-t-2xl bg-background"
-									style={{ paddingBottom: insets.bottom }}
-									onPress={(e) => e.stopPropagation()}
-								>
-									<View className="flex-row items-center justify-between border-b border-border px-4 py-3">
-										<Text className="text-lg font-semibold">Select date</Text>
-										<Button variant="ghost" onPress={() => setShowCalendar(false)}>
+								<View className="flex-row items-center justify-between border-b border-border px-4 py-3">
+									<Text className="text-lg font-semibold">Select date</Text>
+									<PopoverPrimitive.Close asChild>
+										<Button variant="ghost">
 											<Text>Done</Text>
 										</Button>
-									</View>
-									<Calendar
-										onDayPress={(day) => {
-											onChange(new Date(day.timestamp));
-											setShowCalendar(false);
-										}}
-										markedDates={
-											selectedDateKey
-												? { [selectedDateKey]: { selected: true } }
-												: undefined
-										}
-										minDate={minDate}
-										maxDate={maxDate}
-									/>
-								</Pressable>
-							</Pressable>
-						</Modal>
+									</PopoverPrimitive.Close>
+								</View>
+								<CalendarPicker
+									selectedDateKey={selectedDateKey}
+									minDate={minDate}
+									maxDate={maxDate}
+									onSelect={onChange}
+								/>
+							</PopoverContent>
+						</Popover>
 
 						{error ? (
 							<Text className="mt-1 text-sm text-red-500">{error.message}</Text>

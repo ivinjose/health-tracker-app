@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import {
 	Dialog,
 	DialogContent,
+	DialogFooter,
 	DialogHeader,
 	DialogTitle,
 } from '@/components/ui/dialog';
@@ -55,8 +56,13 @@ export default function NewAppointmentDialog({ open, onOpenChange }) {
 				<DialogHeader>
 					<DialogTitle>Appointment details</DialogTitle>
 				</DialogHeader>
-				<ScrollView keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
-					<Form {...form}>
+				<Form {...form}>
+					<ScrollView
+						className="max-h-80"
+						keyboardShouldPersistTaps="handled"
+						showsVerticalScrollIndicator={false}
+						contentContainerStyle={{ paddingBottom: 8 }}
+					>
 						<FormFieldInput
 							formControl={form.control}
 							schemaProperty="location"
@@ -82,17 +88,19 @@ export default function NewAppointmentDialog({ open, onOpenChange }) {
 							placeholder="Remember to take the results from the blood work last week"
 							labelText="Remarks"
 						/>
+					</ScrollView>
+					<DialogFooter className="pt-2">
 						<Button
 							onPress={form.handleSubmit(addAppointment)}
 							disabled={isPending}
-							className="mt-2"
+							className="w-full"
 						>
 							<Text className="font-medium text-primary-foreground">
 								{isPending ? 'Saving…' : 'Save'}
 							</Text>
 						</Button>
-					</Form>
-				</ScrollView>
+					</DialogFooter>
+				</Form>
 			</DialogContent>
 		</Dialog>
 	);
