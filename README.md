@@ -17,6 +17,10 @@ Mobile and web client for the Health Tracker app, migrated from the Vite web app
 
 See [docs/migration/phase-4-advanced.md](./docs/migration/phase-4-advanced.md) if you want to add these later.
 
+## Architecture
+
+Conventions for forms, modals, date pickers, and repo cross-references: [docs/ARCHITECTURE.md](./docs/ARCHITECTURE.md).
+
 ## Prerequisites
 
 - Node.js 18+

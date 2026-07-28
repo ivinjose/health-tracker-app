@@ -32,13 +32,15 @@ Work through phases in order. Each file is self-contained with goals, tasks, fil
 
 ## Reference pattern for UI ports
 
-Use the existing Expo patterns (see git history for deleted PTO dialogs, or `app/(auth)/login.jsx`):
+See **[../ARCHITECTURE.md](../ARCHITECTURE.md)** for full agent context (modals, date pickers, imports, repo relationships).
+
+Summary:
 
 - `useForm` + `zodResolver` + `@tanstack/react-query`
-- RN `Modal` / `components/ui/dialog`
-- `form-field-input`, `form-field-select`, `form-field-textarea`
+- **`FormSheetModal`** for form dialogs (pattern from `pto-tracker-app`; not `@rn-primitives/dialog`)
+- `FormDateField` (accordion + calendar), `form-field-input`, `form-field-select`, `form-field-textarea`
 - `useToast` + `react-native-toast-message`
-- NativeWind `className` on RN components
+- NativeWind `className` on RN components; `@/` import alias
 
 ## Parity checklist (final state)
 
