@@ -1,11 +1,6 @@
 import FormDateField from '@/components/FormDateField';
+import FormSheetModal from '@/components/FormSheetModal';
 import { Button } from '@/components/ui/button';
-import {
-	Dialog,
-	DialogContent,
-	DialogHeader,
-	DialogTitle,
-} from '@/components/ui/dialog';
 import { Form } from '@/components/ui/form';
 import FormFieldInput from '@/components/ui/form-field-input';
 import FormFieldSelect from '@/components/ui/form-field-select';
@@ -21,7 +16,6 @@ import { format } from 'date-fns';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import { ScrollView } from 'react-native';
 
 export default function NewReportDialog({ open, onOpenChange, appointmentId }) {
 	const { toast } = useToast();
@@ -78,59 +72,58 @@ export default function NewReportDialog({ open, onOpenChange, appointmentId }) {
 	const maxDate = format(new Date(), 'yyyy-MM-dd');
 
 	return (
-		<Dialog open={open} onOpenChange={onOpenChange}>
-			<DialogContent className="max-h-[90%]">
-				<DialogHeader>
-					<DialogTitle>Report details</DialogTitle>
-				</DialogHeader>
-				<ScrollView keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
-					<Form {...form}>
-						<FormFieldSelect
-							formControl={form.control}
-							schemaProperty="investigation"
-							placeholder="Choose from the list"
-							labelText="Investigation"
-							dropdownOptions={isInvestigationLoading ? [] : investigations}
-						/>
-						<FormFieldInput
-							formControl={form.control}
-							schemaProperty="value"
-							placeholder="Enter the test result value"
-							labelText="Report value"
-							inputType="number"
-						/>
-						<FormDateField
-							formControl={form.control}
-							name="date"
-							labelText="Date of sample collection"
-							maxDate={maxDate}
-						/>
-						<FormFieldSelect
-							formControl={form.control}
-							schemaProperty="appointment"
-							placeholder="Choose an appointment"
-							labelText="Link to an appointment"
-							dropdownOptions={
-								appointmentsIsLoading
-									? [{ label: 'Loading appointments…', value: '' }]
-									: appointmentOptions
-							}
-						/>
-						<FormFieldTextarea
-							formControl={form.control}
-							schemaProperty="remarks"
-							placeholder="Enter any details you want to remember or note"
-							labelText="Remarks"
-						/>
-						{/* TODO Phase 4: file upload + OCR */}
-						<Button onPress={form.handleSubmit(addReport)} disabled={isPending} className="mt-2">
-							<Text className="font-medium text-primary-foreground">
-								{isPending ? 'Saving…' : 'Save'}
-							</Text>
-						</Button>
-					</Form>
-				</ScrollView>
-			</DialogContent>
-		</Dialog>
+		<FormSheetModal
+			open={open}
+			onOpenChange={onOpenChange}
+			title="Report details"
+			footer={
+				<Button onPress={form.handleSubmit(addReport)} disabled={isPending}>
+					<Text className="font-medium text-primary-foreground">
+						{isPending ? 'Saving…' : 'Save'}
+					</Text>
+				</Button>
+			}
+		>
+			<Form {...form}>
+				<FormFieldSelect
+					formControl={form.control}
+					schemaProperty="investigation"
+					placeholder="Choose from the list"
+					labelText="Investigation"
+					dropdownOptions={isInvestigationLoading ? [] : investigations}
+				/>
+				<FormFieldInput
+					formControl={form.control}
+					schemaProperty="value"
+					placeholder="Enter the test result value"
+					labelText="Report value"
+					inputType="number"
+				/>
+				<FormDateField
+					formControl={form.control}
+					name="date"
+					labelText="Date of sample collection"
+					maxDate={maxDate}
+				/>
+				<FormFieldSelect
+					formControl={form.control}
+					schemaProperty="appointment"
+					placeholder="Choose an appointment"
+					labelText="Link to an appointment"
+					dropdownOptions={
+						appointmentsIsLoading
+							? [{ label: 'Loading appointments…', value: '' }]
+							: appointmentOptions
+					}
+				/>
+				<FormFieldTextarea
+					formControl={form.control}
+					schemaProperty="remarks"
+					placeholder="Enter any details you want to remember or note"
+					labelText="Remarks"
+				/>
+				{/* TODO Phase 4: file upload + OCR */}
+			</Form>
+		</FormSheetModal>
 	);
 }

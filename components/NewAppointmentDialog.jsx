@@ -1,12 +1,6 @@
 import FormDateField from '@/components/FormDateField';
+import FormSheetModal from '@/components/FormSheetModal';
 import { Button } from '@/components/ui/button';
-import {
-	Dialog,
-	DialogContent,
-	DialogFooter,
-	DialogHeader,
-	DialogTitle,
-} from '@/components/ui/dialog';
 import { Form } from '@/components/ui/form';
 import FormFieldInput from '@/components/ui/form-field-input';
 import FormFieldSelect from '@/components/ui/form-field-select';
@@ -20,7 +14,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { format, subDays } from 'date-fns';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
-import { ScrollView } from 'react-native';
 
 const TIME_OPTIONS = TIME_SLOTS.map((slot) => ({ label: slot, value: slot }));
 
@@ -51,57 +44,45 @@ export default function NewAppointmentDialog({ open, onOpenChange }) {
 	const minDate = format(subDays(new Date(), 1), 'yyyy-MM-dd');
 
 	return (
-		<Dialog open={open} onOpenChange={onOpenChange}>
-			<DialogContent className="max-h-[90%]">
-				<DialogHeader>
-					<DialogTitle>Appointment details</DialogTitle>
-				</DialogHeader>
-				<Form {...form}>
-					<ScrollView
-						className="max-h-80"
-						keyboardShouldPersistTaps="handled"
-						showsVerticalScrollIndicator={false}
-						contentContainerStyle={{ paddingBottom: 8 }}
-					>
-						<FormFieldInput
-							formControl={form.control}
-							schemaProperty="location"
-							placeholder="Dr. Jean Claude at Medical trust"
-							labelText="Where's the appointment at"
-						/>
-						<FormDateField
-							formControl={form.control}
-							name="date"
-							labelText="Date of appointment"
-							minDate={minDate}
-						/>
-						<FormFieldSelect
-							formControl={form.control}
-							schemaProperty="time"
-							placeholder="Select time"
-							labelText="Time of appointment"
-							dropdownOptions={TIME_OPTIONS}
-						/>
-						<FormFieldTextarea
-							formControl={form.control}
-							schemaProperty="remarks"
-							placeholder="Remember to take the results from the blood work last week"
-							labelText="Remarks"
-						/>
-					</ScrollView>
-					<DialogFooter className="pt-2">
-						<Button
-							onPress={form.handleSubmit(addAppointment)}
-							disabled={isPending}
-							className="w-full"
-						>
-							<Text className="font-medium text-primary-foreground">
-								{isPending ? 'Saving…' : 'Save'}
-							</Text>
-						</Button>
-					</DialogFooter>
-				</Form>
-			</DialogContent>
-		</Dialog>
+		<FormSheetModal
+			open={open}
+			onOpenChange={onOpenChange}
+			title="Appointment details"
+			footer={
+				<Button onPress={form.handleSubmit(addAppointment)} disabled={isPending}>
+					<Text className="font-medium text-primary-foreground">
+						{isPending ? 'Saving…' : 'Save'}
+					</Text>
+				</Button>
+			}
+		>
+			<Form {...form}>
+				<FormFieldInput
+					formControl={form.control}
+					schemaProperty="location"
+					placeholder="Dr. Jean Claude at Medical trust"
+					labelText="Where's the appointment at"
+				/>
+				<FormDateField
+					formControl={form.control}
+					name="date"
+					labelText="Date of appointment"
+					minDate={minDate}
+				/>
+				<FormFieldSelect
+					formControl={form.control}
+					schemaProperty="time"
+					placeholder="Select time"
+					labelText="Time of appointment"
+					dropdownOptions={TIME_OPTIONS}
+				/>
+				<FormFieldTextarea
+					formControl={form.control}
+					schemaProperty="remarks"
+					placeholder="Remember to take the results from the blood work last week"
+					labelText="Remarks"
+				/>
+			</Form>
+		</FormSheetModal>
 	);
 }

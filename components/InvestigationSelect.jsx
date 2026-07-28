@@ -1,10 +1,5 @@
+import FormSheetModal from '@/components/FormSheetModal';
 import { Button } from '@/components/ui/button';
-import {
-	Dialog,
-	DialogContent,
-	DialogHeader,
-	DialogTitle,
-} from '@/components/ui/dialog';
 import { Text } from '@/components/ui/text';
 import { useMemo, useState } from 'react';
 import { FlatList, Pressable, TextInput, View } from 'react-native';
@@ -46,47 +41,47 @@ export default function InvestigationSelect({
 				<Text className="text-foreground">{selectedLabel}</Text>
 			</Button>
 
-			<Dialog open={isOpen} onOpenChange={setIsOpen}>
-				<DialogContent className="max-h-[80%]">
-					<DialogHeader>
-						<DialogTitle>Select investigation</DialogTitle>
-					</DialogHeader>
-					<TextInput
-						value={search}
-						onChangeText={setSearch}
-						placeholder="Start typing to search"
-						className="rounded-lg border border-input px-3 py-2 text-foreground"
-						placeholderTextColor="#9ca3af"
-					/>
-					<FlatList
-						data={filteredResults}
-						keyExtractor={(item) => item.value}
-						keyboardShouldPersistTaps="handled"
-						style={{ maxHeight: 320 }}
-						ListEmptyComponent={
-							<Text className="py-4 text-center text-muted-foreground">
-								No results found
-							</Text>
-						}
-						renderItem={({ item }) => (
-							<Pressable
-								onPress={() => handleSelect(item.value)}
-								className="border-b border-border py-3"
+			<FormSheetModal
+				open={isOpen}
+				onOpenChange={setIsOpen}
+				title="Select investigation"
+				scrollable={false}
+			>
+				<TextInput
+					value={search}
+					onChangeText={setSearch}
+					placeholder="Start typing to search"
+					className="mb-4 rounded-lg border border-input px-3 py-2 text-foreground"
+					placeholderTextColor="#9ca3af"
+				/>
+				<FlatList
+					data={filteredResults}
+					keyExtractor={(item) => item.value}
+					keyboardShouldPersistTaps="handled"
+					className="flex-1"
+					ListEmptyComponent={
+						<Text className="py-4 text-center text-muted-foreground">
+							No results found
+						</Text>
+					}
+					renderItem={({ item }) => (
+						<Pressable
+							onPress={() => handleSelect(item.value)}
+							className="border-b border-border py-3"
+						>
+							<Text
+								className={
+									item.value === currentValue
+										? 'font-semibold text-primary'
+										: 'text-foreground'
+								}
 							>
-								<Text
-									className={
-										item.value === currentValue
-											? 'font-semibold text-primary'
-											: 'text-foreground'
-									}
-								>
-									{item.label}
-								</Text>
-							</Pressable>
-						)}
-					/>
-				</DialogContent>
-			</Dialog>
+								{item.label}
+							</Text>
+						</Pressable>
+					)}
+				/>
+			</FormSheetModal>
 		</View>
 	);
 }
