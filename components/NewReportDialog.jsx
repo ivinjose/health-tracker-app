@@ -1,3 +1,6 @@
+import useAppointmentsApiManager from '@/api-managers/AppointmentsApiManager';
+import useInvestigationsApiManager from '@/api-managers/InvestigationsApiManager';
+import useReportsApiManager from '@/api-managers/ReportsApiManager';
 import FormDateField from '@/components/FormDateField';
 import FormSheetModal from '@/components/FormSheetModal';
 import { Button } from '@/components/ui/button';
@@ -7,13 +10,10 @@ import FormFieldSelect from '@/components/ui/form-field-select';
 import FormFieldTextarea from '@/components/ui/form-field-textarea';
 import { Text } from '@/components/ui/text';
 import { useToast } from '@/hooks/use-toast';
-import useAppointmentsApiManager from '@/api-managers/AppointmentsApiManager';
-import useInvestigationsApiManager from '@/api-managers/InvestigationsApiManager';
-import useReportsApiManager from '@/api-managers/ReportsApiManager';
 import formSchema from '@/schemas/Report';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { format } from 'date-fns';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { format } from 'date-fns';
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 
@@ -105,7 +105,8 @@ export default function NewReportDialog({ open, onOpenChange, appointmentId }) {
 					labelText="Date of sample collection"
 					maxDate={maxDate}
 				/>
-				<FormFieldSelect
+				{/* Hiding for now since its convoluting the focus away from the health metrics */}
+				{/* <FormFieldSelect
 					formControl={form.control}
 					schemaProperty="appointment"
 					placeholder="Choose an appointment"
@@ -115,7 +116,7 @@ export default function NewReportDialog({ open, onOpenChange, appointmentId }) {
 							? [{ label: 'Loading appointments…', value: '' }]
 							: appointmentOptions
 					}
-				/>
+				/> */}
 				<FormFieldTextarea
 					formControl={form.control}
 					schemaProperty="remarks"

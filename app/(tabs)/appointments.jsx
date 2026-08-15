@@ -1,12 +1,11 @@
+import useAppointmentsApiManager from '@/api-managers/AppointmentsApiManager';
 import AppointmentCard from '@/components/AppointmentCard';
-import NewAppointmentDialog from '@/components/NewAppointmentDialog';
 import CardView from '@/components/CardView';
-import PageHeader from '@/components/PageHeader';
+import NewAppointmentDialog from '@/components/NewAppointmentDialog';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Text } from '@/components/ui/text';
 import { useToast } from '@/hooks/use-toast';
-import useAppointmentsApiManager from '@/api-managers/AppointmentsApiManager';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useLocalSearchParams } from 'expo-router';
 import { Plus } from 'lucide-react-native';
@@ -48,7 +47,6 @@ export default function AppointmentsScreen() {
 
 	return (
 		<View className="flex-1 bg-background">
-			<PageHeader text="Manage Appointments" />
 			<View className="px-4 py-3">
 				<Button onPress={() => setShowNewAppointmentDialog(true)}>
 					<Plus size={18} color="#fff" />

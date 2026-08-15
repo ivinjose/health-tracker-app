@@ -1,3 +1,4 @@
+import axios from '@/api/axios';
 import { Button } from '@/components/ui/button';
 import { Text } from '@/components/ui/text';
 import { Link, useRouter } from 'expo-router';
@@ -11,7 +12,6 @@ import {
 	TextInput,
 	View,
 } from 'react-native';
-import axios from '../../api/axios';
 import useAuth from '../../hooks/useAuth';
 import { storeRefreshToken } from '../../hooks/useRefreshToken';
 
@@ -22,8 +22,8 @@ export default function LoginScreen() {
 	const router = useRouter();
 
 	const usernameRef = useRef(null);
-	const [username, setUsername] = useState('');
-	const [password, setPassword] = useState('');
+	const [username, setUsername] = useState('ivinjose@gmail.com');
+	const [password, setPassword] = useState('test');
 	const [errorMessage, setErrorMessage] = useState('');
 	const [successMessage, setSuccessMessage] = useState('');
 	const [shouldPersist, setShouldPersist] = useState(false);

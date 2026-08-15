@@ -1,12 +1,11 @@
+import useInvestigationsApiManager from '@/api-managers/InvestigationsApiManager';
+import useReportsApiManager from '@/api-managers/ReportsApiManager';
 import NewReportDialog from '@/components/NewReportDialog';
-import PageHeader from '@/components/PageHeader';
 import ReportCard from '@/components/ReportCard';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Text } from '@/components/ui/text';
 import { useToast } from '@/hooks/use-toast';
-import useInvestigationsApiManager from '@/api-managers/InvestigationsApiManager';
-import useReportsApiManager from '@/api-managers/ReportsApiManager';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useLocalSearchParams } from 'expo-router';
 import { Plus } from 'lucide-react-native';
@@ -55,7 +54,6 @@ export default function ReportsScreen() {
 
 	return (
 		<View className="flex-1 bg-background">
-			<PageHeader text="Manage reports" />
 			<View className="px-4 py-3">
 				<Button onPress={() => setShowNewReportDialog(true)}>
 					<Plus size={18} color="#fff" />

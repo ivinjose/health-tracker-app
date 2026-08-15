@@ -1,15 +1,15 @@
 import React from 'react';
 
 import { Redirect, Tabs } from 'expo-router';
-import { ActivityIndicator, View } from 'react-native';
 import { CalendarPlus, FileText, LayoutGrid } from 'lucide-react-native';
+import { ActivityIndicator, View } from 'react-native';
 
 import { HapticTab } from '@/components/ui/haptic-tab';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { LogoutTabButton } from '@/components/ui/logout-tab-button';
 import { useColorScheme } from '@/hooks/use-color-scheme';
-import useAuth from '../../hooks/useAuth';
 import { Colors } from '@/lib/theme';
+import useAuth from '../../hooks/useAuth';
 
 export default function AppLayout() {
 	const colorScheme = useColorScheme();
@@ -44,6 +44,7 @@ export default function AppLayout() {
 			<Tabs.Screen
 				name="appointments"
 				options={{
+					href: null, // Hiding the tab bar icon for now since its convoluting the focus away from the health metrics
 					title: 'Appointments',
 					tabBarIcon: ({ color }) => <CalendarPlus size={26} color={color} strokeWidth={1.5} />,
 				}}
