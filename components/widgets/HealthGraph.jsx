@@ -1,5 +1,6 @@
 import LineChart from '@/components/charts/LineChart';
 import WidgetView from '@/components/WidgetView';
+import { useTheme } from '@/components/ThemeProvider';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Text } from '@/components/ui/text';
 import { getInvestigationLabel, withDisplayDates } from '@/lib/reportUtils';
@@ -11,6 +12,7 @@ import { ArrowRight } from 'lucide-react-native';
 import { Pressable, View } from 'react-native';
 
 export default function HealthGraph({ investigation, count }) {
+	const theme = useTheme();
 	const reportsApiManager = useReportsApiManager();
 	const investigationsApiManager = useInvestigationsApiManager();
 
@@ -34,8 +36,8 @@ export default function HealthGraph({ investigation, count }) {
 	const footer = (
 		<Link href={`/(tabs)/more/analyse-reports/${investigation}`} asChild>
 			<Pressable className="flex-row items-center gap-1">
-				<Text className="text-sm text-[#30425f]">View more</Text>
-				<ArrowRight size={14} color="#30425f" />
+				<Text className="text-sm text-primary">View more</Text>
+				<ArrowRight size={14} color={theme.colors.primary} />
 			</Pressable>
 		</Link>
 	);

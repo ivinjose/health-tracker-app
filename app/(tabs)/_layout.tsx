@@ -39,6 +39,7 @@ export default function AppLayout() {
 				name="index"
 				options={{
 					title: 'Overview',
+					...appearances.iosDark.navigation,
 					tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />,
 				}}
 			/>

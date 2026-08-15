@@ -1,7 +1,9 @@
 import axios from '@/api/axios';
+import { ThemeProvider, useTheme } from '@/components/ThemeProvider';
 import { Button } from '@/components/ui/button';
 import { Text } from '@/components/ui/text';
 import { Link, useRouter } from 'expo-router';
+import { StatusBar } from 'expo-status-bar';
 import { useEffect, useRef, useState } from 'react';
 import {
 	ActivityIndicator,
@@ -18,6 +20,15 @@ import { storeRefreshToken } from '../../hooks/useRefreshToken';
 const LOGIN_URL = '/api/login';
 
 export default function LoginScreen() {
+	return (
+		<ThemeProvider appearance="iosDark" className="flex-1 bg-background">
+			<LoginView />
+		</ThemeProvider>
+	);
+}
+
+function LoginView() {
+	const theme = useTheme();
 	const { setAuth, persist, setPersist } = useAuth();
 	const router = useRouter();
 
@@ -82,16 +93,22 @@ export default function LoginScreen() {
 	return (
 		<KeyboardAvoidingView
 			behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-			className="flex-1"
+			className="flex-1 bg-background"
 		>
+			<StatusBar style={theme.statusBarStyle} />
 			<ScrollView
 				className="flex-1"
-				contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', paddingHorizontal: 24, paddingVertical: 48 }}
+				contentContainerStyle={{
+					flexGrow: 1,
+					justifyContent: 'center',
+					paddingHorizontal: 24,
+					paddingVertical: 48,
+				}}
 				keyboardShouldPersistTaps="handled"
 				showsVerticalScrollIndicator={false}
 			>
-				<View className="rounded-lg border border-border bg-card p-6 shadow-sm">
-					<Text variant="h1" className="mb-6">
+				<View className="rounded-[10px] border border-border bg-card p-6">
+					<Text variant="h1" className="mb-6 text-foreground">
 						Login
 					</Text>
 
@@ -106,7 +123,7 @@ export default function LoginScreen() {
 
 					{successMessage ? (
 						<Text
-							className="mb-4 rounded-md bg-green-500/10 p-3 text-green-700 dark:text-green-400"
+							className="mb-4 rounded-md bg-primary/10 p-3 text-primary"
 							accessibilityLiveRegion="assertive"
 						>
 							{successMessage}
@@ -115,31 +132,39 @@ export default function LoginScreen() {
 
 					<View className="gap-4">
 						<View>
-							<Text className="mb-2 font-medium text-foreground">Email</Text>
+							<Text className="mb-2 text-sm font-medium text-muted-foreground">
+								Email
+							</Text>
 							<TextInput
 								ref={usernameRef}
 								value={username}
 								onChangeText={setUsername}
 								placeholder="me@example.com"
-								placeholderTextColor="#9ca3af"
+								placeholderTextColor={theme.colors.placeholder}
 								autoCapitalize="none"
 								autoCorrect={false}
 								keyboardType="email-address"
+								keyboardAppearance={theme.keyboardAppearance}
+								selectionColor={theme.colors.tint}
 								editable={!isLoading}
-								className="rounded-md border border-input bg-background px-4 py-3 text-foreground"
+								className="rounded-[10px] border border-input bg-background px-4 py-3 text-foreground"
 							/>
 						</View>
 
 						<View>
-							<Text className="mb-2 font-medium text-foreground">Password</Text>
+							<Text className="mb-2 text-sm font-medium text-muted-foreground">
+								Password
+							</Text>
 							<TextInput
 								value={password}
 								onChangeText={setPassword}
 								placeholder="Enter password"
-								placeholderTextColor="#9ca3af"
+								placeholderTextColor={theme.colors.placeholder}
 								secureTextEntry
+								keyboardAppearance={theme.keyboardAppearance}
+								selectionColor={theme.colors.tint}
 								editable={!isLoading}
-								className="rounded-md border border-input bg-background px-4 py-3 text-foreground"
+								className="rounded-[10px] border border-input bg-background px-4 py-3 text-foreground"
 							/>
 						</View>
 
@@ -149,8 +174,11 @@ export default function LoginScreen() {
 							className="flex-row items-center gap-2 py-2"
 						>
 							<View
-								className={`h-5 w-5 items-center justify-center rounded border-2 ${shouldPersist || persist ? 'border-primary bg-primary' : 'border-muted-foreground'
-									}`}
+								className={`h-5 w-5 items-center justify-center rounded border-2 ${
+									shouldPersist || persist
+										? 'border-primary bg-primary'
+										: 'border-muted-foreground'
+								}`}
 							>
 								{shouldPersist || persist ? (
 									<Text className="text-xs text-primary-foreground">✓</Text>
@@ -162,10 +190,10 @@ export default function LoginScreen() {
 						<Button
 							onPress={handleSubmit}
 							disabled={!username || !password || isLoading}
-							className="mt-2"
+							className="mt-2 h-11 rounded-[10px] shadow-none"
 						>
 							{isLoading ? (
-								<ActivityIndicator color="#fff" />
+								<ActivityIndicator color={theme.colors.primaryForeground} />
 							) : (
 								<Text className="font-medium text-primary-foreground">Login</Text>
 							)}

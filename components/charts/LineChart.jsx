@@ -1,3 +1,4 @@
+import { useTheme } from '@/components/ThemeProvider';
 import { Text, View } from 'react-native';
 import Svg, { Circle, Line, Polyline, Text as SvgText } from 'react-native-svg';
 
@@ -8,11 +9,11 @@ import {
 	getChartWidth,
 } from './chartUtils';
 
-const LINE_COLOR = '#30425f';
-const AXIS_COLOR = '#b8c0d9';
-const LABEL_COLOR = '#6b7280';
-
 export default function LineChart({ data = [], xAxisKey, yAxisKey, width }) {
+	const theme = useTheme();
+	const lineColor = theme.chart.line;
+	const axisColor = theme.chart.axis;
+	const labelColor = theme.chart.label;
 	const chartWidth = width ?? getChartWidth();
 
 	if (!data.length) {
@@ -44,19 +45,19 @@ export default function LineChart({ data = [], xAxisKey, yAxisKey, width }) {
 					y1={CHART_PADDING.top + innerHeight}
 					x2={chartWidth - CHART_PADDING.right}
 					y2={CHART_PADDING.top + innerHeight}
-					stroke={AXIS_COLOR}
+					stroke={axisColor}
 					strokeWidth={1}
 				/>
 				{polylinePoints ? (
 					<Polyline
 						points={polylinePoints}
 						fill="none"
-						stroke={LINE_COLOR}
+						stroke={lineColor}
 						strokeWidth={2}
 					/>
 				) : null}
 				{validPoints.map((point, index) => (
-					<Circle key={`point-${index}`} cx={point.x} cy={point.y} r={4} fill={LINE_COLOR} />
+					<Circle key={`point-${index}`} cx={point.x} cy={point.y} r={4} fill={lineColor} />
 				))}
 				{validPoints.map((point, index) =>
 					index % labelStep === 0 || index === validPoints.length - 1 ? (
@@ -65,7 +66,7 @@ export default function LineChart({ data = [], xAxisKey, yAxisKey, width }) {
 							x={point.x}
 							y={CHART_HEIGHT - 10}
 							fontSize={10}
-							fill={LABEL_COLOR}
+							fill={labelColor}
 							textAnchor="middle"
 						>
 							{String(point.item[xAxisKey] ?? '').slice(0, 8)}
@@ -78,7 +79,7 @@ export default function LineChart({ data = [], xAxisKey, yAxisKey, width }) {
 						x={point.x}
 						y={point.y - 8}
 						fontSize={10}
-						fill={LABEL_COLOR}
+						fill={labelColor}
 						textAnchor="middle"
 					>
 						{String(point.value)}
