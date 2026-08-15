@@ -3,12 +3,10 @@ import useInvestigationsApiManager from '@/api-managers/InvestigationsApiManager
 import useReportsApiManager from '@/api-managers/ReportsApiManager';
 import FormDateField from '@/components/FormDateField';
 import FormSheetModal from '@/components/FormSheetModal';
-import { Button } from '@/components/ui/button';
 import { Form } from '@/components/ui/form';
 import FormFieldInput from '@/components/ui/form-field-input';
 import FormFieldSelect from '@/components/ui/form-field-select';
 import FormFieldTextarea from '@/components/ui/form-field-textarea';
-import { Text } from '@/components/ui/text';
 import { useToast } from '@/hooks/use-toast';
 import formSchema from '@/schemas/Report';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -76,13 +74,10 @@ export default function NewReportDialog({ open, onOpenChange, appointmentId }) {
 			open={open}
 			onOpenChange={onOpenChange}
 			title="Report details"
-			footer={
-				<Button onPress={form.handleSubmit(addReport)} disabled={isPending}>
-					<Text className="font-medium text-primary-foreground">
-						{isPending ? 'Saving…' : 'Save'}
-					</Text>
-				</Button>
-			}
+			appearance="dark"
+			onConfirm={form.handleSubmit(addReport)}
+			confirmDisabled={isPending}
+			confirmLoading={isPending}
 		>
 			<Form {...form}>
 				<FormFieldSelect
