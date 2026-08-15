@@ -5,7 +5,7 @@ import {
 	AccordionTrigger,
 } from '@/components/ui/accordion';
 import { Text } from '@/components/ui/text';
-import { IOS_DARK_SHEET, useFormSheetAppearance } from '@/components/form-sheet-appearance';
+import { useTheme } from '@/components/ThemeProvider';
 import { format } from 'date-fns';
 import { Calendar as CalendarIcon } from 'lucide-react-native';
 import { Controller } from 'react-hook-form';
@@ -19,7 +19,7 @@ export default function FormDateField({
 	minDate,
 	maxDate,
 }) {
-	const isDark = useFormSheetAppearance() === 'dark';
+	const theme = useTheme();
 
 	return (
 		<Controller
@@ -31,41 +31,18 @@ export default function FormDateField({
 				return (
 					<View className="mb-5">
 						{labelText ? (
-							<Text
-								className={
-									isDark
-										? 'mb-0 block text-[13px] font-normal text-[#8E8E93]'
-										: 'mb-0 block text-base font-normal text-[#4c4c4c]'
-								}
-							>
+							<Text className="mb-0 text-sm font-medium text-muted-foreground">
 								{labelText}
 							</Text>
 						) : null}
 						<Accordion type="single" collapsible>
 							<AccordionItem value="date">
-								<AccordionTrigger
-									className={
-										isDark
-											? 'flex-row items-center justify-start gap-2 rounded-[10px] bg-[#2C2C2E] px-3 py-3'
-											: 'flex-row items-center justify-start gap-2'
-									}
-								>
-									<CalendarIcon
-										size={24}
-										color={isDark ? IOS_DARK_SHEET.tint : '#000'}
-									/>
+								<AccordionTrigger className="flex-row items-center justify-start gap-2 rounded-[10px] border border-input bg-card px-3 py-3">
+									<CalendarIcon size={24} color={theme.colors.tint} />
 									{value ? (
-										<Text className={isDark ? 'text-white' : undefined}>
-											{format(value, 'PPP')}
-										</Text>
+										<Text className="text-foreground">{format(value, 'PPP')}</Text>
 									) : (
-										<Text
-											className={
-												isDark ? 'text-[#8E8E93]' : undefined
-											}
-										>
-											Pick a date
-										</Text>
+										<Text className="text-muted-foreground">Pick a date</Text>
 									)}
 								</AccordionTrigger>
 								<AccordionContent>
@@ -84,27 +61,15 @@ export default function FormDateField({
 										onDayPress={(day) => {
 											onChange(new Date(day.dateString));
 										}}
-										theme={isDark ? IOS_DARK_SHEET.calendar : undefined}
-										style={
-											isDark
-												? { backgroundColor: IOS_DARK_SHEET.background }
-												: undefined
-										}
+										theme={theme.calendar}
+										style={{ backgroundColor: theme.colors.background }}
 									/>
 								</AccordionContent>
 							</AccordionItem>
 						</Accordion>
 
 						{error ? (
-							<Text
-								className={
-									isDark
-										? 'mt-1 text-sm text-[#FF453A]'
-										: 'mt-1 text-sm text-red-500'
-								}
-							>
-								{error.message}
-							</Text>
+							<Text className="mt-1 text-sm text-destructive">{error.message}</Text>
 						) : null}
 					</View>
 				);

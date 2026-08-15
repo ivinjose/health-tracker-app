@@ -1,4 +1,4 @@
-import { IOS_DARK_SHEET, useFormSheetAppearance } from '@/components/form-sheet-appearance';
+import { useTheme } from '@/components/ThemeProvider';
 import { Controller } from 'react-hook-form';
 import { Text, TextInput, View } from 'react-native';
 
@@ -10,7 +10,7 @@ const FormFieldInput = ({
 	labelStyleClass,
 	inputType = 'default',
 }) => {
-	const isDark = useFormSheetAppearance() === 'dark';
+	const theme = useTheme();
 
 	return (
 		<Controller
@@ -22,9 +22,7 @@ const FormFieldInput = ({
 						<Text
 							className={
 								labelStyleClass ??
-								(isDark
-									? 'mb-1 text-[13px] font-normal text-[#8E8E93]'
-									: 'mb-1 text-base font-medium')
+								'mb-1 text-sm font-medium text-muted-foreground'
 							}
 						>
 							{labelText}
@@ -32,29 +30,19 @@ const FormFieldInput = ({
 					)}
 
 					<TextInput
-						className={
-							isDark
-								? 'rounded-[10px] bg-[#2C2C2E] px-3 py-3 text-base text-white'
-								: 'rounded-lg border border-gray-300 px-3 py-2 text-base'
-						}
+						className="rounded-[10px] border border-input bg-card px-3 py-3 text-base text-foreground"
 						placeholder={placeholder}
-						placeholderTextColor={isDark ? IOS_DARK_SHEET.placeholder : '#9ca3af'}
+						placeholderTextColor={theme.colors.placeholder}
 						value={value}
 						onChangeText={onChange}
 						onBlur={onBlur}
 						keyboardType={inputType === 'number' ? 'numeric' : 'default'}
-						keyboardAppearance={isDark ? 'dark' : 'default'}
-						selectionColor={isDark ? IOS_DARK_SHEET.tint : undefined}
+						keyboardAppearance={theme.keyboardAppearance}
+						selectionColor={theme.colors.tint}
 					/>
 
 					{error && (
-						<Text
-							className={
-								isDark ? 'mt-1 text-sm text-[#FF453A]' : 'mt-1 text-sm text-red-500'
-							}
-						>
-							{error.message}
-						</Text>
+						<Text className="mt-1 text-sm text-destructive">{error.message}</Text>
 					)}
 				</View>
 			)}

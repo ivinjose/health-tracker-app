@@ -1,6 +1,7 @@
 import { buttonTextVariants, buttonVariants } from '@/components/ui/button';
 import { NativeOnlyAnimatedView } from '@/components/ui/native-only-animated-view';
 import { TextClassContext } from '@/components/ui/text';
+import { useTheme } from '@/components/ThemeProvider';
 import { cn } from '@/lib/utils';
 import * as AlertDialogPrimitive from '@rn-primitives/alert-dialog';
 import * as React from 'react';
@@ -53,19 +54,22 @@ function AlertDialogContent({
   React.RefAttributes<AlertDialogPrimitive.ContentRef> & {
     portalHost?: string;
   }) {
+  const theme = useTheme();
   return (
     <AlertDialogPortal hostName={portalHost}>
       <AlertDialogOverlay>
-        <AlertDialogPrimitive.Content
-          className={cn(
-            'bg-background border-border z-50 flex w-full max-w-[calc(100%-2rem)] flex-col gap-4 rounded-lg border p-6 shadow-lg shadow-black/5 sm:max-w-lg',
-            Platform.select({
-              web: 'animate-in fade-in-0 zoom-in-95 duration-200',
-            }),
-            className
-          )}
-          {...props}
-        />
+        <View style={theme.vars}>
+          <AlertDialogPrimitive.Content
+            className={cn(
+              'bg-background border-border z-50 flex w-full max-w-[calc(100%-2rem)] flex-col gap-4 rounded-lg border p-6 shadow-lg shadow-black/5 sm:max-w-lg',
+              Platform.select({
+                web: 'animate-in fade-in-0 zoom-in-95 duration-200',
+              }),
+              className
+            )}
+            {...props}
+          />
+        </View>
       </AlertDialogOverlay>
     </AlertDialogPortal>
   );

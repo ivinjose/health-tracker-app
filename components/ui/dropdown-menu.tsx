@@ -1,7 +1,7 @@
-import { useFormSheetAppearance } from '@/components/form-sheet-appearance';
 import { Icon } from '@/components/ui/icon';
 import { NativeOnlyAnimatedView } from '@/components/ui/native-only-animated-view';
 import { TextClassContext } from '@/components/ui/text';
+import { useTheme } from '@/components/ThemeProvider';
 import { cn } from '@/lib/utils';
 import * as DropdownMenuPrimitive from '@rn-primitives/dropdown-menu';
 import { Check, ChevronDown, ChevronRight, ChevronUp } from 'lucide-react-native';
@@ -103,7 +103,7 @@ function DropdownMenuContent({
     overlayClassName?: string;
     portalHost?: string;
   }) {
-  const isDark = useFormSheetAppearance() === 'dark';
+  const theme = useTheme();
   return (
     <DropdownMenuPrimitive.Portal hostName={portalHost}>
       <FullWindowOverlay>
@@ -119,11 +119,11 @@ function DropdownMenuContent({
           })}
           className={overlayClassName}>
           <NativeOnlyAnimatedView entering={FadeIn}>
-            <TextClassContext.Provider value={isDark ? 'text-white' : 'text-popover-foreground'}>
-              <DropdownMenuPrimitive.Content
-                className={cn(
-                  'min-w-[8rem] overflow-hidden rounded-md border p-1 shadow-lg shadow-black/5',
-                  isDark ? 'border-[#3A3A3C] bg-[#2C2C2E]' : 'border-border bg-popover',
+            <View style={theme.vars}>
+              <TextClassContext.Provider value="text-popover-foreground">
+                <DropdownMenuPrimitive.Content
+                  className={cn(
+                    'border-border bg-popover min-w-[8rem] overflow-hidden rounded-md border p-1 shadow-lg shadow-black/5',
                   Platform.select({
                     web: cn(
                       'animate-in fade-in-0 zoom-in-95 max-h-(--radix-context-menu-content-available-height) origin-(--radix-context-menu-content-transform-origin) z-50 cursor-default',
@@ -135,7 +135,8 @@ function DropdownMenuContent({
                 )}
                 {...props}
               />
-            </TextClassContext.Provider>
+              </TextClassContext.Provider>
+            </View>
           </NativeOnlyAnimatedView>
         </DropdownMenuPrimitive.Overlay>
       </FullWindowOverlay>
@@ -154,16 +155,11 @@ function DropdownMenuItem({
     inset?: boolean;
     variant?: 'default' | 'destructive';
   }) {
-  const isDark = useFormSheetAppearance() === 'dark';
   return (
     <TextClassContext.Provider
       value={cn(
-        'select-none text-sm group-active:text-popover-foreground',
-        isDark ? 'text-white' : 'text-popover-foreground',
-        variant === 'destructive' &&
-          (isDark
-            ? 'text-[#FF453A] group-active:text-[#FF453A]'
-            : 'text-destructive group-active:text-destructive')
+        'select-none text-sm text-popover-foreground group-active:text-popover-foreground',
+        variant === 'destructive' && 'text-destructive group-active:text-destructive'
       )}>
       <DropdownMenuPrimitive.Item
         className={cn(

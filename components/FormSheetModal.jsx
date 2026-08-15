@@ -1,7 +1,5 @@
-import {
-	FormSheetAppearanceContext,
-	IOS_DARK_SHEET,
-} from '@/components/form-sheet-appearance';
+import { ThemeProvider, useTheme } from '@/components/ThemeProvider';
+import { getAppearance, resolveAppearanceName } from '@/lib/appearance';
 import { Text } from '@/components/ui/text';
 import { StatusBar } from 'expo-status-bar';
 import { CircleCheck, CircleX } from 'lucide-react-native';
@@ -21,146 +19,174 @@ export default function FormSheetModal({
 	scrollViewRef,
 	scrollable = true,
 }) {
-	const onCancel = () => onOpenChange(false);
-	const confirmInactive = confirmDisabled || confirmLoading;
-	const isDark = appearance === 'dark';
-	const closeColor = isDark ? IOS_DARK_SHEET.close : '#4c4c4c';
-	const confirmColor = confirmInactive
-		? isDark
-			? IOS_DARK_SHEET.tintDisabled
-			: '#9ca3af'
-		: isDark
-			? IOS_DARK_SHEET.tint
-			: '#007AFF';
+	const appearanceName = resolveAppearanceName(appearance);
+	const theme = getAppearance(appearanceName);
 
 	return (
 		<Modal
 			visible={open}
-			onRequestClose={onCancel}
+			onRequestClose={() => onOpenChange(false)}
 			animationType="slide"
 			presentationStyle="pageSheet"
-			{...(isDark ? { userInterfaceStyle: 'dark' } : {})}
+			{...(theme.userInterfaceStyle
+				? { userInterfaceStyle: theme.userInterfaceStyle }
+				: {})}
 		>
-			{isDark ? <StatusBar style="light" /> : null}
-			<FormSheetAppearanceContext.Provider value={appearance}>
-				<View className={isDark ? 'flex-1 bg-[#1C1C1E]' : 'flex-1 bg-background'}>
-					{isDark ? (
-						<View className="flex-row items-center px-4 pb-3 pt-4">
-							<Pressable
-								onPress={onCancel}
-								className="h-8 w-8 items-center justify-center"
-								hitSlop={8}
-								accessibilityRole="button"
-								accessibilityLabel="Close"
-							>
-								<CircleX size={28} color={closeColor} />
-							</Pressable>
-							<View className="min-w-0 flex-1 px-2">
-								{title ? (
-									<Text
-										className="text-center text-[17px] font-semibold text-white"
-										numberOfLines={1}
-									>
-										{title}
-									</Text>
-								) : null}
-							</View>
-							{onConfirm ? (
-								<Pressable
-									onPress={onConfirm}
-									disabled={confirmInactive}
-									className="h-8 w-8 items-center justify-center"
-									hitSlop={8}
-									accessibilityRole="button"
-									accessibilityLabel={confirmAccessibilityLabel}
-									accessibilityState={{
-										disabled: confirmInactive,
-										busy: confirmLoading,
-									}}
-								>
-									{confirmLoading ? (
-										<ActivityIndicator size="small" color={IOS_DARK_SHEET.tint} />
-									) : (
-										<CircleCheck size={28} color={confirmColor} />
-									)}
-								</Pressable>
-							) : (
-								<View className="h-8 w-8" />
-							)}
-						</View>
-					) : (
-						<>
-							<Pressable
-								onPress={onCancel}
-								className="absolute left-4 top-4 z-10"
-								hitSlop={8}
-								accessibilityRole="button"
-								accessibilityLabel="Close"
-							>
-								<CircleX size={28} color={closeColor} />
-							</Pressable>
-
-							{onConfirm ? (
-								<Pressable
-									onPress={onConfirm}
-									disabled={confirmInactive}
-									className="absolute right-4 top-4 z-10"
-									hitSlop={8}
-									accessibilityRole="button"
-									accessibilityLabel={confirmAccessibilityLabel}
-									accessibilityState={{
-										disabled: confirmInactive,
-										busy: confirmLoading,
-									}}
-								>
-									{confirmLoading ? (
-										<ActivityIndicator size="small" color="#007AFF" />
-									) : (
-										<CircleCheck size={28} color={confirmColor} />
-									)}
-								</Pressable>
-							) : null}
-
-							{title ? (
-								<View className="px-10 pt-14">
-									<Text className="text-lg font-semibold text-foreground">
-										{title}
-									</Text>
-								</View>
-							) : null}
-						</>
-					)}
-
-					{scrollable ? (
-						<ScrollView
-							ref={scrollViewRef}
-							className="flex-1"
-							contentContainerStyle={{
-								padding: isDark ? 20 : 40,
-								paddingTop: isDark ? 8 : title ? 16 : 56,
-								paddingBottom: 24,
-							}}
-							showsVerticalScrollIndicator={false}
-							keyboardShouldPersistTaps="handled"
-						>
-							{children}
-						</ScrollView>
-					) : (
-						<View
-							className="flex-1"
-							style={{
-								padding: isDark ? 20 : 40,
-								paddingTop: isDark ? 8 : title ? 16 : 56,
-								paddingBottom: 24,
-							}}
-						>
-							{children}
-						</View>
-					)}
-
-					{footer ? <View className="px-10 p-4">{footer}</View> : null}
-				</View>
-			</FormSheetAppearanceContext.Provider>
+			<StatusBar style={theme.statusBarStyle} />
+			<ThemeProvider appearance={appearanceName} className="flex-1 bg-background">
+				<FormSheetBody
+					title={title}
+					footer={footer}
+					onConfirm={onConfirm}
+					confirmDisabled={confirmDisabled}
+					confirmLoading={confirmLoading}
+					confirmAccessibilityLabel={confirmAccessibilityLabel}
+					onCancel={() => onOpenChange(false)}
+					scrollViewRef={scrollViewRef}
+					scrollable={scrollable}
+				>
+					{children}
+				</FormSheetBody>
+			</ThemeProvider>
 		</Modal>
+	);
+}
+
+function FormSheetBody({
+	title,
+	children,
+	footer,
+	onConfirm,
+	confirmDisabled,
+	confirmLoading,
+	confirmAccessibilityLabel,
+	onCancel,
+	scrollViewRef,
+	scrollable,
+}) {
+	const theme = useTheme();
+	const confirmInactive = confirmDisabled || confirmLoading;
+	const confirmColor = confirmInactive ? theme.colors.tintDisabled : theme.colors.tint;
+	const useToolbar = theme.layout.header === 'toolbar';
+	const contentPaddingTop = title
+		? theme.layout.contentPaddingTopWithTitle
+		: theme.layout.contentPaddingTopWithoutTitle;
+
+	return (
+		<>
+			{useToolbar ? (
+				<View className="flex-row items-center px-4 pb-3 pt-4">
+					<Pressable
+						onPress={onCancel}
+						className="h-8 w-8 items-center justify-center"
+						hitSlop={8}
+						accessibilityRole="button"
+						accessibilityLabel="Close"
+					>
+						<CircleX size={28} color={theme.colors.close} />
+					</Pressable>
+					<View className="min-w-0 flex-1 px-2">
+						{title ? (
+							<Text
+								className="text-center text-[17px] font-semibold text-foreground"
+								numberOfLines={1}
+							>
+								{title}
+							</Text>
+						) : null}
+					</View>
+					{onConfirm ? (
+						<Pressable
+							onPress={onConfirm}
+							disabled={confirmInactive}
+							className="h-8 w-8 items-center justify-center"
+							hitSlop={8}
+							accessibilityRole="button"
+							accessibilityLabel={confirmAccessibilityLabel}
+							accessibilityState={{
+								disabled: confirmInactive,
+								busy: confirmLoading,
+							}}
+						>
+							{confirmLoading ? (
+								<ActivityIndicator size="small" color={theme.colors.tint} />
+							) : (
+								<CircleCheck size={28} color={confirmColor} />
+							)}
+						</Pressable>
+					) : (
+						<View className="h-8 w-8" />
+					)}
+				</View>
+			) : (
+				<>
+					<Pressable
+						onPress={onCancel}
+						className="absolute left-4 top-4 z-10"
+						hitSlop={8}
+						accessibilityRole="button"
+						accessibilityLabel="Close"
+					>
+						<CircleX size={28} color={theme.colors.close} />
+					</Pressable>
+
+					{onConfirm ? (
+						<Pressable
+							onPress={onConfirm}
+							disabled={confirmInactive}
+							className="absolute right-4 top-4 z-10"
+							hitSlop={8}
+							accessibilityRole="button"
+							accessibilityLabel={confirmAccessibilityLabel}
+							accessibilityState={{
+								disabled: confirmInactive,
+								busy: confirmLoading,
+							}}
+						>
+							{confirmLoading ? (
+								<ActivityIndicator size="small" color={theme.colors.tint} />
+							) : (
+								<CircleCheck size={28} color={confirmColor} />
+							)}
+						</Pressable>
+					) : null}
+
+					{title ? (
+						<View className="px-10 pt-14">
+							<Text className="text-lg font-semibold text-foreground">{title}</Text>
+						</View>
+					) : null}
+				</>
+			)}
+
+			{scrollable ? (
+				<ScrollView
+					ref={scrollViewRef}
+					className="flex-1"
+					contentContainerStyle={{
+						padding: theme.layout.contentPadding,
+						paddingTop: contentPaddingTop,
+						paddingBottom: 24,
+					}}
+					showsVerticalScrollIndicator={false}
+					keyboardShouldPersistTaps="handled"
+				>
+					{children}
+				</ScrollView>
+			) : (
+				<View
+					className="flex-1"
+					style={{
+						padding: theme.layout.contentPadding,
+						paddingTop: contentPaddingTop,
+						paddingBottom: 24,
+					}}
+				>
+					{children}
+				</View>
+			)}
+
+			{footer ? <View className="px-10 p-4">{footer}</View> : null}
+		</>
 	);
 }

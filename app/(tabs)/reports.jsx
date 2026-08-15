@@ -2,10 +2,7 @@ import useInvestigationsApiManager from '@/api-managers/InvestigationsApiManager
 import useReportsApiManager from '@/api-managers/ReportsApiManager';
 import NewReportDialog from '@/components/NewReportDialog';
 import ReportCard from '@/components/ReportCard';
-import {
-	FormSheetAppearanceContext,
-	IOS_DARK_SHEET,
-} from '@/components/form-sheet-appearance';
+import { ThemeProvider, useTheme } from '@/components/ThemeProvider';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Text } from '@/components/ui/text';
@@ -19,6 +16,15 @@ import { useEffect, useState } from 'react';
 import { RefreshControl, ScrollView, View } from 'react-native';
 
 export default function ReportsScreen() {
+	return (
+		<ThemeProvider appearance="iosDark" className="flex-1 bg-background">
+			<ReportsView />
+		</ThemeProvider>
+	);
+}
+
+function ReportsView() {
+	const theme = useTheme();
 	const isFocused = useIsFocused();
 	const { showNewReportDialog: showDialogParam, appointment } = useLocalSearchParams();
 	const appointmentId = Array.isArray(appointment) ? appointment[0] : appointment;
@@ -60,43 +66,39 @@ export default function ReportsScreen() {
 	});
 
 	return (
-		<FormSheetAppearanceContext.Provider value="dark">
-			{isFocused ? <StatusBar style="light" /> : null}
-			<View className="flex-1 bg-[#1C1C1E]">
+		<>
+			{isFocused ? <StatusBar style={theme.statusBarStyle} /> : null}
+			<View className="flex-1 bg-background">
 				<View className="px-4 py-3">
 					<Button
 						onPress={() => setShowNewReportDialog(true)}
-						className="h-11 rounded-[10px] bg-[#0A84FF] shadow-none"
+						className="h-11 rounded-[10px] shadow-none"
 					>
-						<Plus size={18} color="#fff" />
-						<Text className="ml-2 font-medium text-white">New report</Text>
+						<Plus size={18} color={theme.colors.primaryForeground} />
+						<Text className="ml-2 font-medium text-primary-foreground">New report</Text>
 					</Button>
 				</View>
 
 				{isLoading ? (
 					<View className="gap-4 p-4">
-						<Skeleton className="h-24 w-full rounded-[10px] bg-[#2C2C2E]" />
-						<Skeleton className="h-24 w-full rounded-[10px] bg-[#2C2C2E]" />
+						<Skeleton className="h-24 w-full rounded-[10px] bg-card" />
+						<Skeleton className="h-24 w-full rounded-[10px] bg-card" />
 					</View>
 				) : isError ? (
 					<View className="flex-1 items-center justify-center gap-3 px-6">
-						<Text className="text-center text-[#FF453A]">Could not load reports.</Text>
-						<Button
-							variant="outline"
-							onPress={() => refetch()}
-							className="border-[#3A3A3C] bg-[#2C2C2E]"
-						>
-							<Text className="text-white">Try again</Text>
+						<Text className="text-center text-destructive">Could not load reports.</Text>
+						<Button variant="outline" onPress={() => refetch()}>
+							<Text>Try again</Text>
 						</Button>
 					</View>
 				) : reports.length === 0 ? (
 					<View className="flex-1 items-center justify-center gap-4 px-6">
-						<Text className="text-center text-[#8E8E93]">No reports yet.</Text>
+						<Text className="text-center text-muted-foreground">No reports yet.</Text>
 						<Button
 							onPress={() => setShowNewReportDialog(true)}
-							className="h-11 rounded-[10px] bg-[#0A84FF] shadow-none"
+							className="h-11 rounded-[10px] shadow-none"
 						>
-							<Text className="font-medium text-white">Create report</Text>
+							<Text className="font-medium text-primary-foreground">Create report</Text>
 						</Button>
 					</View>
 				) : (
@@ -107,8 +109,8 @@ export default function ReportsScreen() {
 							<RefreshControl
 								refreshing={isRefetching}
 								onRefresh={refetch}
-								tintColor={IOS_DARK_SHEET.secondaryLabel}
-								colors={[IOS_DARK_SHEET.tint]}
+								tintColor={theme.colors.mutedForeground}
+								colors={[theme.colors.tint]}
 							/>
 						}
 					>
@@ -129,6 +131,6 @@ export default function ReportsScreen() {
 					appointmentId={appointmentId}
 				/>
 			</View>
-		</FormSheetAppearanceContext.Provider>
+		</>
 	);
 }

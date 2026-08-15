@@ -1,7 +1,7 @@
 import { EllipsisVertical } from 'lucide-react-native';
 import { Pressable, Text, View } from 'react-native';
 
-import { useFormSheetAppearance } from '@/components/form-sheet-appearance';
+import { useTheme } from '@/components/ThemeProvider';
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -10,17 +10,11 @@ import {
 } from '@/components/ui/dropdown-menu';
 
 const CardView = ({ children, actions = [] }) => {
-	const isDark = useFormSheetAppearance() === 'dark';
+	const theme = useTheme();
 
 	return (
 		<>
-			<View
-				className={
-					isDark
-						? 'flex-row items-start justify-between gap-0 overflow-hidden rounded-[10px] bg-[#2C2C2E]'
-						: 'flex-row items-start justify-between gap-0 overflow-hidden bg-card'
-				}
-			>
+			<View className="flex-row items-start justify-between gap-0 overflow-hidden rounded-[10px] bg-card">
 				<View className="min-w-0 flex-1">{children}</View>
 
 				{actions.length > 0 && (
@@ -28,10 +22,7 @@ const CardView = ({ children, actions = [] }) => {
 						<DropdownMenu>
 							<DropdownMenuTrigger asChild>
 								<Pressable className="-m-1 p-1">
-									<EllipsisVertical
-										size={20}
-										color={isDark ? '#8E8E93' : '#565656'}
-									/>
+									<EllipsisVertical size={20} color={theme.colors.mutedForeground} />
 								</Pressable>
 							</DropdownMenuTrigger>
 
@@ -45,12 +36,8 @@ const CardView = ({ children, actions = [] }) => {
 										<Text
 											className={
 												action.variant === 'destructive'
-													? isDark
-														? 'text-[#FF453A]'
-														: undefined
-													: isDark
-														? 'text-white'
-														: undefined
+													? 'text-destructive'
+													: 'text-popover-foreground'
 											}
 										>
 											{action.label}

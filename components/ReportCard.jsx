@@ -1,5 +1,5 @@
 import CardView from '@/components/CardView';
-import { IOS_DARK_SHEET, useFormSheetAppearance } from '@/components/form-sheet-appearance';
+import { useTheme } from '@/components/ThemeProvider';
 import {
 	AlertDialog,
 	AlertDialogAction,
@@ -27,7 +27,7 @@ export default function ReportCard({
 	filename,
 	investigations = [],
 }) {
-	const isDark = useFormSheetAppearance() === 'dark';
+	const theme = useTheme();
 	const [showConfirm, setShowConfirm] = useState(false);
 
 	const onDelete = useCallback(() => {
@@ -49,54 +49,21 @@ export default function ReportCard({
 		<>
 			<CardView actions={actions}>
 				<View className="flex-row gap-4 p-4">
-					<CircleUserRound
-						size={40}
-						color={isDark ? IOS_DARK_SHEET.tint : '#30425f'}
-					/>
+					<CircleUserRound size={40} color={theme.colors.primary} />
 					<View className="flex-1 gap-1">
-						<Text
-							className={
-								isDark
-									? 'text-base font-semibold text-white'
-									: 'text-base font-semibold text-foreground'
-							}
-						>
+						<Text className="text-base font-semibold text-foreground">
 							{investigationMeta.label} - {value} {investigationMeta.unit}
 						</Text>
-						{remarks ? (
-							<Text className={isDark ? 'text-sm text-white' : 'text-sm text-foreground'}>
-								{remarks}
-							</Text>
-						) : null}
+						{remarks ? <Text className="text-sm text-foreground">{remarks}</Text> : null}
 						{appointments.length > 0 ? (
-							<Text
-								className={
-									isDark
-										? 'text-sm text-[#8E8E93]'
-										: 'text-sm text-muted-foreground'
-								}
-							>
+							<Text className="text-sm text-muted-foreground">
 								Appointment - {appointments[0].location}
 							</Text>
 						) : null}
 						<View className="mt-1 flex-row items-center justify-between gap-2">
-							<Text
-								className={
-									isDark
-										? 'text-sm text-[#8E8E93]'
-										: 'text-sm text-muted-foreground'
-								}
-							>
-								{displayDate}
-							</Text>
+							<Text className="text-sm text-muted-foreground">{displayDate}</Text>
 							{filename ? (
-								<Text
-									className={
-										isDark
-											? 'text-sm text-[#8E8E93]'
-											: 'text-sm text-muted-foreground'
-									}
-								>
+								<Text className="text-sm text-muted-foreground">
 									{/* TODO Phase 4: ViewReport */}
 									Report attached
 								</Text>
@@ -107,32 +74,19 @@ export default function ReportCard({
 			</CardView>
 
 			<AlertDialog open={showConfirm} onOpenChange={setShowConfirm}>
-				<AlertDialogContent
-					className={isDark ? 'border-[#3A3A3C] bg-[#2C2C2E]' : undefined}
-				>
+				<AlertDialogContent>
 					<AlertDialogHeader>
-						<AlertDialogTitle className={isDark ? 'text-white' : undefined}>
-							Are you absolutely sure?
-						</AlertDialogTitle>
-						<AlertDialogDescription
-							className={isDark ? 'text-[#8E8E93]' : undefined}
-						>
+						<AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+						<AlertDialogDescription>
 							This action cannot be undone. This will permanently delete your report.
 						</AlertDialogDescription>
 					</AlertDialogHeader>
 					<AlertDialogFooter>
-						<AlertDialogCancel
-							className={
-								isDark ? 'border-[#3A3A3C] bg-[#2C2C2E]' : undefined
-							}
-						>
-							<Text className={isDark ? 'text-white' : undefined}>Cancel</Text>
+						<AlertDialogCancel>
+							<Text>Cancel</Text>
 						</AlertDialogCancel>
-						<AlertDialogAction
-							onPress={onDelete}
-							className={isDark ? 'bg-[#FF453A]' : undefined}
-						>
-							<Text className={isDark ? 'text-white' : undefined}>Continue</Text>
+						<AlertDialogAction onPress={onDelete} className="bg-destructive">
+							<Text className="text-destructive-foreground">Continue</Text>
 						</AlertDialogAction>
 					</AlertDialogFooter>
 				</AlertDialogContent>

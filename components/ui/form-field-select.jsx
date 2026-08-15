@@ -5,8 +5,6 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from '@/components/ui/select';
-import { TextClassContext } from '@/components/ui/text';
-import { useFormSheetAppearance } from '@/components/form-sheet-appearance';
 import { Controller } from 'react-hook-form';
 import { Text, View } from 'react-native';
 
@@ -18,8 +16,6 @@ const FormFieldSelect = ({
 	labelStyleClass,
 	dropdownOptions,
 }) => {
-	const isDark = useFormSheetAppearance() === 'dark';
-
 	return (
 		<Controller
 			control={formControl}
@@ -40,69 +36,38 @@ const FormFieldSelect = ({
 					: undefined;
 
 				return (
-					<View className={isDark ? 'mb-4 w-full' : 'w-full'}>
+					<View className="mb-4 w-full">
 						{!!labelText && (
 							<Text
 								className={
-									labelStyleClass ??
-									(isDark ? 'text-[13px] font-normal text-[#8E8E93]' : undefined)
+									labelStyleClass ?? 'text-sm font-medium text-muted-foreground'
 								}
 							>
 								{labelText}
 							</Text>
 						)}
 
-						<TextClassContext.Provider value={isDark ? 'text-white' : undefined}>
-							<Select
-								value={selectValue}
-								onValueChange={(option) => onChange(option?.value ?? '')}
-							>
-								<SelectTrigger
-									className={
-										isDark
-											? 'mt-1 h-11 border-0 bg-[#2C2C2E] shadow-none'
-											: 'mt-1'
-									}
-								>
-									<SelectValue
-										placeholder={placeholder}
-										className={
-											isDark
-												? selectValue
-													? 'text-white'
-													: 'text-[#8E8E93]'
-												: undefined
-										}
-									/>
-								</SelectTrigger>
+						<Select
+							value={selectValue}
+							onValueChange={(option) => onChange(option?.value ?? '')}
+						>
+							<SelectTrigger className="mt-1 bg-card">
+								<SelectValue placeholder={placeholder} />
+							</SelectTrigger>
 
-								<SelectContent
-									className={
-										isDark
-											? 'border-[#3A3A3C] bg-[#2C2C2E]'
-											: undefined
-									}
-								>
-									{dropdownOptions.map(({ value: optionValue, label }) => (
-										<SelectItem
-											className={isDark ? undefined : 'text-black'}
-											key={optionValue}
-											value={optionValue}
-											label={label}
-										/>
-									))}
-								</SelectContent>
-							</Select>
-						</TextClassContext.Provider>
+							<SelectContent>
+								{dropdownOptions.map(({ value: optionValue, label }) => (
+									<SelectItem
+										key={optionValue}
+										value={optionValue}
+										label={label}
+									/>
+								))}
+							</SelectContent>
+						</Select>
 
 						{error && (
-							<Text
-								className={
-									isDark ? 'mt-1 text-[#FF453A]' : 'mt-1 text-red-500'
-								}
-							>
-								{error.message}
-							</Text>
+							<Text className="mt-1 text-destructive">{error.message}</Text>
 						)}
 					</View>
 				);

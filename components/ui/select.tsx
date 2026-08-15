@@ -1,7 +1,7 @@
-import { useFormSheetAppearance } from '@/components/form-sheet-appearance';
 import { Icon } from '@/components/ui/icon';
 import { NativeOnlyAnimatedView } from '@/components/ui/native-only-animated-view';
 import { TextClassContext } from '@/components/ui/text';
+import { useTheme } from '@/components/ThemeProvider';
 import { cn } from '@/lib/utils';
 import * as SelectPrimitive from '@rn-primitives/select';
 import { Check, ChevronDown, ChevronDownIcon, ChevronUpIcon } from 'lucide-react-native';
@@ -78,17 +78,17 @@ function SelectContent({
     className?: string;
     portalHost?: string;
   }) {
-  const isDark = useFormSheetAppearance() === 'dark';
+  const theme = useTheme();
   return (
     <SelectPrimitive.Portal hostName={portalHost}>
       <FullWindowOverlay>
         <SelectPrimitive.Overlay style={Platform.select({ native: StyleSheet.absoluteFill })}>
-          <TextClassContext.Provider value={isDark ? 'text-white' : 'text-popover-foreground'}>
-            <NativeOnlyAnimatedView className="z-50" entering={FadeIn} exiting={FadeOut}>
-              <SelectPrimitive.Content
-                className={cn(
-                  'relative z-50 min-w-[8rem] rounded-md border shadow-md shadow-black/5',
-                  isDark ? 'border-[#3A3A3C] bg-[#2C2C2E]' : 'border-border bg-popover',
+          <View style={theme.vars}>
+            <TextClassContext.Provider value="text-popover-foreground">
+              <NativeOnlyAnimatedView className="z-50" entering={FadeIn} exiting={FadeOut}>
+                <SelectPrimitive.Content
+                  className={cn(
+                    'border-border bg-popover relative z-50 min-w-[8rem] rounded-md border shadow-md shadow-black/5',
                   Platform.select({
                     web: cn(
                       'animate-in fade-in-0 zoom-in-95 origin-(--radix-select-content-transform-origin) max-h-52 overflow-y-auto overflow-x-hidden',
@@ -125,7 +125,8 @@ function SelectContent({
                 <SelectScrollDownButton />
               </SelectPrimitive.Content>
             </NativeOnlyAnimatedView>
-          </TextClassContext.Provider>
+            </TextClassContext.Provider>
+          </View>
         </SelectPrimitive.Overlay>
       </FullWindowOverlay>
     </SelectPrimitive.Portal>
@@ -149,12 +150,10 @@ function SelectItem({
   children,
   ...props
 }: React.ComponentProps<typeof SelectPrimitive.Item>) {
-  const isDark = useFormSheetAppearance() === 'dark';
   return (
     <SelectPrimitive.Item
       className={cn(
         'active:bg-accent group relative flex w-full flex-row items-center gap-2 rounded-sm py-2 pl-2 pr-8 sm:py-1.5',
-        isDark && 'active:bg-[#3A3A3C]',
         Platform.select({
           web: 'focus:bg-accent focus:text-accent-foreground *:[span]:last:flex *:[span]:last:items-center *:[span]:last:gap-2 cursor-default outline-none data-[disabled]:pointer-events-none [&_svg]:pointer-events-none',
         }),
@@ -167,12 +166,7 @@ function SelectItem({
           <Icon as={Check} className="text-muted-foreground size-4 shrink-0" />
         </SelectPrimitive.ItemIndicator>
       </View>
-      <SelectPrimitive.ItemText
-        className={cn(
-          'group-active:text-accent-foreground select-none text-sm',
-          isDark ? 'text-white' : 'text-foreground'
-        )}
-      />
+      <SelectPrimitive.ItemText className="text-foreground group-active:text-accent-foreground select-none text-sm" />
     </SelectPrimitive.Item>
   );
 }
