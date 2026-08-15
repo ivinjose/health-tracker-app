@@ -1,4 +1,5 @@
 import CardView from '@/components/CardView';
+import { IOS_DARK_SHEET, useFormSheetAppearance } from '@/components/form-sheet-appearance';
 import {
 	AlertDialog,
 	AlertDialogAction,
@@ -26,6 +27,7 @@ export default function ReportCard({
 	filename,
 	investigations = [],
 }) {
+	const isDark = useFormSheetAppearance() === 'dark';
 	const [showConfirm, setShowConfirm] = useState(false);
 
 	const onDelete = useCallback(() => {
@@ -35,7 +37,7 @@ export default function ReportCard({
 
 	const actions = useMemo(() => {
 		if (isReadOnly) return [];
-		return [{ label: 'Delete', action: () => setShowConfirm(true) }];
+		return [{ label: 'Delete', action: () => setShowConfirm(true), variant: 'destructive' }];
 	}, [isReadOnly]);
 
 	const investigationMeta = useMemo(() => {
@@ -47,21 +49,54 @@ export default function ReportCard({
 		<>
 			<CardView actions={actions}>
 				<View className="flex-row gap-4 p-4">
-					<CircleUserRound size={40} color="#30425f" />
+					<CircleUserRound
+						size={40}
+						color={isDark ? IOS_DARK_SHEET.tint : '#30425f'}
+					/>
 					<View className="flex-1 gap-1">
-						<Text className="text-base font-semibold text-foreground">
+						<Text
+							className={
+								isDark
+									? 'text-base font-semibold text-white'
+									: 'text-base font-semibold text-foreground'
+							}
+						>
 							{investigationMeta.label} - {value} {investigationMeta.unit}
 						</Text>
-						{remarks ? <Text className="text-sm text-foreground">{remarks}</Text> : null}
+						{remarks ? (
+							<Text className={isDark ? 'text-sm text-white' : 'text-sm text-foreground'}>
+								{remarks}
+							</Text>
+						) : null}
 						{appointments.length > 0 ? (
-							<Text className="text-sm text-muted-foreground">
+							<Text
+								className={
+									isDark
+										? 'text-sm text-[#8E8E93]'
+										: 'text-sm text-muted-foreground'
+								}
+							>
 								Appointment - {appointments[0].location}
 							</Text>
 						) : null}
 						<View className="mt-1 flex-row items-center justify-between gap-2">
-							<Text className="text-sm text-muted-foreground">{displayDate}</Text>
+							<Text
+								className={
+									isDark
+										? 'text-sm text-[#8E8E93]'
+										: 'text-sm text-muted-foreground'
+								}
+							>
+								{displayDate}
+							</Text>
 							{filename ? (
-								<Text className="text-sm text-muted-foreground">
+								<Text
+									className={
+										isDark
+											? 'text-sm text-[#8E8E93]'
+											: 'text-sm text-muted-foreground'
+									}
+								>
 									{/* TODO Phase 4: ViewReport */}
 									Report attached
 								</Text>
@@ -72,19 +107,32 @@ export default function ReportCard({
 			</CardView>
 
 			<AlertDialog open={showConfirm} onOpenChange={setShowConfirm}>
-				<AlertDialogContent>
+				<AlertDialogContent
+					className={isDark ? 'border-[#3A3A3C] bg-[#2C2C2E]' : undefined}
+				>
 					<AlertDialogHeader>
-						<AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-						<AlertDialogDescription>
+						<AlertDialogTitle className={isDark ? 'text-white' : undefined}>
+							Are you absolutely sure?
+						</AlertDialogTitle>
+						<AlertDialogDescription
+							className={isDark ? 'text-[#8E8E93]' : undefined}
+						>
 							This action cannot be undone. This will permanently delete your report.
 						</AlertDialogDescription>
 					</AlertDialogHeader>
 					<AlertDialogFooter>
-						<AlertDialogCancel>
-							<Text>Cancel</Text>
+						<AlertDialogCancel
+							className={
+								isDark ? 'border-[#3A3A3C] bg-[#2C2C2E]' : undefined
+							}
+						>
+							<Text className={isDark ? 'text-white' : undefined}>Cancel</Text>
 						</AlertDialogCancel>
-						<AlertDialogAction onPress={onDelete}>
-							<Text>Continue</Text>
+						<AlertDialogAction
+							onPress={onDelete}
+							className={isDark ? 'bg-[#FF453A]' : undefined}
+						>
+							<Text className={isDark ? 'text-white' : undefined}>Continue</Text>
 						</AlertDialogAction>
 					</AlertDialogFooter>
 				</AlertDialogContent>

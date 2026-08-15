@@ -53,6 +53,16 @@ export default function AppLayout() {
 				name="reports"
 				options={{
 					title: 'Reports',
+					headerStyle: { backgroundColor: '#1C1C1E' },
+					headerTintColor: '#FFFFFF',
+					headerTitleStyle: { color: '#FFFFFF', fontWeight: '600' },
+					headerShadowVisible: false,
+					tabBarStyle: {
+						backgroundColor: '#1C1C1E',
+						borderTopColor: '#3A3A3C',
+					},
+					tabBarActiveTintColor: '#0A84FF',
+					tabBarInactiveTintColor: '#8E8E93',
 					tabBarIcon: ({ color }) => <FileText size={26} color={color} strokeWidth={1.5} />,
 				}}
 			/>
