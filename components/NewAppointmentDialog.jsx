@@ -8,12 +8,11 @@ import FormFieldTextarea from '@/components/ui/form-field-textarea';
 import { Text } from '@/components/ui/text';
 import { TIME_SLOTS } from '@/constants/appointments';
 import { useToast } from '@/hooks/use-toast';
+import useValidatedForm from '@/hooks/useValidatedForm';
 import useAppointmentsApiManager from '@/api-managers/AppointmentsApiManager';
 import formSchema from '@/schemas/Appointment';
-import { zodResolver } from '@hookform/resolvers/zod';
 import { format, subDays } from 'date-fns';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { useForm } from 'react-hook-form';
 
 const TIME_OPTIONS = TIME_SLOTS.map((slot) => ({ label: slot, value: slot }));
 
@@ -22,8 +21,8 @@ export default function NewAppointmentDialog({ open, onOpenChange }) {
 	const queryClient = useQueryClient();
 	const appointmentsApiManager = useAppointmentsApiManager();
 
-	const form = useForm({
-		resolver: zodResolver(formSchema),
+	const { form, canSubmit } = useValidatedForm({
+		schema: formSchema,
 		defaultValues: { location: '', date: undefined, time: '', remarks: '' },
 	});
 
@@ -49,7 +48,7 @@ export default function NewAppointmentDialog({ open, onOpenChange }) {
 			onOpenChange={onOpenChange}
 			title="Appointment details"
 			footer={
-				<Button onPress={form.handleSubmit(addAppointment)} disabled={isPending}>
+				<Button onPress={form.handleSubmit(addAppointment)} disabled={!canSubmit || isPending}>
 					<Text className="font-medium text-primary-foreground">
 						{isPending ? 'Saving…' : 'Save'}
 					</Text>

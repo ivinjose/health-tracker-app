@@ -5,11 +5,10 @@ import FormFieldInput from '@/components/ui/form-field-input';
 import FormFieldSelect from '@/components/ui/form-field-select';
 import { Text } from '@/components/ui/text';
 import { useToast } from '@/hooks/use-toast';
+import useValidatedForm from '@/hooks/useValidatedForm';
 import useProfileApiManager from '@/api-managers/ProfileApiManager';
 import formSchema from '@/schemas/Profile';
-import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { useForm } from 'react-hook-form';
 
 const GENDER_OPTIONS = [
 	{ label: 'Male', value: 'Male' },
@@ -21,8 +20,8 @@ export default function NewProfileDialog({ open, onOpenChange }) {
 	const queryClient = useQueryClient();
 	const profileApiManager = useProfileApiManager();
 
-	const form = useForm({
-		resolver: zodResolver(formSchema),
+	const { form, canSubmit } = useValidatedForm({
+		schema: formSchema,
 		defaultValues: { name: '', age: '', gender: '' },
 	});
 
@@ -45,7 +44,7 @@ export default function NewProfileDialog({ open, onOpenChange }) {
 			onOpenChange={onOpenChange}
 			title="Create new profile"
 			footer={
-				<Button onPress={form.handleSubmit(addProfile)} disabled={isPending}>
+				<Button onPress={form.handleSubmit(addProfile)} disabled={!canSubmit || isPending}>
 					<Text className="font-medium text-primary-foreground">
 						{isPending ? 'Creating…' : 'Create profile'}
 					</Text>

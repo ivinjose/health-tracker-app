@@ -8,12 +8,11 @@ import FormFieldInput from '@/components/ui/form-field-input';
 import FormFieldSelect from '@/components/ui/form-field-select';
 import FormFieldTextarea from '@/components/ui/form-field-textarea';
 import { useToast } from '@/hooks/use-toast';
+import useValidatedForm from '@/hooks/useValidatedForm';
 import formSchema from '@/schemas/Report';
-import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
 import { useEffect } from 'react';
-import { useForm } from 'react-hook-form';
 
 export default function NewReportDialog({ open, onOpenChange, appointmentId }) {
 	const { toast } = useToast();
@@ -22,8 +21,8 @@ export default function NewReportDialog({ open, onOpenChange, appointmentId }) {
 	const reportsApiManager = useReportsApiManager();
 	const investigationsApiManager = useInvestigationsApiManager();
 
-	const form = useForm({
-		resolver: zodResolver(formSchema),
+	const { form, canSubmit } = useValidatedForm({
+		schema: formSchema,
 		defaultValues: {
 			investigation: '',
 			value: '',
@@ -75,7 +74,7 @@ export default function NewReportDialog({ open, onOpenChange, appointmentId }) {
 			onOpenChange={onOpenChange}
 			title="Report details"
 			onConfirm={form.handleSubmit(addReport)}
-			confirmDisabled={isPending}
+			confirmDisabled={!canSubmit || isPending}
 			confirmLoading={isPending}
 		>
 			<Form {...form}>

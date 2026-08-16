@@ -4,8 +4,8 @@ const MAX_UPLOAD_SIZE = 1024 * 1024 * 3; // 3MB
 const ACCEPTED_FILE_TYPES = ['image/png', 'image/jpeg', 'application/pdf'];
 
 const formSchema = z.object({
-    investigation: z.string(),
-    value: z.string(),
+    investigation: z.string().min(1, "Investigation is required."),
+    value: z.string().min(1, "Report value is required."),
     date: z.date({
         error: "Date is required.",
     }),
