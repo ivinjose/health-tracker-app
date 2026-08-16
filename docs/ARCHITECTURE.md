@@ -60,7 +60,8 @@ Implementation details:
 - React Native `Modal` with `presentationStyle="pageSheet"` and `animationType="slide"`
 - `CircleX` close button top-left → calls `onOpenChange(false)`
 - Form body in `ScrollView` (`flex-1`, `keyboardShouldPersistTaps="handled"`)
-- **Primary action button in `footer`**, outside the scroll area (always visible)
+- **Primary action:** `footer` (Save button) **or** `onConfirm` (tick in the sheet header). `NewReportDialog` uses `onConfirm`.
+- Optional `appearance="dark"` / `"iosDark"` for the iOS dark sheet (see [THEMING.md](./THEMING.md)). Default is `light`.
 - Optional `scrollable={false}` for list-heavy sheets (e.g. `InvestigationSelect`)
 
 **Current consumers:** `NewAppointmentDialog`, `NewReportDialog`, `NewProfileDialog`, `InvestigationSelect`.
@@ -113,6 +114,8 @@ Use **`FormDateField`** (`components/FormDateField.jsx`): inline **Accordion + `
 - Icons: `lucide-react-native`.
 - Charts: `components/charts/*` (react-native-svg), not Recharts.
 
+**Per-subtree appearance (iOS dark opt-in):** see **[THEMING.md](./THEMING.md)**. Do not add `isDark` color branches. Wrap a screen in `ThemeProvider` from `@/components/ThemeProvider` (not `@react-navigation/native`) or pass `appearance` on `FormSheetModal`. Palettes live in `lib/appearance.js`.
+
 ## Auth & storage
 
 - Public axios instance: `@/api/axios`
@@ -130,7 +133,7 @@ Use **`FormDateField`** (`components/FormDateField.jsx`): inline **Accordion + `
 | `components/` | Shared UI; **`FormSheetModal`**, **`FormDateField`**, cards, charts |
 | `components/ui/` | rn-primitives wrappers (button, select, alert-dialog, …) |
 | `hooks/` | Auth, axios, toast |
-| `lib/` | Utilities (`reportUtils`, etc.) |
+| `lib/` | Utilities (`reportUtils`, etc.); **`appearance.js`** palettes for per-subtree theming |
 | `constants/` | App constants (e.g. appointment time slots) |
 | `docs/migration/` | Phase-by-phase migration plans & parity checklist |
 
