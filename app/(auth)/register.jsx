@@ -1,9 +1,8 @@
 import axios from '@/api/axios';
-import { ThemeProvider, useTheme } from '@/components/ThemeProvider';
+import { useTheme } from '@/components/ThemeProvider';
 import { Button } from '@/components/ui/button';
 import { Text } from '@/components/ui/text';
 import { Link } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
 import { Check, CircleCheckBig, X } from 'lucide-react-native';
 import { useEffect, useRef, useState } from 'react';
 import {
@@ -32,14 +31,6 @@ function ValidationIcon({ value, isValid }) {
 }
 
 export default function RegisterScreen() {
-	return (
-		<ThemeProvider appearance="iosDark" className="flex-1 bg-background">
-			<RegisterView />
-		</ThemeProvider>
-	);
-}
-
-function RegisterView() {
 	const theme = useTheme();
 	const profileNameRef = useRef(null);
 
@@ -117,7 +108,6 @@ function RegisterView() {
 	if (isSuccess) {
 		return (
 			<View className="flex-1 items-center justify-center bg-background px-6">
-				<StatusBar style={theme.statusBarStyle} />
 				<CircleCheckBig size={50} color={theme.colors.tint} />
 				<Text className="mt-4 text-center text-lg font-semibold text-foreground">
 					Account has been created successfully.
@@ -142,7 +132,6 @@ function RegisterView() {
 			behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
 			className="flex-1 bg-background"
 		>
-			<StatusBar style={theme.statusBarStyle} />
 			<ScrollView
 				className="flex-1"
 				contentContainerStyle={{

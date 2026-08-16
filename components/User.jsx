@@ -1,3 +1,4 @@
+import { useTheme } from '@/components/ThemeProvider';
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -21,6 +22,7 @@ import { Check, User as UserIcon } from 'lucide-react-native';
 import { Pressable, View } from 'react-native';
 
 export default function UserMenu() {
+	const theme = useTheme();
 	const logout = useLogout();
 	const router = useRouter();
 	const queryClient = useQueryClient();
@@ -60,7 +62,7 @@ export default function UserMenu() {
 		<DropdownMenu>
 			<DropdownMenuTrigger asChild>
 				<Pressable className="flex-row items-center gap-2 rounded-md bg-primary px-3 py-2">
-					<UserIcon color="#fff" size={20} />
+					<UserIcon color={theme.colors.primaryForeground} size={20} />
 					<Text className="font-medium text-primary-foreground">{auth.name}</Text>
 				</Pressable>
 			</DropdownMenuTrigger>
@@ -85,10 +87,12 @@ export default function UserMenu() {
 									>
 										<View className="flex-row items-center justify-between gap-3">
 											<View className="flex-row items-center gap-2">
-												<UserIcon size={20} />
+												<UserIcon size={20} color={theme.colors.foreground} />
 												<Text>{profile.name}</Text>
 											</View>
-											{profile.user === auth.id ? <Check size={15} /> : null}
+											{profile.user === auth.id ? (
+												<Check size={15} color={theme.colors.tint} />
+											) : null}
 										</View>
 									</DropdownMenuItem>
 								))}

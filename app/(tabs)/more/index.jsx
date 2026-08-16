@@ -1,3 +1,4 @@
+import { useTheme } from '@/components/ThemeProvider';
 import UserMenu from '@/components/User';
 import { Text } from '@/components/ui/text';
 import { Link } from 'expo-router';
@@ -20,6 +21,8 @@ const MENU_ITEMS = [
 ];
 
 export default function MoreScreen() {
+	const theme = useTheme();
+
 	return (
 		<ScrollView className="flex-1 bg-background">
 			<View className="border-b border-border p-4">
@@ -31,7 +34,7 @@ export default function MoreScreen() {
 					<Link key={item.href} href={item.href} asChild>
 						<Pressable className="flex-row items-center justify-between rounded-lg border border-border bg-card px-4 py-4">
 							<Text className="font-medium text-foreground">{item.label}</Text>
-							<ChevronRight size={18} color="#6b7280" />
+							<ChevronRight size={18} color={theme.colors.mutedForeground} />
 						</Pressable>
 					</Link>
 				))}

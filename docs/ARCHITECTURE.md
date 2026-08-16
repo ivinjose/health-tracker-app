@@ -61,7 +61,7 @@ Implementation details:
 - `CircleX` close button top-left → calls `onOpenChange(false)`
 - Form body in `ScrollView` (`flex-1`, `keyboardShouldPersistTaps="handled"`)
 - **Primary action:** `footer` (Save button) **or** `onConfirm` (tick in the sheet header). `NewReportDialog` uses `onConfirm`.
-- Optional `appearance="dark"` / `"iosDark"` for the iOS dark sheet (see [THEMING.md](./THEMING.md)). Default is `light`.
+- Sheets inherit the app-wide appearance. Re-apply NativeWind vars inside the `Modal` (see [THEMING.md](./THEMING.md)).
 - Optional `scrollable={false}` for list-heavy sheets (e.g. `InvestigationSelect`)
 
 **Current consumers:** `NewAppointmentDialog`, `NewReportDialog`, `NewProfileDialog`, `InvestigationSelect`.
@@ -114,7 +114,7 @@ Use **`FormDateField`** (`components/FormDateField.jsx`): inline **Accordion + `
 - Icons: `lucide-react-native`.
 - Charts: `components/charts/*` (react-native-svg), not Recharts.
 
-**Per-subtree appearance (iOS dark opt-in):** see **[THEMING.md](./THEMING.md)**. Do not add `isDark` color branches. Wrap a screen in `ThemeProvider` from `@/components/ThemeProvider` (not `@react-navigation/native`) or pass `appearance` on `FormSheetModal`. Palettes live in `lib/appearance.js`.
+**App-wide appearance (iOS dark):** see **[THEMING.md](./THEMING.md)**. Do not add `isDark` color branches. Mount `ThemeProvider` from `@/components/ThemeProvider` once in `app/_layout.tsx` (not `@react-navigation/native`). Palettes live in `lib/appearance.js`; switch the whole app with `APP_APPEARANCE`. Re-apply `theme.vars` only on `Modal` and portal roots.
 
 ## Auth & storage
 
@@ -133,7 +133,7 @@ Use **`FormDateField`** (`components/FormDateField.jsx`): inline **Accordion + `
 | `components/` | Shared UI; **`FormSheetModal`**, **`FormDateField`**, cards, charts |
 | `components/ui/` | rn-primitives wrappers (button, select, alert-dialog, …) |
 | `hooks/` | Auth, axios, toast |
-| `lib/` | Utilities (`reportUtils`, etc.); **`appearance.js`** palettes for per-subtree theming |
+| `lib/` | Utilities (`reportUtils`, etc.); **`appearance.js`** palettes and `APP_APPEARANCE` |
 | `constants/` | App constants (e.g. appointment time slots) |
 | `docs/migration/` | Phase-by-phase migration plans & parity checklist |
 

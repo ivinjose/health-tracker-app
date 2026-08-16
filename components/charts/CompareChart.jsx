@@ -1,3 +1,4 @@
+import { useTheme } from '@/components/ThemeProvider';
 import { View } from 'react-native';
 import Svg, { Circle, G, Line, Polyline, Text as SvgText } from 'react-native-svg';
 
@@ -8,12 +9,10 @@ import {
 	getChartWidth,
 } from './chartUtils';
 
-const LINE_COLORS = ['#30425f', '#e54d2e'];
-const AXIS_COLOR = '#b8c0d9';
-const LABEL_COLOR = '#6b7280';
-
 export default function CompareChart({ data = [], xAxisKey, yAxisKeys = [], width }) {
+	const theme = useTheme();
 	const chartWidth = width ?? getChartWidth();
+	const lineColors = [theme.chart.line, theme.chart.lineSecondary];
 
 	if (!data.length || yAxisKeys.length === 0) {
 		return null;
@@ -37,7 +36,7 @@ export default function CompareChart({ data = [], xAxisKey, yAxisKeys = [], widt
 					y1={CHART_PADDING.top + innerHeight}
 					x2={chartWidth - CHART_PADDING.right}
 					y2={CHART_PADDING.top + innerHeight}
-					stroke={AXIS_COLOR}
+					stroke={theme.chart.axis}
 					strokeWidth={1}
 				/>
 				{series.map((line, lineIndex) => {
@@ -47,6 +46,7 @@ export default function CompareChart({ data = [], xAxisKey, yAxisKeys = [], widt
 					const polylinePoints = validPoints
 						.map((point) => `${point.x},${point.y}`)
 						.join(' ');
+					const stroke = lineColors[lineIndex % lineColors.length];
 
 					return (
 						<G key={line.key}>
@@ -54,7 +54,7 @@ export default function CompareChart({ data = [], xAxisKey, yAxisKeys = [], widt
 								<Polyline
 									points={polylinePoints}
 									fill="none"
-									stroke={LINE_COLORS[lineIndex % LINE_COLORS.length]}
+									stroke={stroke}
 									strokeWidth={2}
 								/>
 							) : null}
@@ -64,7 +64,7 @@ export default function CompareChart({ data = [], xAxisKey, yAxisKeys = [], widt
 									cx={point.x}
 									cy={point.y}
 									r={4}
-									fill={LINE_COLORS[lineIndex % LINE_COLORS.length]}
+									fill={stroke}
 								/>
 							))}
 						</G>
@@ -77,7 +77,7 @@ export default function CompareChart({ data = [], xAxisKey, yAxisKeys = [], widt
 							x={point.x}
 							y={CHART_HEIGHT - 10}
 							fontSize={10}
-							fill={LABEL_COLOR}
+							fill={theme.chart.label}
 							textAnchor="middle"
 						>
 							{String(point.item[xAxisKey] ?? '').slice(0, 8)}

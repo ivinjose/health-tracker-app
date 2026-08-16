@@ -2,30 +2,19 @@ import useInvestigationsApiManager from '@/api-managers/InvestigationsApiManager
 import useReportsApiManager from '@/api-managers/ReportsApiManager';
 import NewReportDialog from '@/components/NewReportDialog';
 import ReportCard from '@/components/ReportCard';
-import { ThemeProvider, useTheme } from '@/components/ThemeProvider';
+import { useTheme } from '@/components/ThemeProvider';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Text } from '@/components/ui/text';
 import { useToast } from '@/hooks/use-toast';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useIsFocused } from '@react-navigation/native';
-import { StatusBar } from 'expo-status-bar';
 import { useLocalSearchParams } from 'expo-router';
 import { Plus } from 'lucide-react-native';
 import { useEffect, useState } from 'react';
 import { RefreshControl, ScrollView, View } from 'react-native';
 
 export default function ReportsScreen() {
-	return (
-		<ThemeProvider appearance="iosDark" className="flex-1 bg-background">
-			<ReportsView />
-		</ThemeProvider>
-	);
-}
-
-function ReportsView() {
 	const theme = useTheme();
-	const isFocused = useIsFocused();
 	const { showNewReportDialog: showDialogParam, appointment } = useLocalSearchParams();
 	const appointmentId = Array.isArray(appointment) ? appointment[0] : appointment;
 	const [showNewReportDialog, setShowNewReportDialog] = useState(false);
@@ -66,71 +55,68 @@ function ReportsView() {
 	});
 
 	return (
-		<>
-			{isFocused ? <StatusBar style={theme.statusBarStyle} /> : null}
-			<View className="flex-1 bg-background">
-				<View className="px-4 py-3">
+		<View className="flex-1 bg-background">
+			<View className="px-4 py-3">
+				<Button
+					onPress={() => setShowNewReportDialog(true)}
+					className="h-11 rounded-[10px] shadow-none"
+				>
+					<Plus size={18} color={theme.colors.primaryForeground} />
+					<Text className="ml-2 font-medium text-primary-foreground">New report</Text>
+				</Button>
+			</View>
+
+			{isLoading ? (
+				<View className="gap-4 p-4">
+					<Skeleton className="h-24 w-full rounded-[10px] bg-card" />
+					<Skeleton className="h-24 w-full rounded-[10px] bg-card" />
+				</View>
+			) : isError ? (
+				<View className="flex-1 items-center justify-center gap-3 px-6">
+					<Text className="text-center text-destructive">Could not load reports.</Text>
+					<Button variant="outline" onPress={() => refetch()}>
+						<Text>Try again</Text>
+					</Button>
+				</View>
+			) : reports.length === 0 ? (
+				<View className="flex-1 items-center justify-center gap-4 px-6">
+					<Text className="text-center text-muted-foreground">No reports yet.</Text>
 					<Button
 						onPress={() => setShowNewReportDialog(true)}
 						className="h-11 rounded-[10px] shadow-none"
 					>
-						<Plus size={18} color={theme.colors.primaryForeground} />
-						<Text className="ml-2 font-medium text-primary-foreground">New report</Text>
+						<Text className="font-medium text-primary-foreground">Create report</Text>
 					</Button>
 				</View>
+			) : (
+				<ScrollView
+					className="flex-1"
+					contentContainerStyle={{ padding: 16, gap: 16 }}
+					refreshControl={
+						<RefreshControl
+							refreshing={isRefetching}
+							onRefresh={refetch}
+							tintColor={theme.colors.mutedForeground}
+							colors={[theme.colors.tint]}
+						/>
+					}
+				>
+					{reports.map((report) => (
+						<ReportCard
+							key={report._id}
+							onDeleteCb={removeReport}
+							investigations={investigations}
+							{...report}
+						/>
+					))}
+				</ScrollView>
+			)}
 
-				{isLoading ? (
-					<View className="gap-4 p-4">
-						<Skeleton className="h-24 w-full rounded-[10px] bg-card" />
-						<Skeleton className="h-24 w-full rounded-[10px] bg-card" />
-					</View>
-				) : isError ? (
-					<View className="flex-1 items-center justify-center gap-3 px-6">
-						<Text className="text-center text-destructive">Could not load reports.</Text>
-						<Button variant="outline" onPress={() => refetch()}>
-							<Text>Try again</Text>
-						</Button>
-					</View>
-				) : reports.length === 0 ? (
-					<View className="flex-1 items-center justify-center gap-4 px-6">
-						<Text className="text-center text-muted-foreground">No reports yet.</Text>
-						<Button
-							onPress={() => setShowNewReportDialog(true)}
-							className="h-11 rounded-[10px] shadow-none"
-						>
-							<Text className="font-medium text-primary-foreground">Create report</Text>
-						</Button>
-					</View>
-				) : (
-					<ScrollView
-						className="flex-1"
-						contentContainerStyle={{ padding: 16, gap: 16 }}
-						refreshControl={
-							<RefreshControl
-								refreshing={isRefetching}
-								onRefresh={refetch}
-								tintColor={theme.colors.mutedForeground}
-								colors={[theme.colors.tint]}
-							/>
-						}
-					>
-						{reports.map((report) => (
-							<ReportCard
-								key={report._id}
-								onDeleteCb={removeReport}
-								investigations={investigations}
-								{...report}
-							/>
-						))}
-					</ScrollView>
-				)}
-
-				<NewReportDialog
-					open={showNewReportDialog}
-					onOpenChange={setShowNewReportDialog}
-					appointmentId={appointmentId}
-				/>
-			</View>
-		</>
+			<NewReportDialog
+				open={showNewReportDialog}
+				onOpenChange={setShowNewReportDialog}
+				appointmentId={appointmentId}
+			/>
+		</View>
 	);
 }

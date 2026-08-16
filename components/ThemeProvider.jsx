@@ -1,10 +1,10 @@
-import { getAppearance } from '@/lib/appearance';
+import { APP_APPEARANCE, getAppearance } from '@/lib/appearance';
 import { createContext, useContext, useMemo } from 'react';
 import { View } from 'react-native';
 
-const ThemeContext = createContext(getAppearance('light'));
+const ThemeContext = createContext(getAppearance(APP_APPEARANCE));
 
-export function ThemeProvider({ appearance = 'light', className, style, children }) {
+export function ThemeProvider({ appearance = APP_APPEARANCE, className, style, children }) {
 	const theme = useMemo(() => getAppearance(appearance), [appearance]);
 
 	return (

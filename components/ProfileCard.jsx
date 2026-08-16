@@ -1,4 +1,5 @@
 import CardView from '@/components/CardView';
+import { useTheme } from '@/components/ThemeProvider';
 import {
 	AlertDialog,
 	AlertDialogAction,
@@ -15,6 +16,7 @@ import { useCallback, useMemo, useState } from 'react';
 import { View } from 'react-native';
 
 export default function ProfileCard({ user, name, age, gender, parent, onDeleteCb, isAdmin }) {
+	const theme = useTheme();
 	const [showConfirm, setShowConfirm] = useState(false);
 
 	const onDelete = useCallback(() => {
@@ -33,7 +35,7 @@ export default function ProfileCard({ user, name, age, gender, parent, onDeleteC
 		<>
 			<CardView actions={actions}>
 				<View className="flex-row gap-4 p-4">
-					<CircleUserRound size={40} color="#30425f" />
+					<CircleUserRound size={40} color={theme.colors.primary} />
 					<View className="flex-1">
 						<Text className="text-base font-semibold text-foreground">{name}</Text>
 						<Text className="text-sm text-muted-foreground">

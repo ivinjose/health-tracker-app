@@ -1,4 +1,5 @@
 import CardView from '@/components/CardView';
+import { useTheme } from '@/components/ThemeProvider';
 import {
 	AlertDialog,
 	AlertDialogAction,
@@ -24,6 +25,7 @@ export default function AppointmentCard({
 	onDeleteCb,
 	isReadOnly = false,
 }) {
+	const theme = useTheme();
 	const [showConfirm, setShowConfirm] = useState(false);
 
 	const onDelete = useCallback(() => {
@@ -40,7 +42,7 @@ export default function AppointmentCard({
 		<>
 			<CardView actions={actions}>
 				<View className="flex-row gap-4 p-4">
-					<CalendarPlus size={40} color="#30425f" />
+					<CalendarPlus size={40} color={theme.colors.primary} />
 					<View className="flex-1 gap-1">
 						<Text className="text-base font-semibold text-foreground">{location}</Text>
 						<Text className="text-sm text-muted-foreground">
@@ -61,8 +63,8 @@ export default function AppointmentCard({
 								asChild
 							>
 								<Pressable className="mt-1 flex-row items-center gap-1">
-									<SquarePen size={14} color="#30425f" />
-									<Text className="text-sm text-[#30425f]">Link a report</Text>
+									<SquarePen size={14} color={theme.colors.primary} />
+									<Text className="text-sm text-primary">Link a report</Text>
 								</Pressable>
 							</Link>
 						) : null}

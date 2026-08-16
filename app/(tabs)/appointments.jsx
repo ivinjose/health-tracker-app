@@ -2,6 +2,7 @@ import useAppointmentsApiManager from '@/api-managers/AppointmentsApiManager';
 import AppointmentCard from '@/components/AppointmentCard';
 import CardView from '@/components/CardView';
 import NewAppointmentDialog from '@/components/NewAppointmentDialog';
+import { useTheme } from '@/components/ThemeProvider';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Text } from '@/components/ui/text';
@@ -13,6 +14,7 @@ import { useEffect, useState } from 'react';
 import { RefreshControl, ScrollView, View } from 'react-native';
 
 export default function AppointmentsScreen() {
+	const theme = useTheme();
 	const { showNewAppointmentDialog: showDialogParam } = useLocalSearchParams();
 	const [showNewAppointmentDialog, setShowNewAppointmentDialog] = useState(false);
 	const { toast } = useToast();
@@ -49,7 +51,7 @@ export default function AppointmentsScreen() {
 		<View className="flex-1 bg-background">
 			<View className="px-4 py-3">
 				<Button onPress={() => setShowNewAppointmentDialog(true)}>
-					<Plus size={18} color="#fff" />
+					<Plus size={18} color={theme.colors.primaryForeground} />
 					<Text className="ml-2 font-medium text-primary-foreground">New appointment</Text>
 				</Button>
 			</View>
@@ -75,7 +77,12 @@ export default function AppointmentsScreen() {
 					className="flex-1"
 					contentContainerStyle={{ padding: 16, gap: 16 }}
 					refreshControl={
-						<RefreshControl refreshing={isRefetching} onRefresh={refetch} />
+						<RefreshControl
+							refreshing={isRefetching}
+							onRefresh={refetch}
+							tintColor={theme.colors.mutedForeground}
+							colors={[theme.colors.tint]}
+						/>
 					}
 				>
 					{appointments.map((appointment) => (

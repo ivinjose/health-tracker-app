@@ -1,3 +1,4 @@
+import { useTheme } from '@/components/ThemeProvider';
 import { Text } from '@/components/ui/text';
 import { Link, useLocalSearchParams } from 'expo-router';
 import { CircleCheckBig } from 'lucide-react-native';
@@ -8,6 +9,7 @@ import axios from '@/api/axios';
 const VERIFY_URL = '/api/verify';
 
 export default function VerifyScreen() {
+	const theme = useTheme();
 	const { emailToken } = useLocalSearchParams();
 	const token = Array.isArray(emailToken) ? emailToken[0] : emailToken;
 
@@ -62,7 +64,7 @@ export default function VerifyScreen() {
 	if (isLoading) {
 		return (
 			<View className="flex-1 items-center justify-center bg-background">
-				<ActivityIndicator size="large" />
+				<ActivityIndicator size="large" color={theme.colors.tint} />
 				<Text className="mt-4 text-muted-foreground">Verifying your account…</Text>
 			</View>
 		);
@@ -71,7 +73,7 @@ export default function VerifyScreen() {
 	if (isSuccess) {
 		return (
 			<View className="flex-1 items-center justify-center bg-background px-6">
-				<CircleCheckBig size={50} color="green" />
+				<CircleCheckBig size={50} color={theme.colors.tint} />
 				<Text className="mt-4 text-center text-lg font-semibold text-foreground">
 					Account has been verified successfully!
 				</Text>

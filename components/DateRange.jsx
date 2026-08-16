@@ -1,3 +1,4 @@
+import { ThemeProvider, useTheme } from '@/components/ThemeProvider';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
@@ -10,6 +11,7 @@ import { Calendar } from 'react-native-calendars';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 function DatePickerField({ enabled, value, onSelect, label }) {
+	const theme = useTheme();
 	const insets = useSafeAreaInsets();
 	const [showCalendar, setShowCalendar] = useState(false);
 	const dateValue = value ? new Date(Number(value)) : undefined;
@@ -28,38 +30,42 @@ function DatePickerField({ enabled, value, onSelect, label }) {
 					<Text className={dateValue ? 'text-foreground' : 'text-muted-foreground'}>
 						{dateValue ? format(dateValue, 'PP') : 'Pick a date'}
 					</Text>
-					<CalendarIcon size={18} color="#6b7280" />
+					<CalendarIcon size={18} color={theme.colors.mutedForeground} />
 				</Pressable>
 			</View>
 
 			<Modal visible={showCalendar} transparent animationType="slide">
-				<Pressable
-					className="flex-1 justify-end bg-black/50"
-					onPress={() => setShowCalendar(false)}
-				>
+				<ThemeProvider appearance={theme.name} className="flex-1">
 					<Pressable
-						className="rounded-t-2xl bg-background"
-						style={{ paddingBottom: insets.bottom }}
-						onPress={(event) => event.stopPropagation()}
+						className="flex-1 justify-end bg-black/50"
+						onPress={() => setShowCalendar(false)}
 					>
-						<View className="flex-row items-center justify-between border-b border-border px-4 py-3">
-							<Text className="text-lg font-semibold">{label}</Text>
-							<Button variant="ghost" onPress={() => setShowCalendar(false)}>
-								<Text>Done</Text>
-							</Button>
-						</View>
-						<Calendar
-							maxDate={maxDate}
-							onDayPress={(day) => {
-								onSelect(new Date(day.timestamp));
-								setShowCalendar(false);
-							}}
-							markedDates={
-								selectedKey ? { [selectedKey]: { selected: true } } : undefined
-							}
-						/>
+						<Pressable
+							className="rounded-t-2xl bg-background"
+							style={{ paddingBottom: insets.bottom }}
+							onPress={(event) => event.stopPropagation()}
+						>
+							<View className="flex-row items-center justify-between border-b border-border px-4 py-3">
+								<Text className="text-lg font-semibold text-foreground">{label}</Text>
+								<Button variant="ghost" onPress={() => setShowCalendar(false)}>
+									<Text>Done</Text>
+								</Button>
+							</View>
+							<Calendar
+								maxDate={maxDate}
+								onDayPress={(day) => {
+									onSelect(new Date(day.timestamp));
+									setShowCalendar(false);
+								}}
+								markedDates={
+									selectedKey ? { [selectedKey]: { selected: true } } : undefined
+								}
+								theme={theme.calendar}
+								style={{ backgroundColor: theme.colors.background }}
+							/>
+						</Pressable>
 					</Pressable>
-				</Pressable>
+				</ThemeProvider>
 			</Modal>
 		</View>
 	);

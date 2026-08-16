@@ -1,4 +1,5 @@
 import FormSheetModal from '@/components/FormSheetModal';
+import { useTheme } from '@/components/ThemeProvider';
 import { Button } from '@/components/ui/button';
 import { Text } from '@/components/ui/text';
 import { useMemo, useState } from 'react';
@@ -10,6 +11,7 @@ export default function InvestigationSelect({
 	onSelectCb,
 	labelText = 'Investigation',
 }) {
+	const theme = useTheme();
 	const [isOpen, setIsOpen] = useState(false);
 	const [search, setSearch] = useState('');
 
@@ -52,7 +54,9 @@ export default function InvestigationSelect({
 					onChangeText={setSearch}
 					placeholder="Start typing to search"
 					className="mb-4 rounded-lg border border-input px-3 py-2 text-foreground"
-					placeholderTextColor="#9ca3af"
+					placeholderTextColor={theme.colors.placeholder}
+					keyboardAppearance={theme.keyboardAppearance}
+					selectionColor={theme.colors.tint}
 				/>
 				<FlatList
 					data={filteredResults}

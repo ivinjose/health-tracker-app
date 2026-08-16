@@ -1,3 +1,4 @@
+import { useTheme } from '@/components/ThemeProvider';
 import WidgetView from '@/components/WidgetView';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Text } from '@/components/ui/text';
@@ -15,6 +16,7 @@ export const APPOINTMENT_TYPE = {
 };
 
 export default function AppointmentsWidget({ type = APPOINTMENT_TYPE.UPCOMING, count }) {
+	const theme = useTheme();
 	const title = `${type === APPOINTMENT_TYPE.UPCOMING ? 'Upcoming' : 'Past'} appointments`;
 	const today = getDateWithoutTime(new Date());
 	const appointmentsApiManager = useAppointmentsApiManager();
@@ -53,8 +55,8 @@ export default function AppointmentsWidget({ type = APPOINTMENT_TYPE.UPCOMING, c
 								asChild
 							>
 								<Pressable className="mt-1 flex-row items-center gap-1">
-									<SquarePen size={14} color="#30425f" />
-									<Text className="text-sm text-[#30425f]">Link a report</Text>
+									<SquarePen size={14} color={theme.colors.primary} />
+									<Text className="text-sm text-primary">Link a report</Text>
 								</Pressable>
 							</Link>
 						</View>
@@ -78,6 +80,7 @@ function WidgetLoading() {
 }
 
 function WidgetEmpty({ type }) {
+	const theme = useTheme();
 	if (type === APPOINTMENT_TYPE.UPCOMING) {
 		return (
 			<View className="gap-3">
@@ -92,8 +95,8 @@ function WidgetEmpty({ type }) {
 					asChild
 				>
 					<Pressable className="flex-row items-center gap-1">
-						<CalendarPlus size={14} color="#30425f" />
-						<Text className="text-sm text-[#30425f]">Create new appointment</Text>
+						<CalendarPlus size={14} color={theme.colors.primary} />
+						<Text className="text-sm text-primary">Create new appointment</Text>
 					</Pressable>
 				</Link>
 			</View>

@@ -2,6 +2,7 @@ import NewProfileDialog from '@/components/NewProfileDialog';
 import PageHeader from '@/components/PageHeader';
 import ProfileCard from '@/components/ProfileCard';
 import CardView from '@/components/CardView';
+import { useTheme } from '@/components/ThemeProvider';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Text } from '@/components/ui/text';
@@ -14,6 +15,7 @@ import { useState } from 'react';
 import { RefreshControl, ScrollView, View } from 'react-native';
 
 export default function ProfilesScreen() {
+	const theme = useTheme();
 	const [showNewProfileDialog, setShowNewProfileDialog] = useState(false);
 	const { auth } = useAuth();
 	const { toast } = useToast();
@@ -44,7 +46,7 @@ export default function ProfilesScreen() {
 			<PageHeader text="Manage user profiles" showBack />
 			<View className="px-4 py-3">
 				<Button onPress={() => setShowNewProfileDialog(true)}>
-					<Plus size={18} color="#fff" />
+					<Plus size={18} color={theme.colors.primaryForeground} />
 					<Text className="ml-2 font-medium text-primary-foreground">Create new profile</Text>
 				</Button>
 			</View>
@@ -70,7 +72,12 @@ export default function ProfilesScreen() {
 					className="flex-1"
 					contentContainerStyle={{ padding: 16, gap: 16 }}
 					refreshControl={
-						<RefreshControl refreshing={isRefetching} onRefresh={refetch} />
+						<RefreshControl
+							refreshing={isRefetching}
+							onRefresh={refetch}
+							tintColor={theme.colors.mutedForeground}
+							colors={[theme.colors.tint]}
+						/>
 					}
 				>
 					{profiles.map(({ _id, ...rest }) => (

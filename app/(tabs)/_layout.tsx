@@ -7,19 +7,18 @@ import { ActivityIndicator, View } from 'react-native';
 import { HapticTab } from '@/components/ui/haptic-tab';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { LogoutTabButton } from '@/components/ui/logout-tab-button';
-import { useColorScheme } from '@/hooks/use-color-scheme';
-import { appearances } from '@/lib/appearance';
-import { Colors } from '@/lib/theme';
+import { APP_APPEARANCE, getAppearance } from '@/lib/appearance';
 import useAuth from '../../hooks/useAuth';
 
+const appTheme = getAppearance(APP_APPEARANCE);
+
 export default function AppLayout() {
-	const colorScheme = useColorScheme();
 	const { auth, isLoading } = useAuth();
 
 	if (isLoading) {
 		return (
-			<View style={{ flex: 1, justifyContent: 'center' }}>
-				<ActivityIndicator size="large" />
+			<View className="flex-1 items-center justify-center bg-background">
+				<ActivityIndicator size="large" color={appTheme.colors.tint} />
 			</View>
 		);
 	}
@@ -31,7 +30,7 @@ export default function AppLayout() {
 	return (
 		<Tabs
 			screenOptions={{
-				tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
+				...appTheme.navigation,
 				headerShown: true,
 				tabBarButton: HapticTab,
 			}}>
@@ -39,7 +38,6 @@ export default function AppLayout() {
 				name="index"
 				options={{
 					title: 'Overview',
-					...appearances.iosDark.navigation,
 					tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />,
 				}}
 			/>
@@ -55,7 +53,6 @@ export default function AppLayout() {
 				name="reports"
 				options={{
 					title: 'Reports',
-					...appearances.iosDark.navigation,
 					tabBarIcon: ({ color }) => <FileText size={26} color={color} strokeWidth={1.5} />,
 				}}
 			/>

@@ -1,5 +1,4 @@
 import { ThemeProvider, useTheme } from '@/components/ThemeProvider';
-import { getAppearance, resolveAppearanceName } from '@/lib/appearance';
 import { Text } from '@/components/ui/text';
 import { StatusBar } from 'expo-status-bar';
 import { CircleCheck, CircleX } from 'lucide-react-native';
@@ -15,12 +14,10 @@ export default function FormSheetModal({
 	confirmDisabled = false,
 	confirmLoading = false,
 	confirmAccessibilityLabel = 'Save',
-	appearance = 'light',
 	scrollViewRef,
 	scrollable = true,
 }) {
-	const appearanceName = resolveAppearanceName(appearance);
-	const theme = getAppearance(appearanceName);
+	const theme = useTheme();
 
 	return (
 		<Modal
@@ -33,7 +30,7 @@ export default function FormSheetModal({
 				: {})}
 		>
 			<StatusBar style={theme.statusBarStyle} />
-			<ThemeProvider appearance={appearanceName} className="flex-1 bg-background">
+			<ThemeProvider appearance={theme.name} className="flex-1 bg-background">
 				<FormSheetBody
 					title={title}
 					footer={footer}

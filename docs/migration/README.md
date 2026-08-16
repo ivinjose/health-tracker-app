@@ -32,7 +32,7 @@ Work through phases in order. Each file is self-contained with goals, tasks, fil
 
 ## Reference pattern for UI ports
 
-See **[../ARCHITECTURE.md](../ARCHITECTURE.md)** for full agent context (modals, date pickers, imports, repo relationships). Per-subtree iOS dark theming: **[../THEMING.md](../THEMING.md)**.
+See **[../ARCHITECTURE.md](../ARCHITECTURE.md)** for full agent context (modals, date pickers, imports, repo relationships). App-wide iOS dark theming: **[../THEMING.md](../THEMING.md)**.
 
 Summary:
 

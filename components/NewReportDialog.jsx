@@ -74,7 +74,6 @@ export default function NewReportDialog({ open, onOpenChange, appointmentId }) {
 			open={open}
 			onOpenChange={onOpenChange}
 			title="Report details"
-			appearance="dark"
 			onConfirm={form.handleSubmit(addReport)}
 			confirmDisabled={isPending}
 			confirmLoading={isPending}

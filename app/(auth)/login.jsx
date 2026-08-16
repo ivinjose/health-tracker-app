@@ -1,9 +1,8 @@
 import axios from '@/api/axios';
-import { ThemeProvider, useTheme } from '@/components/ThemeProvider';
+import { useTheme } from '@/components/ThemeProvider';
 import { Button } from '@/components/ui/button';
 import { Text } from '@/components/ui/text';
 import { Link, useRouter } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
 import { useEffect, useRef, useState } from 'react';
 import {
 	ActivityIndicator,
@@ -20,14 +19,6 @@ import { storeRefreshToken } from '../../hooks/useRefreshToken';
 const LOGIN_URL = '/api/login';
 
 export default function LoginScreen() {
-	return (
-		<ThemeProvider appearance="iosDark" className="flex-1 bg-background">
-			<LoginView />
-		</ThemeProvider>
-	);
-}
-
-function LoginView() {
 	const theme = useTheme();
 	const { setAuth, persist, setPersist } = useAuth();
 	const router = useRouter();
@@ -95,7 +86,6 @@ function LoginView() {
 			behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
 			className="flex-1 bg-background"
 		>
-			<StatusBar style={theme.statusBarStyle} />
 			<ScrollView
 				className="flex-1"
 				contentContainerStyle={{
