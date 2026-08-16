@@ -1,15 +1,11 @@
-import {
-	Accordion,
-	AccordionContent,
-	AccordionItem,
-	AccordionTrigger,
-} from '@/components/ui/accordion';
+import { Expanding } from '@/components/ui/expanding';
 import { Text } from '@/components/ui/text';
 import { useTheme } from '@/components/ThemeProvider';
 import { format } from 'date-fns';
 import { Calendar as CalendarIcon } from 'lucide-react-native';
+import { useState } from 'react';
 import { Controller } from 'react-hook-form';
-import { View } from 'react-native';
+import { Pressable, View } from 'react-native';
 import { Calendar } from 'react-native-calendars';
 
 export default function FormDateField({
@@ -20,6 +16,7 @@ export default function FormDateField({
 	maxDate,
 }) {
 	const theme = useTheme();
+	const [open, setOpen] = useState(false);
 
 	return (
 		<Controller
@@ -35,38 +32,50 @@ export default function FormDateField({
 								{labelText}
 							</Text>
 						) : null}
-						<Accordion type="single" collapsible>
-							<AccordionItem value="date">
-								<AccordionTrigger className="flex-row items-center justify-start gap-2 rounded-[10px] border border-input bg-card px-3 py-3">
-									<CalendarIcon size={24} color={theme.colors.tint} />
-									{value ? (
-										<Text className="text-foreground">{format(value, 'PPP')}</Text>
-									) : (
-										<Text className="text-muted-foreground">Pick a date</Text>
-									)}
-								</AccordionTrigger>
-								<AccordionContent>
-									<Calendar
-										initialDate={
-											selectedDateKey ?? format(new Date(), 'yyyy-MM-dd')
-										}
-										enableSwipeMonths
-										minDate={minDate}
-										maxDate={maxDate}
-										markedDates={
-											selectedDateKey
-												? { [selectedDateKey]: { selected: true } }
-												: {}
-										}
-										onDayPress={(day) => {
-											onChange(new Date(day.dateString));
-										}}
-										theme={theme.calendar}
-										style={{ backgroundColor: theme.colors.background }}
-									/>
-								</AccordionContent>
-							</AccordionItem>
-						</Accordion>
+						<Pressable
+							onPress={() => setOpen((current) => !current)}
+							className="flex-row items-center justify-start gap-2 rounded-[10px] border border-input bg-card px-3 py-3"
+							accessibilityRole="button"
+							accessibilityState={{ expanded: open }}
+							accessibilityLabel={value ? format(value, 'PPP') : 'Pick a date'}
+						>
+							<CalendarIcon size={24} color={theme.colors.tint} />
+							{value ? (
+								<Text
+									className="text-foreground"
+									style={open ? { color: theme.colors.tint } : undefined}
+								>
+									{format(value, 'PPP')}
+								</Text>
+							) : (
+								<Text
+									className="text-muted-foreground"
+									style={open ? { color: theme.colors.tint } : undefined}
+								>
+									Pick a date
+								</Text>
+							)}
+						</Pressable>
+						<Expanding open={open}>
+							<Calendar
+								initialDate={
+									selectedDateKey ?? format(new Date(), 'yyyy-MM-dd')
+								}
+								enableSwipeMonths
+								minDate={minDate}
+								maxDate={maxDate}
+								markedDates={
+									selectedDateKey
+										? { [selectedDateKey]: { selected: true } }
+										: {}
+								}
+								onDayPress={(day) => {
+									onChange(new Date(day.dateString));
+								}}
+								theme={theme.calendar}
+								style={{ backgroundColor: theme.colors.background }}
+							/>
+						</Expanding>
 
 						{error ? (
 							<Text className="mt-1 text-sm text-destructive">{error.message}</Text>
