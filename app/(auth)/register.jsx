@@ -1,6 +1,9 @@
+import axios from '@/api/axios';
+import { ThemeProvider, useTheme } from '@/components/ThemeProvider';
 import { Button } from '@/components/ui/button';
 import { Text } from '@/components/ui/text';
 import { Link } from 'expo-router';
+import { StatusBar } from 'expo-status-bar';
 import { Check, CircleCheckBig, X } from 'lucide-react-native';
 import { useEffect, useRef, useState } from 'react';
 import {
@@ -12,7 +15,6 @@ import {
 	TextInput,
 	View,
 } from 'react-native';
-import axios from '@/api/axios';
 
 const PROFILE_NAME_REGEX = /^[a-zA-Z][a-zA-Z0-9 ]{3,10}$/;
 const USER_EMAIL_REGEX = /^[a-zA-Z0-9_.±]+@[a-zA-Z0-9-]+.[a-zA-Z0-9-.]+$/;
@@ -20,11 +22,25 @@ const PASSWORD_REGEX = /^[a-zA-Z][a-zA-Z0-9]{3,10}$/;
 const REGISTER_URL = '/api/register';
 
 function ValidationIcon({ value, isValid }) {
+	const theme = useTheme();
 	if (!value) return null;
-	return isValid ? <Check size={18} color="#46A758" /> : <X size={18} color="#E54D2E" />;
+	return isValid ? (
+		<Check size={18} color={theme.colors.tint} />
+	) : (
+		<X size={18} color={theme.colors.destructive} />
+	);
 }
 
 export default function RegisterScreen() {
+	return (
+		<ThemeProvider appearance="iosDark" className="flex-1 bg-background">
+			<RegisterView />
+		</ThemeProvider>
+	);
+}
+
+function RegisterView() {
+	const theme = useTheme();
 	const profileNameRef = useRef(null);
 
 	const [profileName, setProfileName] = useState('');
@@ -101,7 +117,8 @@ export default function RegisterScreen() {
 	if (isSuccess) {
 		return (
 			<View className="flex-1 items-center justify-center bg-background px-6">
-				<CircleCheckBig size={50} color="green" />
+				<StatusBar style={theme.statusBarStyle} />
+				<CircleCheckBig size={50} color={theme.colors.tint} />
 				<Text className="mt-4 text-center text-lg font-semibold text-foreground">
 					Account has been created successfully.
 				</Text>
@@ -123,8 +140,9 @@ export default function RegisterScreen() {
 	return (
 		<KeyboardAvoidingView
 			behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-			className="flex-1"
+			className="flex-1 bg-background"
 		>
+			<StatusBar style={theme.statusBarStyle} />
 			<ScrollView
 				className="flex-1"
 				contentContainerStyle={{
@@ -136,8 +154,8 @@ export default function RegisterScreen() {
 				keyboardShouldPersistTaps="handled"
 				showsVerticalScrollIndicator={false}
 			>
-				<View className="rounded-lg border border-border bg-card p-6 shadow-sm">
-					<Text variant="h1" className="mb-2">
+				<View className="rounded-[10px] border border-border bg-card p-6">
+					<Text variant="h1" className="mb-2 text-foreground">
 						Hello, {profileName || 'new user'}!
 					</Text>
 					<Text className="mb-6 text-muted-foreground">Create your account</Text>
@@ -152,9 +170,9 @@ export default function RegisterScreen() {
 					) : null}
 
 					<View className="gap-4">
-						<View>
-							<Text className="mb-2 font-medium text-foreground">Profile Name</Text>
-							<View className="flex-row items-center rounded-md border border-input bg-background px-4 py-3">
+						<Field
+							label="Profile Name"
+							input={
 								<TextInput
 									ref={profileNameRef}
 									value={profileName}
@@ -164,15 +182,17 @@ export default function RegisterScreen() {
 									editable={!isLoading}
 									className="flex-1 text-foreground"
 									placeholder="Your name"
-									placeholderTextColor="#9ca3af"
+									placeholderTextColor={theme.colors.placeholder}
+									keyboardAppearance={theme.keyboardAppearance}
+									selectionColor={theme.colors.tint}
 								/>
-								<ValidationIcon value={profileName} isValid={validProfileName} />
-							</View>
-						</View>
+							}
+							icon={<ValidationIcon value={profileName} isValid={validProfileName} />}
+						/>
 
-						<View>
-							<Text className="mb-2 font-medium text-foreground">Email</Text>
-							<View className="flex-row items-center rounded-md border border-input bg-background px-4 py-3">
+						<Field
+							label="Email"
+							input={
 								<TextInput
 									value={username}
 									onChangeText={setUsername}
@@ -182,15 +202,17 @@ export default function RegisterScreen() {
 									editable={!isLoading}
 									className="flex-1 text-foreground"
 									placeholder="me@example.com"
-									placeholderTextColor="#9ca3af"
+									placeholderTextColor={theme.colors.placeholder}
+									keyboardAppearance={theme.keyboardAppearance}
+									selectionColor={theme.colors.tint}
 								/>
-								<ValidationIcon value={username} isValid={validUsername} />
-							</View>
-						</View>
+							}
+							icon={<ValidationIcon value={username} isValid={validUsername} />}
+						/>
 
-						<View>
-							<Text className="mb-2 font-medium text-foreground">Password</Text>
-							<View className="flex-row items-center rounded-md border border-input bg-background px-4 py-3">
+						<Field
+							label="Password"
+							input={
 								<TextInput
 									value={password}
 									onChangeText={setPassword}
@@ -198,15 +220,17 @@ export default function RegisterScreen() {
 									editable={!isLoading}
 									className="flex-1 text-foreground"
 									placeholder="Enter password"
-									placeholderTextColor="#9ca3af"
+									placeholderTextColor={theme.colors.placeholder}
+									keyboardAppearance={theme.keyboardAppearance}
+									selectionColor={theme.colors.tint}
 								/>
-								<ValidationIcon value={password} isValid={validPassword} />
-							</View>
-						</View>
+							}
+							icon={<ValidationIcon value={password} isValid={validPassword} />}
+						/>
 
-						<View>
-							<Text className="mb-2 font-medium text-foreground">Confirm password</Text>
-							<View className="flex-row items-center rounded-md border border-input bg-background px-4 py-3">
+						<Field
+							label="Confirm password"
+							input={
 								<TextInput
 									value={matchPassword}
 									onChangeText={setMatchPassword}
@@ -214,17 +238,30 @@ export default function RegisterScreen() {
 									editable={!isLoading}
 									className="flex-1 text-foreground"
 									placeholder="Confirm password"
-									placeholderTextColor="#9ca3af"
+									placeholderTextColor={theme.colors.placeholder}
+									keyboardAppearance={theme.keyboardAppearance}
+									selectionColor={theme.colors.tint}
 								/>
-								<ValidationIcon value={matchPassword} isValid={validMatchPassword} />
-							</View>
-						</View>
+							}
+							icon={
+								<ValidationIcon
+									value={matchPassword}
+									isValid={validMatchPassword}
+								/>
+							}
+						/>
 
-						<Button onPress={handleSubmit} disabled={!canSubmit} className="mt-2">
+						<Button
+							onPress={handleSubmit}
+							disabled={!canSubmit}
+							className="mt-2 h-11 rounded-[10px] shadow-none"
+						>
 							{isLoading ? (
-								<ActivityIndicator color="#fff" />
+								<ActivityIndicator color={theme.colors.primaryForeground} />
 							) : (
-								<Text className="font-medium text-primary-foreground">Create account</Text>
+								<Text className="font-medium text-primary-foreground">
+									Create account
+								</Text>
 							)}
 						</Button>
 					</View>
@@ -240,5 +277,17 @@ export default function RegisterScreen() {
 				</View>
 			</ScrollView>
 		</KeyboardAvoidingView>
+	);
+}
+
+function Field({ label, input, icon }) {
+	return (
+		<View>
+			<Text className="mb-2 text-sm font-medium text-muted-foreground">{label}</Text>
+			<View className="flex-row items-center rounded-[10px] border border-input bg-background px-4 py-3">
+				{input}
+				{icon}
+			</View>
+		</View>
 	);
 }
