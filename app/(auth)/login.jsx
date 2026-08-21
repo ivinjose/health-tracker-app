@@ -137,7 +137,7 @@ export default function LoginScreen() {
 								keyboardAppearance={theme.keyboardAppearance}
 								selectionColor={theme.colors.tint}
 								editable={!isLoading}
-								className="rounded-[10px] border border-input bg-background px-4 py-3 text-foreground"
+								className="rounded-[10px] border border-input bg-background px-4 py-3 text-base leading-tight text-foreground"
 							/>
 						</View>
 
@@ -154,7 +154,7 @@ export default function LoginScreen() {
 								keyboardAppearance={theme.keyboardAppearance}
 								selectionColor={theme.colors.tint}
 								editable={!isLoading}
-								className="rounded-[10px] border border-input bg-background px-4 py-3 text-foreground"
+								className="rounded-[10px] border border-input bg-background px-4 py-3 text-base leading-tight text-foreground"
 							/>
 						</View>
 

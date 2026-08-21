@@ -53,7 +53,7 @@ export default function InvestigationSelect({
 					value={search}
 					onChangeText={setSearch}
 					placeholder="Start typing to search"
-					className="mb-4 rounded-lg border border-input px-3 py-2 text-foreground"
+					className="mb-4 rounded-lg border border-input px-3 py-2 text-base leading-tight text-foreground"
 					placeholderTextColor={theme.colors.placeholder}
 					keyboardAppearance={theme.keyboardAppearance}
 					selectionColor={theme.colors.tint}

@@ -52,4 +52,24 @@
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
   }
+
+  /*
+    React Native Web defaults TextInput to `font: 14px System`. NativeWind
+    `text-base` (1rem) then applies to ::placeholder but loses to that inline
+    font shorthand for typed text, so the placeholder looks larger.
+    Caret height also follows line-height; 1.25 keeps it proportional to 1rem.
+  */
+  input,
+  textarea {
+    font-size: 1rem !important;
+    line-height: 1.25 !important;
+  }
+
+  input::placeholder,
+  textarea::placeholder {
+    font-size: inherit;
+    line-height: inherit;
+    font-family: inherit;
+    font-weight: inherit;
+  }
 }

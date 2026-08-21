@@ -169,7 +169,7 @@ export default function RegisterScreen() {
 									autoCapitalize="words"
 									autoCorrect={false}
 									editable={!isLoading}
-									className="flex-1 text-foreground"
+									className="flex-1 text-base leading-tight text-foreground"
 									placeholder="Your name"
 									placeholderTextColor={theme.colors.placeholder}
 									keyboardAppearance={theme.keyboardAppearance}
@@ -189,7 +189,7 @@ export default function RegisterScreen() {
 									autoCorrect={false}
 									keyboardType="email-address"
 									editable={!isLoading}
-									className="flex-1 text-foreground"
+									className="flex-1 text-base leading-tight text-foreground"
 									placeholder="me@example.com"
 									placeholderTextColor={theme.colors.placeholder}
 									keyboardAppearance={theme.keyboardAppearance}
@@ -207,7 +207,7 @@ export default function RegisterScreen() {
 									onChangeText={setPassword}
 									secureTextEntry
 									editable={!isLoading}
-									className="flex-1 text-foreground"
+									className="flex-1 text-base leading-tight text-foreground"
 									placeholder="Enter password"
 									placeholderTextColor={theme.colors.placeholder}
 									keyboardAppearance={theme.keyboardAppearance}
@@ -225,7 +225,7 @@ export default function RegisterScreen() {
 									onChangeText={setMatchPassword}
 									secureTextEntry
 									editable={!isLoading}
-									className="flex-1 text-foreground"
+									className="flex-1 text-base leading-tight text-foreground"
 									placeholder="Confirm password"
 									placeholderTextColor={theme.colors.placeholder}
 									keyboardAppearance={theme.keyboardAppearance}
