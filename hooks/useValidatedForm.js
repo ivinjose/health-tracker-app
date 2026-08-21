@@ -1,4 +1,4 @@
-import { zodResolver } from '@/lib/zodResolver';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm, useFormState, useWatch } from 'react-hook-form';
 
 /**
