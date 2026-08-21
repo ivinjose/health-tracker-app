@@ -27,7 +27,7 @@ const useReportsApiManager = () => {
                     investigation,
                     value: parsedNumber,
                     timestamp: date.valueOf(),
-                    appointment,
+                    appointment: appointment || undefined,
                     remarks,
                     report
                 },

@@ -27,7 +27,7 @@ export default function NewReportDialog({ open, onOpenChange, appointmentId }) {
 			investigation: '',
 			value: '',
 			date: undefined,
-			appointment: appointmentId ?? '',
+			appointment: appointmentId || undefined,
 			remarks: '',
 		},
 	});
@@ -58,7 +58,7 @@ export default function NewReportDialog({ open, onOpenChange, appointmentId }) {
 	const { mutateAsync: addReport, isPending } = useMutation({
 		mutationFn: (data) => reportsApiManager.createReport(data),
 		onSuccess: async () => {
-			form.reset({ appointment: appointmentId ?? '' });
+			form.reset({ appointment: appointmentId || undefined });
 			onOpenChange(false);
 			await queryClient.invalidateQueries({ queryKey: ['reports'] });
 			await queryClient.invalidateQueries({ queryKey: ['latest'] });

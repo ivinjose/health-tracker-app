@@ -9,7 +9,10 @@ const formSchema = z.object({
     date: z.date({
         error: "Date is required.",
     }),
-    appointment: z.string().optional(),
+    appointment: z
+        .string()
+        .optional()
+        .transform((value) => value || undefined),
     remarks: z.string().optional(),
     report: z
         .any()
