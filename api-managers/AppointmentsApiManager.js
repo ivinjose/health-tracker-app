@@ -38,7 +38,7 @@ const useAppointmentsApiManager = () => {
         }
     };
 
-    const readAppointments = async (filters) => {
+    const readAppointments = async (filters = {}) => {
         const {
             from,
             to,
@@ -59,9 +59,10 @@ const useAppointmentsApiManager = () => {
         }
         try {
             const response = await axiosPrivate.get(`${api}?${searchParams}`);
-            return response.data.data;
+            return response.data?.data ?? [];
         } catch (err) {
             console.log(err);
+            throw err;
         }
     };
 

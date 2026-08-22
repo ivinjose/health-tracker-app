@@ -1,4 +1,3 @@
-import useAppointmentsApiManager from '@/api-managers/AppointmentsApiManager';
 import useInvestigationsApiManager from '@/api-managers/InvestigationsApiManager';
 import useReportsApiManager from '@/api-managers/ReportsApiManager';
 import FormDateField from '@/components/FormDateField';
@@ -17,7 +16,6 @@ import { useEffect } from 'react';
 export default function NewReportDialog({ open, onOpenChange, appointmentId }) {
 	const { toast } = useToast();
 	const queryClient = useQueryClient();
-	const appointmentsApiManager = useAppointmentsApiManager();
 	const reportsApiManager = useReportsApiManager();
 	const investigationsApiManager = useInvestigationsApiManager();
 
@@ -38,22 +36,21 @@ export default function NewReportDialog({ open, onOpenChange, appointmentId }) {
 		}
 	}, [appointmentId, form]);
 
-	const { data: appointments = [], isLoading: appointmentsIsLoading } = useQuery({
-		queryKey: ['appointments'],
-		queryFn: () => appointmentsApiManager.readAppointments({}),
-		enabled: open,
-	});
+	// TODO later: add appointments to the report
+	// const { data: appointments = [], isLoading: appointmentsIsLoading } = useQuery({
+	// 	queryKey: ['appointments'],
+	// 	queryFn: () => appointmentsApiManager.readAppointments({}),
+	// 	enabled: open,
+	// });
 
 	const { data: investigations = [], isLoading: isInvestigationLoading } = useQuery({
 		queryKey: ['investigations'],
-		queryFn: () => investigationsApiManager.readInvestigations({}),
+		queryFn: async () => {
+			const result = await investigationsApiManager.readInvestigations({});
+			return result ?? [];
+		},
 		enabled: open,
 	});
-
-	const appointmentOptions = appointments.map(({ _id, location, timestamp }) => ({
-		label: `${location} on ${format(timestamp, 'MMM dd, yyyy - hh:mm aaa')}`,
-		value: _id,
-	}));
 
 	const { mutateAsync: addReport, isPending } = useMutation({
 		mutationFn: (data) => reportsApiManager.createReport(data),
