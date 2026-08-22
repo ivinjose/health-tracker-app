@@ -11,6 +11,7 @@ import {
 	AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { Text } from '@/components/ui/text';
+import { getDisplayDate } from '@/lib/reportUtils';
 import { useCallback, useMemo, useState } from 'react';
 import { View } from 'react-native';
 
@@ -21,6 +22,7 @@ export default function ReportCard({
 	investigation,
 	value,
 	displayDate,
+	timestamp,
 	appointments = [],
 	remarks,
 	filename,
@@ -44,6 +46,8 @@ export default function ReportCard({
 		return match ?? { label: investigation ?? 'unknown', unit: '' };
 	}, [investigation, investigations]);
 
+	const dateLabel = getDisplayDate({ displayDate, timestamp });
+
 	return (
 		<>
 			<CardView actions={actions}>
@@ -61,7 +65,9 @@ export default function ReportCard({
 							</Text>
 						) : null}
 						<View className="mt-1 flex-row items-center justify-between gap-2">
-							<Text className="text-sm text-muted-foreground">{displayDate}</Text>
+							{dateLabel ? (
+								<Text className="text-sm text-muted-foreground">{dateLabel}</Text>
+							) : null}
 							{filename ? (
 								<Text className="text-sm text-muted-foreground">
 									{/* TODO Phase 4: ViewReport */}

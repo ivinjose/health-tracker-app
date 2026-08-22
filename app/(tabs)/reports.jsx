@@ -8,6 +8,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Text } from '@/components/ui/text';
 import { SORT_ORDER } from '@/constants/sort';
 import { useToast } from '@/hooks/use-toast';
+import { withDisplayDates } from '@/lib/reportUtils';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useLocalSearchParams } from 'expo-router';
 import { Plus } from 'lucide-react-native';
@@ -38,7 +39,10 @@ export default function ReportsScreen() {
 		isRefetching,
 	} = useQuery({
 		queryKey: ['reports'],
-		queryFn: () => reportsApiManager.readReports({ order: SORT_ORDER.DESC }),
+		queryFn: async () => {
+			const response = await reportsApiManager.readReports({ order: SORT_ORDER.DESC });
+			return withDisplayDates(response ?? []);
+		},
 	});
 
 	const { data: investigations = [] } = useQuery({
