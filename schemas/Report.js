@@ -27,4 +27,10 @@ const formSchema = z.object({
         }, 'Report must be an image, or PDF')
 });
 
+export function isEmptyDraft(row = {}) {
+    const investigation = String(row.investigation ?? '').trim();
+    const value = String(row.value ?? '').trim();
+    return !investigation && !value;
+}
+
 export default formSchema;

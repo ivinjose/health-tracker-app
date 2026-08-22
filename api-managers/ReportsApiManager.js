@@ -98,6 +98,21 @@ const useReportsApiManager = () => {
         }
     };
 
+    const createReports = async (rows) => {
+        const results = await Promise.allSettled(rows.map((row) => createReport(row)));
+        return results.map((result, index) => ({
+            row: rows[index],
+            status: result.status,
+            value: result.status === 'fulfilled' ? result.value : undefined,
+            error:
+                result.status === 'rejected'
+                    ? result.reason instanceof Error
+                        ? result.reason
+                        : new Error(String(result.reason))
+                    : undefined,
+        }));
+    };
+
     const deleteReport = async (data) => {
         const report = data;
         try {
@@ -135,7 +150,7 @@ const useReportsApiManager = () => {
     };
 
     return {
-        createReport, updateReport, readReports, deleteReport, compareReports
+        createReport, createReports, updateReport, readReports, deleteReport, compareReports
     }
 }
 

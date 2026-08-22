@@ -1,5 +1,6 @@
 import useInvestigationsApiManager from '@/api-managers/InvestigationsApiManager';
 import useReportsApiManager from '@/api-managers/ReportsApiManager';
+import NewMultiReportDialog from '@/components/NewMultiReportDialog';
 import NewReportDialog from '@/components/NewReportDialog';
 import ReportCard from '@/components/ReportCard';
 import { useTheme } from '@/components/ThemeProvider';
@@ -12,15 +13,24 @@ import { useToast } from '@/hooks/use-toast';
 import { withDisplayDates } from '@/lib/reportUtils';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useLocalSearchParams } from 'expo-router';
-import { Plus } from 'lucide-react-native';
+import { CopyPlus, Plus } from 'lucide-react-native';
 import { useEffect, useState } from 'react';
 import { Pressable, RefreshControl, ScrollView, View } from 'react-native';
+
+const FAB_STYLE = {
+	shadowColor: '#000',
+	shadowOffset: { width: 0, height: 3 },
+	shadowOpacity: 0.35,
+	shadowRadius: 6,
+	elevation: 6,
+};
 
 export default function ReportsScreen() {
 	const theme = useTheme();
 	const { showNewReportDialog: showDialogParam, appointment } = useLocalSearchParams();
 	const appointmentId = Array.isArray(appointment) ? appointment[0] : appointment;
 	const [showNewReportDialog, setShowNewReportDialog] = useState(false);
+	const [showMultiReportDialog, setShowMultiReportDialog] = useState(false);
 	const [editingReport, setEditingReport] = useState(null);
 	const { toast } = useToast();
 	const reportsApiManager = useReportsApiManager();
@@ -70,6 +80,10 @@ export default function ReportsScreen() {
 		setShowNewReportDialog(true);
 	};
 
+	const openMultiCreate = () => {
+		setShowMultiReportDialog(true);
+	};
+
 	const openEdit = (report) => {
 		setEditingReport(report);
 		setShowNewReportDialog(true);
@@ -103,7 +117,7 @@ export default function ReportsScreen() {
 			) : (
 				<ScrollView
 					className="flex-1"
-					contentContainerStyle={{ padding: 16, paddingBottom: 96, gap: CARD_LIST_GAP }}
+					contentContainerStyle={{ padding: 16, paddingBottom: 168, gap: CARD_LIST_GAP }}
 					refreshControl={
 						<RefreshControl
 							refreshing={isRefetching}
@@ -126,17 +140,21 @@ export default function ReportsScreen() {
 			)}
 
 			<Pressable
+				onPress={openMultiCreate}
+				accessibilityRole="button"
+				accessibilityLabel="New reports"
+				className="absolute bottom-24 right-5 z-10 h-14 w-14 items-center justify-center rounded-full bg-primary active:opacity-80"
+				style={FAB_STYLE}
+			>
+				<CopyPlus size={26} color={theme.colors.primaryForeground} strokeWidth={2.5} />
+			</Pressable>
+
+			<Pressable
 				onPress={openCreate}
 				accessibilityRole="button"
 				accessibilityLabel="New report"
 				className="absolute bottom-6 right-5 z-10 h-14 w-14 items-center justify-center rounded-full bg-primary active:opacity-80"
-				style={{
-					shadowColor: '#000',
-					shadowOffset: { width: 0, height: 3 },
-					shadowOpacity: 0.35,
-					shadowRadius: 6,
-					elevation: 6,
-				}}
+				style={FAB_STYLE}
 			>
 				<Plus size={28} color={theme.colors.primaryForeground} strokeWidth={2.5} />
 			</Pressable>
@@ -146,6 +164,11 @@ export default function ReportsScreen() {
 				onOpenChange={onDialogOpenChange}
 				appointmentId={appointmentId}
 				report={editingReport}
+			/>
+
+			<NewMultiReportDialog
+				open={showMultiReportDialog}
+				onOpenChange={setShowMultiReportDialog}
 			/>
 		</View>
 	);

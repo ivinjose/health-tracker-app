@@ -1,11 +1,8 @@
 import useInvestigationsApiManager from '@/api-managers/InvestigationsApiManager';
 import useReportsApiManager from '@/api-managers/ReportsApiManager';
-import FormDateField from '@/components/FormDateField';
 import FormSheetModal from '@/components/FormSheetModal';
+import ReportFormFields from '@/components/ReportFormFields';
 import { Form } from '@/components/ui/form';
-import FormFieldInput from '@/components/ui/form-field-input';
-import FormFieldSelect from '@/components/ui/form-field-select';
-import FormFieldTextarea from '@/components/ui/form-field-textarea';
 import { useToast } from '@/hooks/use-toast';
 import useValidatedForm from '@/hooks/useValidatedForm';
 import formSchema from '@/schemas/Report';
@@ -115,45 +112,14 @@ export default function NewReportDialog({ open, onOpenChange, appointmentId, rep
 			confirmAccessibilityLabel={isEdit ? 'Save' : 'Create report'}
 		>
 			<Form {...form}>
-				<FormFieldSelect
-					formControl={form.control}
-					schemaProperty="investigation"
-					placeholder="Choose from the list"
-					labelText="Investigation"
-					dropdownOptions={isInvestigationLoading ? [] : investigations}
-					disabled={isEdit}
-				/>
-				<FormFieldInput
-					formControl={form.control}
-					schemaProperty="value"
-					placeholder="Enter the test result value"
-					labelText="Report value"
-					inputType="number"
-				/>
-				<FormDateField
-					formControl={form.control}
-					name="date"
-					labelText="Date of sample collection"
+				<ReportFormFields
+					form={form}
+					investigations={investigations}
+					isInvestigationLoading={isInvestigationLoading}
 					maxDate={maxDate}
+					investigationDisabled={isEdit}
 				/>
-				{/* Hiding for now since its convoluting the focus away from the health metrics */}
-				{/* <FormFieldSelect
-					formControl={form.control}
-					schemaProperty="appointment"
-					placeholder="Choose an appointment"
-					labelText="Link to an appointment"
-					dropdownOptions={
-						appointmentsIsLoading
-							? [{ label: 'Loading appointments…', value: '' }]
-							: appointmentOptions
-					}
-				/> */}
-				<FormFieldTextarea
-					formControl={form.control}
-					schemaProperty="remarks"
-					placeholder="Enter any details you want to remember or note"
-					labelText="Remarks"
-				/>
+				{/* TODO later: add appointments to the report */}
 				{/* TODO Phase 4: file upload + OCR */}
 			</Form>
 		</FormSheetModal>
