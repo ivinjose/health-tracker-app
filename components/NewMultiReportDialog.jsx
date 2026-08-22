@@ -2,7 +2,9 @@ import useInvestigationsApiManager from '@/api-managers/InvestigationsApiManager
 import useReportsApiManager from '@/api-managers/ReportsApiManager';
 import FormSheetModal from '@/components/FormSheetModal';
 import ReportFormFields from '@/components/ReportFormFields';
+import { Expanding } from '@/components/ui/expanding';
 import { Form } from '@/components/ui/form';
+import { Icon } from '@/components/ui/icon';
 import { Text } from '@/components/ui/text';
 import { useToast } from '@/hooks/use-toast';
 import { getDateWithoutTime } from '@/lib/helpers';
@@ -10,6 +12,7 @@ import { getInvestigationLabel } from '@/lib/reportUtils';
 import formSchema, { isEmptyDraft } from '@/schemas/Report';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
+import { ChevronDown, ChevronUp } from 'lucide-react-native';
 import { useEffect, useState } from 'react';
 import { useFieldArray, useForm, useWatch } from 'react-hook-form';
 import { Pressable, View } from 'react-native';
@@ -44,6 +47,7 @@ export default function NewMultiReportDialog({ open, onOpenChange }) {
 	const reportsApiManager = useReportsApiManager();
 	const investigationsApiManager = useInvestigationsApiManager();
 	const [saveErrors, setSaveErrors] = useState([]);
+	const [collapsedIds, setCollapsedIds] = useState(() => new Set());
 
 	const form = useForm({
 		defaultValues: { reports: [emptyDraft()] },
@@ -58,6 +62,7 @@ export default function NewMultiReportDialog({ open, onOpenChange }) {
 	useEffect(() => {
 		if (!open) return;
 		setSaveErrors([]);
+		setCollapsedIds(new Set());
 		form.reset({ reports: [emptyDraft()] });
 	}, [open, form]);
 
@@ -130,6 +135,8 @@ export default function NewMultiReportDialog({ open, onOpenChange }) {
 			};
 		},
 		onSuccess: async ({ leftover, listErrors, fieldErrors, savedCount, posted }) => {
+			setCollapsedIds(new Set());
+
 			if (posted) {
 				await queryClient.invalidateQueries({ queryKey: ['reports'] });
 				await queryClient.invalidateQueries({ queryKey: ['latest'] });
@@ -172,7 +179,20 @@ export default function NewMultiReportDialog({ open, onOpenChange }) {
 	const addAnother = () => {
 		const reports = form.getValues('reports') ?? [];
 		const previous = reports[reports.length - 1];
+		setCollapsedIds(new Set(fields.map((field) => field.id)));
 		append(emptyDraft(previous?.date));
+	};
+
+	const toggleCollapsed = (id) => {
+		setCollapsedIds((current) => {
+			const next = new Set(current);
+			if (next.has(id)) {
+				next.delete(id);
+			} else {
+				next.add(id);
+			}
+			return next;
+		});
 	};
 
 	return (
@@ -199,34 +219,10 @@ export default function NewMultiReportDialog({ open, onOpenChange }) {
 					</View>
 				) : null}
 
-				{fields.map((field, index) => (
-					<View key={field.id}>
-						{index > 0 ? <View className="mb-4 mt-1 h-px bg-border" /> : null}
-						{fields.length > 1 ? (
-							<View className="mb-4 flex-row items-center justify-between">
-								<Text className="text-sm font-medium text-muted-foreground">
-									Report {index + 1}
-								</Text>
-								<Pressable
-									onPress={() => remove(index)}
-									disabled={!canRemove}
-									hitSlop={8}
-									accessibilityRole="button"
-									accessibilityLabel={`Remove report ${index + 1}`}
-									accessibilityState={{ disabled: !canRemove }}
-								>
-									<Text
-										className={
-											canRemove
-												? 'text-sm text-destructive'
-												: 'text-sm text-muted-foreground'
-										}
-									>
-										Remove
-									</Text>
-								</Pressable>
-							</View>
-						) : null}
+				{fields.map((field, index) => {
+					const showHeader = fields.length > 1;
+					const isExpanded = !showHeader || !collapsedIds.has(field.id);
+					const formFields = (
 						<ReportFormFields
 							form={form}
 							namePrefix={`reports.${index}`}
@@ -234,8 +230,66 @@ export default function NewMultiReportDialog({ open, onOpenChange }) {
 							isInvestigationLoading={isInvestigationLoading}
 							maxDate={maxDate}
 						/>
-					</View>
-				))}
+					);
+
+					return (
+						<View key={field.id}>
+							{index > 0 ? <View className="mb-4 mt-1 h-px bg-border" /> : null}
+							{showHeader ? (
+								<View
+									className={
+										isExpanded
+											? 'mb-4 flex-row items-center justify-between'
+											: 'mb-1 flex-row items-center justify-between'
+									}
+								>
+									<Pressable
+										onPress={() => toggleCollapsed(field.id)}
+										hitSlop={8}
+										className="min-w-0 flex-1 flex-row items-center gap-1.5 pr-3"
+										accessibilityRole="button"
+										accessibilityState={{ expanded: isExpanded }}
+										accessibilityLabel={`Report ${index + 1}`}
+									>
+										<Text className="text-sm font-medium text-muted-foreground">
+											Report {index + 1}
+										</Text>
+										<Icon
+											as={isExpanded ? ChevronUp : ChevronDown}
+											className="text-muted-foreground"
+											size={16}
+										/>
+									</Pressable>
+									<Pressable
+										onPress={() => remove(index)}
+										disabled={!canRemove}
+										hitSlop={8}
+										accessibilityRole="button"
+										accessibilityLabel={`Remove report ${index + 1}`}
+										accessibilityState={{ disabled: !canRemove }}
+									>
+										<Text
+											className={
+												canRemove
+													? 'text-sm text-destructive'
+													: 'text-sm text-muted-foreground'
+											}
+										>
+											Remove
+										</Text>
+									</Pressable>
+								</View>
+							) : null}
+							{showHeader ? (
+								<Expanding open={isExpanded}>
+									<View>{formFields}</View>
+								</Expanding>
+							) : (
+								formFields
+							)}
+						</View>
+					);
+				})}
 
 				<Pressable
 					onPress={addAnother}
