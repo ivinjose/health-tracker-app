@@ -12,7 +12,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useCallback } from 'react';
 import { ScrollView, View } from 'react-native';
 
-export default function AnalyseInvestigationScreen() {
+export default function AnalyseScreen() {
 	const router = useRouter();
 	const params = useLocalSearchParams();
 	const investigation = Array.isArray(params.investigation)
@@ -35,18 +35,9 @@ export default function AnalyseInvestigationScreen() {
 
 	const onInvestigationChange = useCallback(
 		(newInvestigation) => {
-			if (newInvestigation !== investigation) {
-				router.replace({
-					pathname: '/(tabs)/analyse-reports/[investigation]',
-					params: {
-						investigation: newInvestigation,
-						from: fromParam,
-						to: toParam,
-					},
-				});
-			}
+			updateParams({ investigation: newInvestigation });
 		},
-		[investigation, router, fromParam, toParam]
+		[updateParams]
 	);
 
 	const clearFromDate = useCallback(() => {
@@ -72,7 +63,7 @@ export default function AnalyseInvestigationScreen() {
 	);
 
 	const { data: investigations = [], isLoading: isInvestigationLoading } = useQuery({
-		queryKey: ['investigations', investigation],
+		queryKey: ['investigations'],
 		queryFn: () => investigationsApiManager.readInvestigations({}),
 	});
 
@@ -98,6 +89,9 @@ export default function AnalyseInvestigationScreen() {
 				contentContainerStyle={{ padding: 16, gap: 16, paddingBottom: 32 }}
 				showsVerticalScrollIndicator={false}
 			>
+				<Text className="text-muted-foreground">
+					Choose an investigation to view trends and history.
+				</Text>
 				<InvestigationSelect
 					results={isInvestigationLoading ? [] : investigations}
 					onSelectCb={onInvestigationChange}

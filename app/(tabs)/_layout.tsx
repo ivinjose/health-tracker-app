@@ -58,11 +58,10 @@ export default function AppLayout() {
 				}}
 			/>
 			<Tabs.Screen
-				name="analyse-reports"
+				name="analyse"
 				options={{
-					headerShown: false,
 					tabBarLabel: 'Analyse',
-					title: 'Analyse Reports',
+					headerTitle: 'Analyse Reports',
 					tabBarIcon: ({ color }) => <ChartLine size={26} color={color} strokeWidth={1.5} />,
 				}}
 			/>
