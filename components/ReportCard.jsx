@@ -11,7 +11,6 @@ import {
 	AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { Text } from '@/components/ui/text';
-import { CircleUserRound } from 'lucide-react-native';
 import { useCallback, useMemo, useState } from 'react';
 import { View } from 'react-native';
 
@@ -49,7 +48,8 @@ export default function ReportCard({
 		<>
 			<CardView actions={actions}>
 				<View className="flex-row gap-4 p-4">
-					<CircleUserRound size={40} color={theme.colors.primary} />
+					{/* TODO Phase 4: Add proper user avatar, hiding this icon till then */}
+					{/* <CircleUserRound size={40} color={theme.colors.primary} /> */}
 					<View className="flex-1 gap-1">
 						<Text className="text-base font-semibold text-foreground">
 							{investigationMeta.label} - {value} {investigationMeta.unit}

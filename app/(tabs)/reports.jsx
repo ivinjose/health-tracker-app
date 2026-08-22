@@ -11,7 +11,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useLocalSearchParams } from 'expo-router';
 import { Plus } from 'lucide-react-native';
 import { useEffect, useState } from 'react';
-import { RefreshControl, ScrollView, View } from 'react-native';
+import { Pressable, RefreshControl, ScrollView, View } from 'react-native';
 
 export default function ReportsScreen() {
 	const theme = useTheme();
@@ -56,16 +56,6 @@ export default function ReportsScreen() {
 
 	return (
 		<View className="flex-1 bg-background">
-			<View className="px-4 py-3">
-				<Button
-					onPress={() => setShowNewReportDialog(true)}
-					className="h-11 rounded-[10px] shadow-none"
-				>
-					<Plus size={18} color={theme.colors.primaryForeground} />
-					<Text className="ml-2 font-medium text-primary-foreground">New report</Text>
-				</Button>
-			</View>
-
 			{isLoading ? (
 				<View className="gap-4 p-4">
 					<Skeleton className="h-24 w-full rounded-[10px] bg-card" />
@@ -79,19 +69,13 @@ export default function ReportsScreen() {
 					</Button>
 				</View>
 			) : reports.length === 0 ? (
-				<View className="flex-1 items-center justify-center gap-4 px-6">
+				<View className="flex-1 items-center justify-center px-6">
 					<Text className="text-center text-muted-foreground">No reports yet.</Text>
-					<Button
-						onPress={() => setShowNewReportDialog(true)}
-						className="h-11 rounded-[10px] shadow-none"
-					>
-						<Text className="font-medium text-primary-foreground">Create report</Text>
-					</Button>
 				</View>
 			) : (
 				<ScrollView
 					className="flex-1"
-					contentContainerStyle={{ padding: 16, gap: 16 }}
+					contentContainerStyle={{ padding: 16, paddingBottom: 96, gap: 8 }}
 					refreshControl={
 						<RefreshControl
 							refreshing={isRefetching}
@@ -111,6 +95,22 @@ export default function ReportsScreen() {
 					))}
 				</ScrollView>
 			)}
+
+			<Pressable
+				onPress={() => setShowNewReportDialog(true)}
+				accessibilityRole="button"
+				accessibilityLabel="New report"
+				className="absolute bottom-6 right-5 z-10 h-14 w-14 items-center justify-center rounded-full bg-primary active:opacity-80"
+				style={{
+					shadowColor: '#000',
+					shadowOffset: { width: 0, height: 3 },
+					shadowOpacity: 0.35,
+					shadowRadius: 6,
+					elevation: 6,
+				}}
+			>
+				<Plus size={28} color={theme.colors.primaryForeground} strokeWidth={2.5} />
+			</Pressable>
 
 			<NewReportDialog
 				open={showNewReportDialog}

@@ -18,7 +18,7 @@ const CardView = ({ children, actions = [] }) => {
 				<View className="min-w-0 flex-1">{children}</View>
 
 				{actions.length > 0 && (
-					<View className="shrink-0 pt-0.5">
+					<View className="shrink-0 pt-3 pr-1.5">
 						<DropdownMenu>
 							<DropdownMenuTrigger asChild>
 								<Pressable className="-m-1 p-1">
