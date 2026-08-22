@@ -1,4 +1,5 @@
 import { useTheme } from '@/components/ThemeProvider';
+import { useState } from 'react';
 import { View } from 'react-native';
 import Svg, { Circle, G, Line, Polyline, Text as SvgText } from 'react-native-svg';
 
@@ -6,17 +7,34 @@ import {
 	CHART_HEIGHT,
 	CHART_PADDING,
 	buildMultiLinePoints,
-	getChartWidth,
 	getXLabelAnchor,
 } from './chartUtils';
 
 export default function CompareChart({ data = [], xAxisKey, yAxisKeys = [], width }) {
 	const theme = useTheme();
-	const chartWidth = width ?? getChartWidth();
+	const [measuredWidth, setMeasuredWidth] = useState(0);
+	const chartWidth = width ?? measuredWidth;
 	const lineColors = [theme.chart.line, theme.chart.lineSecondary];
+
+	const handleLayout = (event) => {
+		if (width) return;
+		const nextWidth = Math.round(event.nativeEvent.layout.width);
+		if (nextWidth > 0 && nextWidth !== measuredWidth) {
+			setMeasuredWidth(nextWidth);
+		}
+	};
 
 	if (!data.length || yAxisKeys.length === 0) {
 		return null;
+	}
+
+	if (!chartWidth) {
+		return (
+			<View
+				style={{ height: CHART_HEIGHT, width: width ?? '100%' }}
+				onLayout={handleLayout}
+			/>
+		);
 	}
 
 	const { series, innerHeight } = buildMultiLinePoints({
@@ -30,7 +48,10 @@ export default function CompareChart({ data = [], xAxisKey, yAxisKeys = [], widt
 	const labelStep = Math.max(1, Math.ceil(labelPoints.length / 4));
 
 	return (
-		<View style={{ height: CHART_HEIGHT, width: chartWidth }}>
+		<View
+			style={{ height: CHART_HEIGHT, width: width ?? '100%' }}
+			onLayout={handleLayout}
+		>
 			<Svg width={chartWidth} height={CHART_HEIGHT}>
 				<Line
 					x1={CHART_PADDING.left}

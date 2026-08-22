@@ -1,5 +1,4 @@
 import { format } from 'date-fns';
-import { Dimensions } from 'react-native';
 
 export const CHART_HEIGHT = 220;
 export const CHART_PADDING = { top: 36, right: 10, bottom: 36, left: 8 };
