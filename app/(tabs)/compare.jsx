@@ -129,6 +129,7 @@ export default function CompareScreen() {
 					<CompareGraph
 						data={reports}
 						investigations={[investigation1, investigation2]}
+						investigationOptions={investigations}
 					/>
 				) : investigation1 && investigation2 ? (
 					<Text className="text-muted-foreground">No comparison data in this range.</Text>

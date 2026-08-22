@@ -16,28 +16,35 @@ import {
 } from './chartUtils';
 
 const TOOLTIP_WIDTH = 120;
+const MULTI_TOOLTIP_WIDTH = 160;
 const HIT_SIZE = 44;
 
-function getTooltipLeft(pointX, chartWidth) {
+function getTooltipLeft(pointX, chartWidth, tooltipWidth) {
 	const margin = 4;
-	const left = pointX - TOOLTIP_WIDTH / 2;
-	return Math.max(margin, Math.min(left, chartWidth - TOOLTIP_WIDTH - margin));
+	const left = pointX - tooltipWidth / 2;
+	return Math.max(margin, Math.min(left, chartWidth - tooltipWidth - margin));
 }
 
 export default function LineChart({
 	data = [],
 	yAxisKey = 'value',
+	yAxisKeys,
 	width,
 	unit = '',
+	units,
+	seriesLabels = [],
 }) {
 	const theme = useTheme();
-	const lineColor = theme.chart.line;
+	const lineColors = [theme.chart.line, theme.chart.lineSecondary];
 	const axisColor = theme.chart.axis;
 	const labelColor = theme.chart.label;
 	const [measuredWidth, setMeasuredWidth] = useState(0);
 	const [selectedIndex, setSelectedIndex] = useState(null);
 	const [tooltipHeight, setTooltipHeight] = useState(56);
 	const chartWidth = width ?? measuredWidth;
+	const keys = yAxisKeys?.length ? yAxisKeys : [yAxisKey];
+	const isMulti = keys.length > 1;
+	const tooltipWidth = isMulti ? MULTI_TOOLTIP_WIDTH : TOOLTIP_WIDTH;
 
 	useEffect(() => {
 		setSelectedIndex(null);
@@ -63,21 +70,40 @@ export default function LineChart({
 	}
 
 	const padding = { ...CHART_PADDING, left: 36 };
-	const { points, innerHeight, minY, maxY, meanY } = chartWidth
+	const { series, innerHeight, minY, maxY, meanY } = chartWidth
 		? buildLinePoints({
 			data,
-			yKey: yAxisKey,
+			yKeys: keys,
 			chartWidth,
 			padding,
 		})
-		: { points: [], innerHeight: 0, minY: 0, maxY: 1, meanY: 0 };
-	const validPoints = points.filter((point) => !Number.isNaN(point.value));
-	const polylinePoints = validPoints.map((point) => `${point.x},${point.y}`).join(' ');
-	const yTicks = getYAxisTicks(minY, maxY, meanY, padding.top, innerHeight);
-	const selectedPoint = selectedIndex != null ? validPoints[selectedIndex] : null;
+		: { series: [], innerHeight: 0, minY: 0, maxY: 1, meanY: 0 };
+	const axisPoints = series[0]?.points ?? [];
+	const yTicks = getYAxisTicks(
+		minY,
+		maxY,
+		isMulti ? undefined : meanY,
+		padding.top,
+		innerHeight
+	);
+	const selectedRows = selectedIndex == null
+		? []
+		: series.flatMap((line, lineIndex) => {
+			const point = line.points[selectedIndex];
+			if (!point || Number.isNaN(point.value)) return [];
+			return [{
+				...point,
+				color: lineColors[lineIndex % lineColors.length],
+				label: seriesLabels[lineIndex] ?? line.key,
+				unit: units?.[lineIndex] ?? (isMulti ? '' : unit),
+			}];
+		});
+	const selectedPoint = selectedRows[0] ?? null;
 	const selectedItem = selectedPoint?.item;
 	const selectedDate = selectedItem ? getChartTooltipDate(selectedItem) : '';
-	const tooltipLeft = selectedPoint ? getTooltipLeft(selectedPoint.x, chartWidth) : 0;
+	const tooltipLeft = selectedPoint
+		? getTooltipLeft(selectedPoint.x, chartWidth, tooltipWidth)
+		: 0;
 	const showTooltipAbove = selectedPoint ? selectedPoint.y > tooltipHeight + 18 : true;
 	const tooltipTop = selectedPoint
 		? showTooltipAbove
@@ -138,77 +164,102 @@ export default function LineChart({
 								</SvgText>
 							</G>
 						))}
-						{polylinePoints ? (
-							<Polyline
-								points={polylinePoints}
-								fill="none"
-								stroke={lineColor}
-								strokeWidth={2}
-							/>
-						) : null}
-						{validPoints.map((point, index) => {
-							const selected = index === selectedIndex;
+						{series.map((line, lineIndex) => {
+							const stroke = lineColors[lineIndex % lineColors.length];
+							const validPoints = line.points.filter((point) => !Number.isNaN(point.value));
+							const polylinePoints = validPoints
+								.map((point) => `${point.x},${point.y}`)
+								.join(' ');
+
 							return (
-								<G key={`point-${index}`}>
-									{selected ? (
-										<Circle
-											cx={point.x}
-											cy={point.y}
-											r={8}
-											fill={lineColor}
-											opacity={0.18}
+								<G key={line.key}>
+									{polylinePoints ? (
+										<Polyline
+											points={polylinePoints}
+											fill="none"
+											stroke={stroke}
+											strokeWidth={2}
 										/>
 									) : null}
-									<Circle
-										cx={point.x}
-										cy={point.y}
-										r={selected ? 5 : 4}
-										fill={lineColor}
-									/>
-									<SvgText
-										x={point.x}
-										y={point.y - 10}
-										fontSize={10}
-										fontWeight="600"
-										fill={lineColor}
-										textAnchor={getXLabelAnchor(index, validPoints.length)}
-									>
-										{String(point.value)}
-									</SvgText>
+									{line.points.map((point, index) => {
+										if (Number.isNaN(point.value)) return null;
+										const selected = index === selectedIndex;
+										return (
+											<G key={`${line.key}-point-${index}`}>
+												{selected ? (
+													<Circle
+														cx={point.x}
+														cy={point.y}
+														r={8}
+														fill={stroke}
+														opacity={0.18}
+													/>
+												) : null}
+												<Circle
+													cx={point.x}
+													cy={point.y}
+													r={selected ? 5 : 4}
+													fill={stroke}
+												/>
+												{isMulti ? null : (
+													<SvgText
+														x={point.x}
+														y={point.y - 10}
+														fontSize={10}
+														fontWeight="600"
+														fill={stroke}
+														textAnchor={getXLabelAnchor(index, line.points.length)}
+													>
+														{String(point.value)}
+													</SvgText>
+												)}
+											</G>
+										);
+									})}
 								</G>
 							);
 						})}
-						{validPoints.map((point, index) => (
+						{axisPoints.map((point, index) => (
 							<SvgText
 								key={`label-${index}`}
 								x={point.x}
 								y={CHART_HEIGHT - 10}
 								fontSize={10}
 								fill={labelColor}
-								textAnchor={getXLabelAnchor(index, validPoints.length)}
+								textAnchor={getXLabelAnchor(index, axisPoints.length)}
 							>
 								{getChartAxisDate(point.item)}
 							</SvgText>
 						))}
 					</Svg>
-					{validPoints.map((point, index) => (
-						<Pressable
-							key={`hit-${index}`}
-							accessibilityRole="button"
-							accessibilityLabel={`Show details for ${point.value}${unit ? ` ${unit}` : ''}`}
-							onPress={() =>
-								setSelectedIndex((current) => (current === index ? null : index))
-							}
-							hitSlop={8}
-							style={{
-								position: 'absolute',
-								left: point.x - HIT_SIZE / 2,
-								top: point.y - HIT_SIZE / 2 - 8,
-								width: HIT_SIZE,
-								height: HIT_SIZE,
-							}}
-						/>
-					))}
+					{series.flatMap((line) =>
+						line.points.map((point, index) => {
+							if (Number.isNaN(point.value)) return null;
+							const seriesUnit = units?.[keys.indexOf(line.key)] ?? (isMulti ? '' : unit);
+							return (
+								<Pressable
+									key={`hit-${line.key}-${index}`}
+									accessibilityRole="button"
+									accessibilityLabel={
+										isMulti
+											? `Show details for ${getChartTooltipDate(point.item)}`
+											: `Show details for ${point.value}${seriesUnit ? ` ${seriesUnit}` : ''}`
+									}
+									onPress={() =>
+										setSelectedIndex((current) => (current === index ? null : index))
+									}
+									hitSlop={8}
+									style={{
+										position: 'absolute',
+										left: point.x - HIT_SIZE / 2,
+										top: point.y - HIT_SIZE / 2 - 8,
+										width: HIT_SIZE,
+										height: HIT_SIZE,
+									}}
+								/>
+							);
+						})
+					)}
 					{selectedItem ? (
 						<View
 							onLayout={(event) => {
@@ -222,7 +273,7 @@ export default function LineChart({
 								position: 'absolute',
 								left: tooltipLeft,
 								top: tooltipTop,
-								width: TOOLTIP_WIDTH,
+								width: tooltipWidth,
 								borderRadius: 8,
 								borderWidth: 1,
 								borderColor: axisColor,
@@ -236,16 +287,23 @@ export default function LineChart({
 								elevation: 3,
 							}}
 						>
-							<Text className="text-xs font-semibold" style={{ color: lineColor }}>
-								{selectedPoint.value}
-								{unit ? ` ${unit}` : ''}
-							</Text>
+							{selectedRows.map((row) => (
+								<Text
+									key={`${row.label}-${row.value}`}
+									className="text-xs font-semibold"
+									style={{ color: row.color }}
+								>
+									{isMulti ? `${row.label} ` : ''}
+									{row.value}
+									{row.unit ? ` ${row.unit}` : ''}
+								</Text>
+							))}
 							{selectedDate ? (
 								<Text className="text-[10px] text-muted-foreground">
 									{selectedDate}
 								</Text>
 							) : null}
-							{selectedItem.remarks ? (
+							{!isMulti && selectedItem.remarks ? (
 								<Text className="text-[10px] text-foreground" numberOfLines={3}>
 									{selectedItem.remarks}
 								</Text>

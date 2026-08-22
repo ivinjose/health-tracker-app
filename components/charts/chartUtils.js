@@ -58,88 +58,53 @@ export function getYAxisTicks(minY, maxY, meanY, top, innerHeight) {
 
 export function buildLinePoints({
 	data,
-	xKey,
 	yKey,
-	chartWidth,
-	height = CHART_HEIGHT,
-	padding = CHART_PADDING,
-}) {
-	const innerWidth = chartWidth - padding.left - padding.right;
-	const innerHeight = height - padding.top - padding.bottom;
-
-	const values = data
-		.map((item) => Number(item[yKey]))
-		.filter((value) => !Number.isNaN(value));
-
-	if (values.length === 0) {
-		return { points: [], minY: 0, maxY: 1, meanY: 0, innerWidth, innerHeight };
-	}
-
-	const minY = Math.min(...values);
-	const maxY = Math.max(...values);
-	const meanY = values.reduce((sum, value) => sum + value, 0) / values.length;
-	const range = maxY - minY;
-
-	const points = data.map((item, index) => {
-		const value = Number(item[yKey]);
-		const x =
-			padding.left +
-			(data.length === 1 ? innerWidth / 2 : (index / (data.length - 1)) * innerWidth);
-		const y = Number.isNaN(value)
-			? Number.NaN
-			: range === 0
-				? padding.top + innerHeight / 2
-				: padding.top + innerHeight - ((value - minY) / range) * innerHeight;
-
-		return { x, y, item, value };
-	});
-
-	return { points, minY, maxY, meanY, innerWidth, innerHeight };
-}
-
-export function buildMultiLinePoints({
-	data,
-	xKey,
 	yKeys,
 	chartWidth,
 	height = CHART_HEIGHT,
 	padding = CHART_PADDING,
 }) {
-	const allValues = data.flatMap((item) =>
-		yKeys.map((key) => Number(item[key])).filter((value) => !Number.isNaN(value))
-	);
-
+	const keys = yKeys?.length ? yKeys : [yKey];
 	const innerWidth = chartWidth - padding.left - padding.right;
 	const innerHeight = height - padding.top - padding.bottom;
 
+	const allValues = data.flatMap((item) =>
+		keys.map((key) => Number(item[key])).filter((value) => !Number.isNaN(value))
+	);
+
 	if (allValues.length === 0) {
-		return { series: [], minY: 0, maxY: 1, innerWidth, innerHeight };
+		return { series: [], points: [], minY: 0, maxY: 1, meanY: 0, innerWidth, innerHeight };
 	}
 
-	const minY = Math.min(...allValues) * 0.9;
-	const maxY = Math.max(...allValues) * 1.1 || 1;
-	const range = maxY - minY || 1;
+	const minY = Math.min(...allValues);
+	const maxY = Math.max(...allValues);
+	const meanY = allValues.reduce((sum, value) => sum + value, 0) / allValues.length;
+	const range = maxY - minY;
 
-	const series = yKeys.map((yKey) => ({
-		key: yKey,
+	const series = keys.map((key) => ({
+		key,
 		points: data.map((item, index) => {
-			const value = Number(item[yKey]);
+			const value = Number(item[key]);
 			const x =
 				padding.left +
 				(data.length === 1 ? innerWidth / 2 : (index / (data.length - 1)) * innerWidth);
-			const y =
-				Number.isNaN(value)
-					? null
+			const y = Number.isNaN(value)
+				? Number.NaN
+				: range === 0
+					? padding.top + innerHeight / 2
 					: padding.top + innerHeight - ((value - minY) / range) * innerHeight;
 
-			return {
-				x,
-				y,
-				item,
-				value,
-			};
+			return { x, y, item, value };
 		}),
 	}));
 
-	return { series, minY, maxY, innerWidth, innerHeight };
+	return {
+		series,
+		points: series[0]?.points ?? [],
+		minY,
+		maxY,
+		meanY,
+		innerWidth,
+		innerHeight,
+	};
 }
