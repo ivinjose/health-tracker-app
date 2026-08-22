@@ -9,7 +9,10 @@ import {
 	CHART_PADDING,
 	buildLinePoints,
 	getChartAxisDate,
+	getChartTooltipDate,
 	getXLabelAnchor,
+	formatAxisValue,
+	getYAxisTicks,
 } from './chartUtils';
 
 const TOOLTIP_WIDTH = 120;
@@ -59,20 +62,21 @@ export default function LineChart({
 		);
 	}
 
-	const { points, innerHeight } = chartWidth
+	const padding = { ...CHART_PADDING, left: 36 };
+	const { points, innerHeight, minY, maxY, meanY } = chartWidth
 		? buildLinePoints({
 			data,
 			yKey: yAxisKey,
 			chartWidth,
-			padding: CHART_PADDING,
+			padding,
 		})
-		: { points: [], innerHeight: 0 };
+		: { points: [], innerHeight: 0, minY: 0, maxY: 1, meanY: 0 };
 	const validPoints = points.filter((point) => !Number.isNaN(point.value));
 	const polylinePoints = validPoints.map((point) => `${point.x},${point.y}`).join(' ');
-	const labelStep = Math.max(1, Math.ceil(validPoints.length / 4));
+	const yTicks = getYAxisTicks(minY, maxY, meanY, padding.top, innerHeight);
 	const selectedPoint = selectedIndex != null ? validPoints[selectedIndex] : null;
 	const selectedItem = selectedPoint?.item;
-	const selectedDate = selectedItem ? getChartAxisDate(selectedItem) : '';
+	const selectedDate = selectedItem ? getChartTooltipDate(selectedItem) : '';
 	const tooltipLeft = selectedPoint ? getTooltipLeft(selectedPoint.x, chartWidth) : 0;
 	const showTooltipAbove = selectedPoint ? selectedPoint.y > tooltipHeight + 18 : true;
 	const tooltipTop = selectedPoint
@@ -98,13 +102,42 @@ export default function LineChart({
 							onPress={() => setSelectedIndex(null)}
 						/>
 						<Line
-							x1={CHART_PADDING.left}
-							y1={CHART_PADDING.top + innerHeight}
-							x2={chartWidth - CHART_PADDING.right}
-							y2={CHART_PADDING.top + innerHeight}
+							x1={padding.left}
+							y1={padding.top}
+							x2={padding.left}
+							y2={padding.top + innerHeight}
 							stroke={axisColor}
 							strokeWidth={1}
 						/>
+						<Line
+							x1={padding.left}
+							y1={padding.top + innerHeight}
+							x2={chartWidth - padding.right}
+							y2={padding.top + innerHeight}
+							stroke={axisColor}
+							strokeWidth={1}
+						/>
+						{yTicks.map((tick, index) => (
+							<G key={`y-tick-${index}`}>
+								<Line
+									x1={padding.left - 4}
+									y1={tick.y}
+									x2={padding.left}
+									y2={tick.y}
+									stroke={axisColor}
+									strokeWidth={1}
+								/>
+								<SvgText
+									x={padding.left - 8}
+									y={tick.y + 3}
+									fontSize={10}
+									fill={labelColor}
+									textAnchor="end"
+								>
+									{formatAxisValue(tick.value)}
+								</SvgText>
+							</G>
+						))}
 						{polylinePoints ? (
 							<Polyline
 								points={polylinePoints}
@@ -154,20 +187,18 @@ export default function LineChart({
 								</G>
 							);
 						})}
-						{validPoints.map((point, index) =>
-							index % labelStep === 0 || index === validPoints.length - 1 ? (
-								<SvgText
-									key={`label-${index}`}
-									x={point.x}
-									y={CHART_HEIGHT - 10}
-									fontSize={10}
-									fill={labelColor}
-									textAnchor={getXLabelAnchor(index, validPoints.length)}
-								>
-									{getChartAxisDate(point.item)}
-								</SvgText>
-							) : null
-						)}
+						{validPoints.map((point, index) => (
+							<SvgText
+								key={`label-${index}`}
+								x={point.x}
+								y={CHART_HEIGHT - 10}
+								fontSize={10}
+								fill={labelColor}
+								textAnchor={getXLabelAnchor(index, validPoints.length)}
+							>
+								{getChartAxisDate(point.item)}
+							</SvgText>
+						))}
 					</Svg>
 					{selectedItem ? (
 						<View
