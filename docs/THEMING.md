@@ -4,7 +4,7 @@ Reference for humans and coding agents working on **app-wide appearance** in hea
 
 This is **not** OS/system dark mode and **not** a user-facing light/dark toggle. The whole app uses one explicit palette (`APP_APPEARANCE`, currently `iosDark`). Child components do not check `isDark`. They use the same NativeWind class names and the same `useTheme()` fields everywhere; the root provider remaps what those tokens mean.
 
-Related: [ARCHITECTURE.md](./ARCHITECTURE.md) (modals, forms, navigation). This file is the source of truth for colors and appearance.
+Related: [ARCHITECTURE.md](../ARCHITECTURE.md) (structure, auth, forms, navigation). This file is the source of truth for colors and appearance.
 
 ---
 

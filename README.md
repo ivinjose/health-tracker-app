@@ -19,7 +19,7 @@ See [docs/migration/phase-4-advanced.md](./docs/migration/phase-4-advanced.md) i
 
 ## Architecture
 
-Conventions for forms, modals, date pickers, and repo cross-references: [docs/ARCHITECTURE.md](./docs/ARCHITECTURE.md).
+Conventions for structure, auth, data flow, forms, and navigation: [ARCHITECTURE.md](./ARCHITECTURE.md). Appearance/theming: [docs/THEMING.md](./docs/THEMING.md).
 
 ## Prerequisites
 
