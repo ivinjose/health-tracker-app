@@ -1,7 +1,7 @@
 import { useTheme } from '@/components/ThemeProvider';
 import { Text } from '@/components/ui/text';
 import { useEffect, useState } from 'react';
-import { View } from 'react-native';
+import { Pressable, View } from 'react-native';
 import Svg, { Circle, G, Line, Polyline, Rect, Text as SvgText } from 'react-native-svg';
 
 import {
@@ -16,7 +16,7 @@ import {
 } from './chartUtils';
 
 const TOOLTIP_WIDTH = 120;
-const HIT_RADIUS = 16;
+const HIT_SIZE = 44;
 
 function getTooltipLeft(pointX, chartWidth) {
 	const margin = 4;
@@ -150,15 +150,6 @@ export default function LineChart({
 							const selected = index === selectedIndex;
 							return (
 								<G key={`point-${index}`}>
-									<Circle
-										cx={point.x}
-										cy={point.y}
-										r={HIT_RADIUS}
-										fill="transparent"
-										onPress={() =>
-											setSelectedIndex((current) => (current === index ? null : index))
-										}
-									/>
 									{selected ? (
 										<Circle
 											cx={point.x}
@@ -200,6 +191,24 @@ export default function LineChart({
 							</SvgText>
 						))}
 					</Svg>
+					{validPoints.map((point, index) => (
+						<Pressable
+							key={`hit-${index}`}
+							accessibilityRole="button"
+							accessibilityLabel={`Show details for ${point.value}${unit ? ` ${unit}` : ''}`}
+							onPress={() =>
+								setSelectedIndex((current) => (current === index ? null : index))
+							}
+							hitSlop={8}
+							style={{
+								position: 'absolute',
+								left: point.x - HIT_SIZE / 2,
+								top: point.y - HIT_SIZE / 2 - 8,
+								width: HIT_SIZE,
+								height: HIT_SIZE,
+							}}
+						/>
+					))}
 					{selectedItem ? (
 						<View
 							onLayout={(event) => {

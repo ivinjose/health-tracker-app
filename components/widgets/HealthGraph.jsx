@@ -41,7 +41,7 @@ export default function HealthGraph({ investigation, count }) {
 			asChild
 		>
 			<Pressable className="flex-row items-center gap-1">
-				<Text className="text-sm text-primary">View more</Text>
+				<Text className="text-sm text-primary">Analyse</Text>
 				<ArrowRight size={14} color={theme.colors.primary} />
 			</Pressable>
 		</Link>

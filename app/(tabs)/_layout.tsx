@@ -50,14 +50,6 @@ export default function AppLayout() {
 				}}
 			/>
 			<Tabs.Screen
-				name="reports"
-				options={{
-					tabBarLabel: 'Manage',
-					headerTitle: 'Manage Reports',
-					tabBarIcon: ({ color }) => <FileText size={26} color={color} strokeWidth={1.5} />,
-				}}
-			/>
-			<Tabs.Screen
 				name="analyse"
 				options={{
 					tabBarLabel: 'Analyse',
@@ -71,6 +63,14 @@ export default function AppLayout() {
 					tabBarLabel: 'Compare',
 					headerTitle: 'Compare Reports',
 					tabBarIcon: ({ color }) => <GitCompareArrows size={26} color={color} strokeWidth={1.5} />,
+				}}
+			/>
+			<Tabs.Screen
+				name="reports"
+				options={{
+					tabBarLabel: 'Manage',
+					headerTitle: 'Manage Reports',
+					tabBarIcon: ({ color }) => <FileText size={26} color={color} strokeWidth={1.5} />,
 				}}
 			/>
 			<Tabs.Screen
