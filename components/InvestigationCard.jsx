@@ -11,7 +11,6 @@ import {
 	AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { Text } from '@/components/ui/text';
-import { FlaskConical } from 'lucide-react-native';
 import { useCallback, useMemo, useState } from 'react';
 import { View } from 'react-native';
 
@@ -43,7 +42,7 @@ export default function InvestigationCard({
 		<>
 			<CardView actions={actions}>
 				<View className="flex-row gap-4 p-4">
-					<FlaskConical size={40} color={theme.colors.primary} />
+					{/* <FlaskConical size={40} color={theme.colors.primary} /> */}
 					<View className="flex-1 gap-1">
 						<Text className="text-base font-semibold text-foreground">{label}</Text>
 						<Text className="text-sm text-muted-foreground">{value}</Text>

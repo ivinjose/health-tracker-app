@@ -7,6 +7,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Text } from '@/components/ui/text';
 import useAuth from '@/hooks/useAuth';
 import useProfileApiManager from '@/api-managers/ProfileApiManager';
+import { CARD_LIST_GAP } from '@/constants/layout';
 import { useToast } from '@/hooks/use-toast';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Plus } from 'lucide-react-native';
@@ -68,7 +69,7 @@ export default function ProfilesScreen() {
 			) : (
 				<ScrollView
 					className="flex-1"
-					contentContainerStyle={{ padding: 16, gap: 16 }}
+					contentContainerStyle={{ padding: 16, gap: CARD_LIST_GAP }}
 					refreshControl={
 						<RefreshControl
 							refreshing={isRefetching}

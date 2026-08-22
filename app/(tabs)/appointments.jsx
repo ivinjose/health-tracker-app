@@ -6,6 +6,7 @@ import { useTheme } from '@/components/ThemeProvider';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Text } from '@/components/ui/text';
+import { CARD_LIST_GAP } from '@/constants/layout';
 import { useToast } from '@/hooks/use-toast';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useLocalSearchParams } from 'expo-router';
@@ -75,7 +76,7 @@ export default function AppointmentsScreen() {
 			) : (
 				<ScrollView
 					className="flex-1"
-					contentContainerStyle={{ padding: 16, gap: 16 }}
+					contentContainerStyle={{ padding: 16, gap: CARD_LIST_GAP }}
 					refreshControl={
 						<RefreshControl
 							refreshing={isRefetching}

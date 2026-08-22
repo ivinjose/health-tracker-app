@@ -3,6 +3,7 @@ import InvestigationSelect from '@/components/InvestigationSelect';
 import LineChart from '@/components/charts/LineChart';
 import ReportCard from '@/components/ReportCard';
 import { Text } from '@/components/ui/text';
+import { CARD_LIST_GAP } from '@/constants/layout';
 import { SORT_ORDER } from '@/constants/sort';
 import { getInvestigationUnit, withDisplayDates } from '@/lib/reportUtils';
 import useInvestigationsApiManager from '@/api-managers/InvestigationsApiManager';
@@ -123,14 +124,18 @@ export default function AnalyseScreen() {
 					<Text className="text-muted-foreground">No reports in this range.</Text>
 				) : null}
 
-				{reports.map((report) => (
-					<ReportCard
-						key={report._id}
-						isReadOnly
-						investigations={investigations}
-						{...report}
-					/>
-				))}
+				{reports.length > 0 ? (
+					<View style={{ gap: CARD_LIST_GAP }}>
+						{reports.map((report) => (
+							<ReportCard
+								key={report._id}
+								isReadOnly
+								investigations={investigations}
+								{...report}
+							/>
+						))}
+					</View>
+				) : null}
 			</ScrollView>
 		</View>
 	);

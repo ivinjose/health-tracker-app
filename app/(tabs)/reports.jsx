@@ -6,6 +6,7 @@ import { useTheme } from '@/components/ThemeProvider';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Text } from '@/components/ui/text';
+import { CARD_LIST_GAP } from '@/constants/layout';
 import { SORT_ORDER } from '@/constants/sort';
 import { useToast } from '@/hooks/use-toast';
 import { withDisplayDates } from '@/lib/reportUtils';
@@ -62,7 +63,7 @@ export default function ReportsScreen() {
 	return (
 		<View className="flex-1 bg-background">
 			{isLoading ? (
-				<View className="gap-4 p-4">
+				<View className="p-4" style={{ gap: CARD_LIST_GAP }}>
 					<Skeleton className="h-24 w-full rounded-[10px] bg-card" />
 					<Skeleton className="h-24 w-full rounded-[10px] bg-card" />
 				</View>
@@ -80,7 +81,7 @@ export default function ReportsScreen() {
 			) : (
 				<ScrollView
 					className="flex-1"
-					contentContainerStyle={{ padding: 16, paddingBottom: 96, gap: 8 }}
+					contentContainerStyle={{ padding: 16, paddingBottom: 96, gap: CARD_LIST_GAP }}
 					refreshControl={
 						<RefreshControl
 							refreshing={isRefetching}
