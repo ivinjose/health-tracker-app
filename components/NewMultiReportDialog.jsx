@@ -222,6 +222,10 @@ export default function NewMultiReportDialog({ open, onOpenChange }) {
 				{fields.map((field, index) => {
 					const showHeader = fields.length > 1;
 					const isExpanded = !showHeader || !collapsedIds.has(field.id);
+					const row = watchedReports?.[index];
+					const headerTitle = formSchema.safeParse(row).success
+						? getInvestigationLabel(investigations, row.investigation)
+						: `Report ${index + 1}`;
 					const formFields = (
 						<ReportFormFields
 							form={form}
@@ -249,14 +253,17 @@ export default function NewMultiReportDialog({ open, onOpenChange }) {
 										className="min-w-0 flex-1 flex-row items-center gap-1.5 pr-3"
 										accessibilityRole="button"
 										accessibilityState={{ expanded: isExpanded }}
-										accessibilityLabel={`Report ${index + 1}`}
+										accessibilityLabel={headerTitle}
 									>
-										<Text className="text-sm font-medium text-muted-foreground">
-											Report {index + 1}
+										<Text
+											className="min-w-0 flex-1 text-sm font-medium text-muted-foreground"
+											numberOfLines={1}
+										>
+											{headerTitle}
 										</Text>
 										<Icon
 											as={isExpanded ? ChevronUp : ChevronDown}
-											className="text-muted-foreground"
+											className="shrink-0 text-muted-foreground"
 											size={16}
 										/>
 									</Pressable>
@@ -265,7 +272,7 @@ export default function NewMultiReportDialog({ open, onOpenChange }) {
 										disabled={!canRemove}
 										hitSlop={8}
 										accessibilityRole="button"
-										accessibilityLabel={`Remove report ${index + 1}`}
+										accessibilityLabel={`Remove ${headerTitle}`}
 										accessibilityState={{ disabled: !canRemove }}
 									>
 										<Text
