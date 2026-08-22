@@ -1,5 +1,4 @@
 import NewProfileDialog from '@/components/NewProfileDialog';
-import PageHeader from '@/components/PageHeader';
 import ProfileCard from '@/components/ProfileCard';
 import CardView from '@/components/CardView';
 import { useTheme } from '@/components/ThemeProvider';
@@ -43,7 +42,6 @@ export default function ProfilesScreen() {
 
 	return (
 		<View className="flex-1 bg-background">
-			<PageHeader text="Manage user profiles" showBack />
 			<View className="px-4 py-3">
 				<Button onPress={() => setShowNewProfileDialog(true)}>
 					<Plus size={18} color={theme.colors.primaryForeground} />

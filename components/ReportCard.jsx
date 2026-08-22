@@ -11,6 +11,7 @@ import {
 	AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { Text } from '@/components/ui/text';
+import { formatInvestigationReading } from '@/lib/investigationUtils';
 import { getDisplayDate } from '@/lib/reportUtils';
 import { useCallback, useMemo, useState } from 'react';
 import { View } from 'react-native';
@@ -56,7 +57,11 @@ export default function ReportCard({
 					{/* <CircleUserRound size={40} color={theme.colors.primary} /> */}
 					<View className="flex-1 gap-1">
 						<Text className="text-base font-semibold text-foreground">
-							{investigationMeta.label} - {value} {investigationMeta.unit}
+							{formatInvestigationReading(
+								investigationMeta.label,
+								value,
+								investigationMeta.unit
+							)}
 						</Text>
 						{remarks ? <Text className="text-sm text-foreground">{remarks}</Text> : null}
 						{appointments.length > 0 ? (

@@ -15,7 +15,8 @@ export default function MoreLayout() {
 			}}
 		>
 			<Stack.Screen name="index" options={{ title: 'More' }} />
-			<Stack.Screen name="profiles" options={{ headerShown: false }} />
+			<Stack.Screen name="profiles" options={{ title: 'Profiles' }} />
+			<Stack.Screen name="investigations" options={{ title: 'Investigations' }} />
 		</Stack>
 	);
 }

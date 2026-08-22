@@ -9,6 +9,9 @@ const FormFieldInput = ({
 	labelText,
 	labelStyleClass,
 	inputType = 'default',
+	editable = true,
+	autoCapitalize,
+	onValueChange,
 }) => {
 	const theme = useTheme();
 
@@ -30,12 +33,17 @@ const FormFieldInput = ({
 					)}
 
 					<TextInput
-						className="rounded-[10px] border border-input bg-card px-3 py-3 text-base leading-tight text-foreground"
+						className={`rounded-[10px] border border-input bg-card px-3 py-3 text-base leading-tight text-foreground ${!editable ? 'opacity-50' : ''}`}
 						placeholder={placeholder}
 						placeholderTextColor={theme.colors.placeholder}
 						value={value}
-						onChangeText={onChange}
+						onChangeText={(text) => {
+							onChange(text);
+							onValueChange?.(text);
+						}}
 						onBlur={onBlur}
+						editable={editable}
+						autoCapitalize={autoCapitalize}
 						keyboardType={inputType === 'number' ? 'numeric' : 'default'}
 						keyboardAppearance={theme.keyboardAppearance}
 						selectionColor={theme.colors.tint}
