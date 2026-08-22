@@ -5,7 +5,7 @@ import { Label } from '@/components/ui/label';
 import { Text } from '@/components/ui/text';
 import { format } from 'date-fns';
 import { Calendar as CalendarIcon } from 'lucide-react-native';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Modal, Pressable, View } from 'react-native';
 import { Calendar } from 'react-native-calendars';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -79,20 +79,22 @@ export default function DateRange({
 	onToDateSelect,
 	onToDateReset,
 }) {
-	const [fromDateEnabled, setFromDateEnabled] = useState(false);
-	const [toDateEnabled, setToDateEnabled] = useState(false);
+	const [fromDateEnabled, setFromDateEnabled] = useState(Boolean(fromDate));
+	const [toDateEnabled, setToDateEnabled] = useState(Boolean(toDate));
 
-	useEffect(() => {
-		if (!fromDateEnabled) {
+	const handleFromEnabledChange = (checked) => {
+		setFromDateEnabled(checked);
+		if (!checked) {
 			onFromDateReset();
 		}
-	}, [fromDateEnabled, onFromDateReset]);
+	};
 
-	useEffect(() => {
-		if (!toDateEnabled) {
+	const handleToEnabledChange = (checked) => {
+		setToDateEnabled(checked);
+		if (!checked) {
 			onToDateReset();
 		}
-	}, [toDateEnabled, onToDateReset]);
+	};
 
 	return (
 		<View className="gap-4">
@@ -100,7 +102,7 @@ export default function DateRange({
 				<View className="flex-row items-center gap-2">
 					<Checkbox
 						checked={fromDateEnabled}
-						onCheckedChange={setFromDateEnabled}
+						onCheckedChange={handleFromEnabledChange}
 					/>
 					<Text className="text-sm text-foreground">Enable from date filter</Text>
 				</View>
@@ -114,7 +116,7 @@ export default function DateRange({
 
 			<View className="gap-2">
 				<View className="flex-row items-center gap-2">
-					<Checkbox checked={toDateEnabled} onCheckedChange={setToDateEnabled} />
+					<Checkbox checked={toDateEnabled} onCheckedChange={handleToEnabledChange} />
 					<Text className="text-sm text-foreground">Enable to date filter</Text>
 				</View>
 				<DatePickerField
