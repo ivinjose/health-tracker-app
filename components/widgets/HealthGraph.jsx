@@ -5,7 +5,7 @@ import { useTheme } from '@/components/ThemeProvider';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Text } from '@/components/ui/text';
 import WidgetView from '@/components/WidgetView';
-import { getInvestigationLabel, withDisplayDates } from '@/lib/reportUtils';
+import { getInvestigationLabel, getInvestigationUnit, withDisplayDates } from '@/lib/reportUtils';
 import { useQuery } from '@tanstack/react-query';
 import { Link } from 'expo-router';
 import { ArrowRight } from 'lucide-react-native';
@@ -32,6 +32,7 @@ export default function HealthGraph({ investigation, count }) {
 	const title = isInvestigationLoading
 		? investigation
 		: getInvestigationLabel(investigations, investigation);
+	const unit = getInvestigationUnit(investigations, investigation);
 
 	const footer = (
 		<Link href={`/(tabs)/more/analyse-reports/${investigation}`} asChild>
@@ -47,7 +48,12 @@ export default function HealthGraph({ investigation, count }) {
 			{isLoading ? (
 				<HealthGraphLoading />
 			) : reports.length > 0 ? (
-				<LineChart data={reports} xAxisKey="displayDate" yAxisKey="value" />
+				<LineChart
+					data={reports}
+					xAxisKey="shortDisplayDate"
+					yAxisKey="value"
+					unit={unit}
+				/>
 			) : (
 				<Text className="text-sm text-muted-foreground">No readings yet.</Text>
 			)}

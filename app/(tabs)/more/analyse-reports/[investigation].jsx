@@ -4,7 +4,7 @@ import LineChart from '@/components/charts/LineChart';
 import PageHeader from '@/components/PageHeader';
 import ReportCard from '@/components/ReportCard';
 import { Text } from '@/components/ui/text';
-import { withDisplayDates } from '@/lib/reportUtils';
+import { getInvestigationUnit, withDisplayDates } from '@/lib/reportUtils';
 import useInvestigationsApiManager from '@/api-managers/InvestigationsApiManager';
 import useReportsApiManager from '@/api-managers/ReportsApiManager';
 import { useQuery } from '@tanstack/react-query';
@@ -120,7 +120,12 @@ export default function AnalyseInvestigationScreen() {
 				{isReportsLoading ? (
 					<Text className="text-muted-foreground">Loading reports…</Text>
 				) : reports.length > 0 ? (
-					<LineChart data={reports} xAxisKey="displayDate" yAxisKey="value" />
+					<LineChart
+						data={reports}
+						xAxisKey="displayDate"
+						yAxisKey="value"
+						unit={getInvestigationUnit(investigations, investigation)}
+					/>
 				) : investigation ? (
 					<Text className="text-muted-foreground">No reports in this range.</Text>
 				) : null}
