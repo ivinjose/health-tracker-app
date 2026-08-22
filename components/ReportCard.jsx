@@ -19,12 +19,14 @@ import { View } from 'react-native';
 export default function ReportCard({
 	_id,
 	isReadOnly = false,
+	onEditCb,
 	onDeleteCb,
 	investigation,
 	value,
 	displayDate,
 	timestamp,
 	appointments = [],
+	appointment,
 	remarks,
 	filename,
 	investigations = [],
@@ -39,8 +41,15 @@ export default function ReportCard({
 
 	const actions = useMemo(() => {
 		if (isReadOnly) return [];
-		return [{ label: 'Delete', action: () => setShowConfirm(true), variant: 'destructive' }];
-	}, [isReadOnly]);
+		return [
+			{
+				label: 'Edit',
+				action: () =>
+					onEditCb({ _id, investigation, value, timestamp, remarks, appointment }),
+			},
+			{ label: 'Delete', action: () => setShowConfirm(true), variant: 'destructive' },
+		];
+	}, [isReadOnly, _id, investigation, value, timestamp, remarks, appointment, onEditCb]);
 
 	const investigationMeta = useMemo(() => {
 		const match = investigations.find((inv) => inv.value === investigation);

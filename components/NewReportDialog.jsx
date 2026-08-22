@@ -13,28 +13,46 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
 import { useEffect } from 'react';
 
-export default function NewReportDialog({ open, onOpenChange, appointmentId }) {
+const EMPTY_VALUES = {
+	investigation: '',
+	value: '',
+	date: undefined,
+	appointment: undefined,
+	remarks: '',
+};
+
+export default function NewReportDialog({ open, onOpenChange, appointmentId, report }) {
 	const { toast } = useToast();
 	const queryClient = useQueryClient();
 	const reportsApiManager = useReportsApiManager();
 	const investigationsApiManager = useInvestigationsApiManager();
+	const isEdit = Boolean(report);
 
 	const { form, canSubmit } = useValidatedForm({
 		schema: formSchema,
 		defaultValues: {
-			investigation: '',
-			value: '',
-			date: undefined,
+			...EMPTY_VALUES,
 			appointment: appointmentId || undefined,
-			remarks: '',
 		},
 	});
 
 	useEffect(() => {
-		if (appointmentId) {
-			form.setValue('appointment', appointmentId);
-		}
-	}, [appointmentId, form]);
+		if (!open) return;
+		form.reset(
+			report
+				? {
+						investigation: report.investigation ?? '',
+						value: report.value != null ? String(report.value) : '',
+						date: report.timestamp ? new Date(report.timestamp) : undefined,
+						appointment: report.appointment || undefined,
+						remarks: report.remarks ?? '',
+					}
+				: {
+						...EMPTY_VALUES,
+						appointment: appointmentId || undefined,
+					}
+		);
+	}, [open, report, appointmentId, form]);
 
 	// TODO later: add appointments to the report
 	// const { data: appointments = [], isLoading: appointmentsIsLoading } = useQuery({
@@ -52,14 +70,35 @@ export default function NewReportDialog({ open, onOpenChange, appointmentId }) {
 		enabled: open,
 	});
 
-	const { mutateAsync: addReport, isPending } = useMutation({
-		mutationFn: (data) => reportsApiManager.createReport(data),
+	const { mutate: saveReport, isPending } = useMutation({
+		mutationFn: (data) => {
+			if (isEdit) {
+				return reportsApiManager.updateReport({
+					id: report._id,
+					investigation: data.investigation,
+					value: data.value,
+					date: data.date,
+					remarks: data.remarks,
+				});
+			}
+			return reportsApiManager.createReport(data);
+		},
 		onSuccess: async () => {
-			form.reset({ appointment: appointmentId || undefined });
+			form.reset({
+				...EMPTY_VALUES,
+				appointment: appointmentId || undefined,
+			});
 			onOpenChange(false);
 			await queryClient.invalidateQueries({ queryKey: ['reports'] });
 			await queryClient.invalidateQueries({ queryKey: ['latest'] });
-			toast({ description: 'Your report was saved successfully!' });
+			toast({
+				description: isEdit
+					? 'Your report was updated successfully!'
+					: 'Your report was saved successfully!',
+			});
+		},
+		onError: (error) => {
+			toast({ description: error.message });
 		},
 	});
 
@@ -69,10 +108,11 @@ export default function NewReportDialog({ open, onOpenChange, appointmentId }) {
 		<FormSheetModal
 			open={open}
 			onOpenChange={onOpenChange}
-			title="Report details"
-			onConfirm={form.handleSubmit(addReport)}
+			title={isEdit ? 'Edit report' : 'Report details'}
+			onConfirm={form.handleSubmit(saveReport)}
 			confirmDisabled={!canSubmit || isPending}
 			confirmLoading={isPending}
+			confirmAccessibilityLabel={isEdit ? 'Save' : 'Create report'}
 		>
 			<Form {...form}>
 				<FormFieldSelect
@@ -81,6 +121,7 @@ export default function NewReportDialog({ open, onOpenChange, appointmentId }) {
 					placeholder="Choose from the list"
 					labelText="Investigation"
 					dropdownOptions={isInvestigationLoading ? [] : investigations}
+					disabled={isEdit}
 				/>
 				<FormFieldInput
 					formControl={form.control}

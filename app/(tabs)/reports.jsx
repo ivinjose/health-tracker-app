@@ -21,6 +21,7 @@ export default function ReportsScreen() {
 	const { showNewReportDialog: showDialogParam, appointment } = useLocalSearchParams();
 	const appointmentId = Array.isArray(appointment) ? appointment[0] : appointment;
 	const [showNewReportDialog, setShowNewReportDialog] = useState(false);
+	const [editingReport, setEditingReport] = useState(null);
 	const { toast } = useToast();
 	const reportsApiManager = useReportsApiManager();
 	const investigationsApiManager = useInvestigationsApiManager();
@@ -28,6 +29,7 @@ export default function ReportsScreen() {
 
 	useEffect(() => {
 		if (showDialogParam === 'true') {
+			setEditingReport(null);
 			setShowNewReportDialog(true);
 		}
 	}, [showDialogParam]);
@@ -58,7 +60,27 @@ export default function ReportsScreen() {
 			await queryClient.invalidateQueries({ queryKey: ['latest'] });
 			toast({ description: 'Your report was deleted successfully!' });
 		},
+		onError: (error) => {
+			toast({ description: error.message });
+		},
 	});
+
+	const openCreate = () => {
+		setEditingReport(null);
+		setShowNewReportDialog(true);
+	};
+
+	const openEdit = (report) => {
+		setEditingReport(report);
+		setShowNewReportDialog(true);
+	};
+
+	const onDialogOpenChange = (open) => {
+		setShowNewReportDialog(open);
+		if (!open) {
+			setEditingReport(null);
+		}
+	};
 
 	return (
 		<View className="flex-1 bg-background">
@@ -94,6 +116,7 @@ export default function ReportsScreen() {
 					{reports.map((report) => (
 						<ReportCard
 							key={report._id}
+							onEditCb={openEdit}
 							onDeleteCb={removeReport}
 							investigations={investigations}
 							{...report}
@@ -103,7 +126,7 @@ export default function ReportsScreen() {
 			)}
 
 			<Pressable
-				onPress={() => setShowNewReportDialog(true)}
+				onPress={openCreate}
 				accessibilityRole="button"
 				accessibilityLabel="New report"
 				className="absolute bottom-6 right-5 z-10 h-14 w-14 items-center justify-center rounded-full bg-primary active:opacity-80"
@@ -120,8 +143,9 @@ export default function ReportsScreen() {
 
 			<NewReportDialog
 				open={showNewReportDialog}
-				onOpenChange={setShowNewReportDialog}
+				onOpenChange={onDialogOpenChange}
 				appointmentId={appointmentId}
+				report={editingReport}
 			/>
 		</View>
 	);

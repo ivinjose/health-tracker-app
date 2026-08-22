@@ -15,6 +15,7 @@ const FormFieldSelect = ({
 	labelText,
 	labelStyleClass,
 	dropdownOptions,
+	disabled = false,
 }) => {
 	return (
 		<Controller
@@ -50,8 +51,9 @@ const FormFieldSelect = ({
 						<Select
 							value={selectValue}
 							onValueChange={(option) => onChange(option?.value ?? '')}
+							disabled={disabled}
 						>
-							<SelectTrigger className="mt-1 bg-card">
+							<SelectTrigger className="mt-1 bg-card" disabled={disabled}>
 								<SelectValue placeholder={placeholder} />
 							</SelectTrigger>
 

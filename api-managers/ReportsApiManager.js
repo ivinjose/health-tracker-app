@@ -1,5 +1,7 @@
 import useAxiosPrivate from "../hooks/useAxiosPrivate";
 
+const getErrorMessage = (err, fallback) => err?.response?.data?.message || fallback;
+
 const useReportsApiManager = () => {
     const axiosPrivate = useAxiosPrivate();
     const REPORTS_API = '/api/reports';
@@ -17,7 +19,7 @@ const useReportsApiManager = () => {
         const parsedNumber = Number(value);
 
         if (!investigation || !parsedNumber || !date) {
-            return;
+            throw new Error('Could not create report.');
         }
 
         try {
@@ -34,7 +36,31 @@ const useReportsApiManager = () => {
             )
             return response.data.data;
         } catch (err) {
-            console.log(err);
+            throw new Error(getErrorMessage(err, 'Could not create report.'));
+        }
+    };
+
+    const updateReport = async (data) => {
+        const { id, investigation, value, date, remarks } = data;
+        const parsedNumber = Number(value);
+
+        if (!id || !investigation || !parsedNumber || !date) {
+            throw new Error('Could not update report.');
+        }
+
+        try {
+            const response = await axiosPrivate.put(
+                `${REPORTS_API}/${id}`,
+                {
+                    investigation,
+                    value: parsedNumber,
+                    timestamp: date.valueOf(),
+                    remarks,
+                },
+            );
+            return response.data.data;
+        } catch (err) {
+            throw new Error(getErrorMessage(err, 'Could not update report.'));
         }
     };
 
@@ -72,14 +98,13 @@ const useReportsApiManager = () => {
         }
     };
 
-    /** not being used right now */
     const deleteReport = async (data) => {
         const report = data;
         try {
             const response = await axiosPrivate.delete(`${REPORTS_API}/${report}`)
             return response.data.data;
         } catch (err) {
-            console.log(err);
+            throw new Error(getErrorMessage(err, 'Could not delete report.'));
         }
     };
 
@@ -110,7 +135,7 @@ const useReportsApiManager = () => {
     };
 
     return {
-        createReport, readReports, deleteReport, compareReports
+        createReport, updateReport, readReports, deleteReport, compareReports
     }
 }
 
