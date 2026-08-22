@@ -1,7 +1,16 @@
+import { format } from 'date-fns';
 import { Dimensions } from 'react-native';
 
 export const CHART_HEIGHT = 220;
-export const CHART_PADDING = { top: 28, right: 10, bottom: 36, left: 8 };
+export const CHART_PADDING = { top: 36, right: 10, bottom: 36, left: 8 };
+export const CHART_AXIS_DATE_FORMAT = 'dd/MM/yyyy';
+
+export function getChartAxisDate(item) {
+	if (item?.timestamp == null) return '';
+	const time = Number(item.timestamp);
+	if (Number.isNaN(time)) return '';
+	return format(time, CHART_AXIS_DATE_FORMAT);
+}
 
 export function getXLabelAnchor(index, length) {
 	if (length <= 1) return 'middle';

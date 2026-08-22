@@ -5,7 +5,7 @@ import ReportCard from '@/components/ReportCard';
 import { Text } from '@/components/ui/text';
 import { CARD_LIST_GAP } from '@/constants/layout';
 import { SORT_ORDER } from '@/constants/sort';
-import { getInvestigationUnit, withDisplayDates } from '@/lib/reportUtils';
+import { getInvestigationUnit, sortReportsByTimestamp, withDisplayDates } from '@/lib/reportUtils';
 import useInvestigationsApiManager from '@/api-managers/InvestigationsApiManager';
 import useReportsApiManager from '@/api-managers/ReportsApiManager';
 import { useQuery } from '@tanstack/react-query';
@@ -115,9 +115,7 @@ export default function AnalyseScreen() {
 					<Text className="text-muted-foreground">Loading reports…</Text>
 				) : reports.length > 0 ? (
 					<LineChart
-						data={reports}
-						xAxisKey="displayDate"
-						yAxisKey="value"
+						data={sortReportsByTimestamp(reports, SORT_ORDER.ASC)}
 						unit={getInvestigationUnit(investigations, investigation)}
 					/>
 				) : investigation ? (

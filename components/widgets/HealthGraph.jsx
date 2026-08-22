@@ -6,7 +6,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Text } from '@/components/ui/text';
 import WidgetView from '@/components/WidgetView';
 import { SORT_ORDER } from '@/constants/sort';
-import { getInvestigationLabel, getInvestigationUnit, sortReportsByTimestamp, withDisplayDates } from '@/lib/reportUtils';
+import { getInvestigationLabel, getInvestigationUnit, sortReportsByTimestamp } from '@/lib/reportUtils';
 import { useQuery } from '@tanstack/react-query';
 import { Link } from 'expo-router';
 import { ArrowRight } from 'lucide-react-native';
@@ -21,7 +21,7 @@ export default function HealthGraph({ investigation, count }) {
 		queryKey: ['reports', investigation, count],
 		queryFn: async () => {
 			const response = await reportsApiManager.readReports({ investigation, count });
-			return sortReportsByTimestamp(withDisplayDates(response ?? []), SORT_ORDER.ASC);
+			return sortReportsByTimestamp(response ?? [], SORT_ORDER.ASC);
 		},
 	});
 
@@ -52,12 +52,7 @@ export default function HealthGraph({ investigation, count }) {
 			{isLoading ? (
 				<HealthGraphLoading />
 			) : reports.length > 0 ? (
-				<LineChart
-					data={reports}
-					xAxisKey="shortDisplayDate"
-					yAxisKey="value"
-					unit={unit}
-				/>
+				<LineChart data={reports} unit={unit} />
 			) : (
 				<Text className="text-sm text-muted-foreground">No readings yet.</Text>
 			)}

@@ -1,7 +1,5 @@
 import { useTheme } from '@/components/ThemeProvider';
 import { Text } from '@/components/ui/text';
-import { SORT_ORDER } from '@/constants/sort';
-import { sortReportsByTimestamp } from '@/lib/reportUtils';
 import { useEffect, useState } from 'react';
 import { View } from 'react-native';
 import Svg, { Circle, G, Line, Polyline, Rect, Text as SvgText } from 'react-native-svg';
@@ -10,6 +8,7 @@ import {
 	CHART_HEIGHT,
 	CHART_PADDING,
 	buildLinePoints,
+	getChartAxisDate,
 	getXLabelAnchor,
 } from './chartUtils';
 
@@ -22,7 +21,12 @@ function getTooltipLeft(pointX, chartWidth) {
 	return Math.max(margin, Math.min(left, chartWidth - TOOLTIP_WIDTH - margin));
 }
 
-export default function LineChart({ data = [], xAxisKey, yAxisKey, width, unit = '' }) {
+export default function LineChart({
+	data = [],
+	yAxisKey = 'value',
+	width,
+	unit = '',
+}) {
 	const theme = useTheme();
 	const lineColor = theme.chart.line;
 	const axisColor = theme.chart.axis;
@@ -55,13 +59,12 @@ export default function LineChart({ data = [], xAxisKey, yAxisKey, width, unit =
 		);
 	}
 
-	const chartData = sortReportsByTimestamp(data, SORT_ORDER.ASC);
 	const { points, innerHeight } = chartWidth
 		? buildLinePoints({
-			data: chartData,
-			xKey: xAxisKey,
+			data,
 			yKey: yAxisKey,
 			chartWidth,
+			padding: CHART_PADDING,
 		})
 		: { points: [], innerHeight: 0 };
 	const validPoints = points.filter((point) => !Number.isNaN(point.value));
@@ -69,6 +72,7 @@ export default function LineChart({ data = [], xAxisKey, yAxisKey, width, unit =
 	const labelStep = Math.max(1, Math.ceil(validPoints.length / 4));
 	const selectedPoint = selectedIndex != null ? validPoints[selectedIndex] : null;
 	const selectedItem = selectedPoint?.item;
+	const selectedDate = selectedItem ? getChartAxisDate(selectedItem) : '';
 	const tooltipLeft = selectedPoint ? getTooltipLeft(selectedPoint.x, chartWidth) : 0;
 	const showTooltipAbove = selectedPoint ? selectedPoint.y > tooltipHeight + 18 : true;
 	const tooltipTop = selectedPoint
@@ -137,6 +141,16 @@ export default function LineChart({ data = [], xAxisKey, yAxisKey, width, unit =
 										r={selected ? 5 : 4}
 										fill={lineColor}
 									/>
+									<SvgText
+										x={point.x}
+										y={point.y - 10}
+										fontSize={10}
+										fontWeight="600"
+										fill={lineColor}
+										textAnchor={getXLabelAnchor(index, validPoints.length)}
+									>
+										{String(point.value)}
+									</SvgText>
 								</G>
 							);
 						})}
@@ -150,7 +164,7 @@ export default function LineChart({ data = [], xAxisKey, yAxisKey, width, unit =
 									fill={labelColor}
 									textAnchor={getXLabelAnchor(index, validPoints.length)}
 								>
-									{String(point.item[xAxisKey] ?? '')}
+									{getChartAxisDate(point.item)}
 								</SvgText>
 							) : null
 						)}
@@ -186,9 +200,9 @@ export default function LineChart({ data = [], xAxisKey, yAxisKey, width, unit =
 								{selectedPoint.value}
 								{unit ? ` ${unit}` : ''}
 							</Text>
-							{selectedItem.displayDate ? (
+							{selectedDate ? (
 								<Text className="text-[10px] text-muted-foreground">
-									{selectedItem.displayDate}
+									{selectedDate}
 								</Text>
 							) : null}
 							{selectedItem.remarks ? (
