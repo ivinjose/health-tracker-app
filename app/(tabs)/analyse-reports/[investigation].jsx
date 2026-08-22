@@ -1,7 +1,6 @@
 import DateRange from '@/components/DateRange';
 import InvestigationSelect from '@/components/InvestigationSelect';
 import LineChart from '@/components/charts/LineChart';
-import PageHeader from '@/components/PageHeader';
 import ReportCard from '@/components/ReportCard';
 import { Text } from '@/components/ui/text';
 import { SORT_ORDER } from '@/constants/sort';
@@ -38,7 +37,7 @@ export default function AnalyseInvestigationScreen() {
 		(newInvestigation) => {
 			if (newInvestigation !== investigation) {
 				router.replace({
-					pathname: '/(tabs)/more/analyse-reports/[investigation]',
+					pathname: '/(tabs)/analyse-reports/[investigation]',
 					params: {
 						investigation: newInvestigation,
 						from: fromParam,
@@ -94,7 +93,6 @@ export default function AnalyseInvestigationScreen() {
 
 	return (
 		<View className="flex-1 bg-background">
-			<PageHeader text="View reports" showBack />
 			<ScrollView
 				className="flex-1"
 				contentContainerStyle={{ padding: 16, gap: 16, paddingBottom: 32 }}

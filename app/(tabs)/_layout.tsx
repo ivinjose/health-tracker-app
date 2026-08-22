@@ -1,12 +1,11 @@
 import React from 'react';
 
 import { Redirect, Tabs } from 'expo-router';
-import { CalendarPlus, FileText, LayoutGrid } from 'lucide-react-native';
+import { CalendarPlus, ChartLine, FileText, GitCompareArrows, LayoutGrid } from 'lucide-react-native';
 import { ActivityIndicator, View } from 'react-native';
 
 import { HapticTab } from '@/components/ui/haptic-tab';
 import { IconSymbol } from '@/components/ui/icon-symbol';
-import { LogoutTabButton } from '@/components/ui/logout-tab-button';
 import { APP_APPEARANCE, getAppearance } from '@/lib/appearance';
 import useAuth from '../../hooks/useAuth';
 
@@ -37,6 +36,7 @@ export default function AppLayout() {
 			<Tabs.Screen
 				name="index"
 				options={{
+					tabBarLabel: 'Home',
 					title: 'Overview',
 					tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />,
 				}}
@@ -52,8 +52,26 @@ export default function AppLayout() {
 			<Tabs.Screen
 				name="reports"
 				options={{
-					title: 'Reports',
+					tabBarLabel: 'Manage',
+					headerTitle: 'Manage Reports',
 					tabBarIcon: ({ color }) => <FileText size={26} color={color} strokeWidth={1.5} />,
+				}}
+			/>
+			<Tabs.Screen
+				name="analyse-reports"
+				options={{
+					headerShown: false,
+					tabBarLabel: 'Analyse',
+					title: 'Analyse Reports',
+					tabBarIcon: ({ color }) => <ChartLine size={26} color={color} strokeWidth={1.5} />,
+				}}
+			/>
+			<Tabs.Screen
+				name="compare"
+				options={{
+					tabBarLabel: 'Compare',
+					headerTitle: 'Compare Reports',
+					tabBarIcon: ({ color }) => <GitCompareArrows size={26} color={color} strokeWidth={1.5} />,
 				}}
 			/>
 			<Tabs.Screen
@@ -62,16 +80,6 @@ export default function AppLayout() {
 					title: 'More',
 					headerShown: false,
 					tabBarIcon: ({ color }) => <LayoutGrid size={26} color={color} strokeWidth={1.5} />,
-				}}
-			/>
-			<Tabs.Screen
-				name="logout"
-				options={{
-					title: 'Logout',
-					tabBarIcon: ({ color }) => (
-						<IconSymbol size={28} name="rectangle.portrait.and.arrow.right" color={color} />
-					),
-					tabBarButton: (props) => <LogoutTabButton {...props} />,
 				}}
 			/>
 		</Tabs>

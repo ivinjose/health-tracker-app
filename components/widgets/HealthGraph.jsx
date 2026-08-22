@@ -36,7 +36,7 @@ export default function HealthGraph({ investigation, count }) {
 	const unit = getInvestigationUnit(investigations, investigation);
 
 	const footer = (
-		<Link href={`/(tabs)/more/analyse-reports/${investigation}`} asChild>
+		<Link href={`/(tabs)/analyse-reports/${investigation}`} asChild>
 			<Pressable className="flex-row items-center gap-1">
 				<Text className="text-sm text-primary">View more</Text>
 				<ArrowRight size={14} color={theme.colors.primary} />

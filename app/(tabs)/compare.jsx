@@ -1,7 +1,6 @@
 import CompareGraph from '@/components/CompareGraph';
 import DateRange from '@/components/DateRange';
 import InvestigationSelect from '@/components/InvestigationSelect';
-import PageHeader from '@/components/PageHeader';
 import { Text } from '@/components/ui/text';
 import { withDisplayDates } from '@/lib/reportUtils';
 import useInvestigationsApiManager from '@/api-managers/InvestigationsApiManager';
@@ -94,7 +93,6 @@ export default function CompareScreen() {
 
 	return (
 		<View className="flex-1 bg-background">
-			<PageHeader text="Compare results" showBack />
 			<ScrollView
 				className="flex-1"
 				contentContainerStyle={{ padding: 16, gap: 16, paddingBottom: 32 }}

@@ -1,5 +1,4 @@
 import InvestigationSelect from '@/components/InvestigationSelect';
-import PageHeader from '@/components/PageHeader';
 import { Text } from '@/components/ui/text';
 import useInvestigationsApiManager from '@/api-managers/InvestigationsApiManager';
 import { useQuery } from '@tanstack/react-query';
@@ -16,12 +15,11 @@ export default function AnalyseReportsScreen() {
 	});
 
 	const onInvestigationChange = (investigation) => {
-		router.push(`/(tabs)/more/analyse-reports/${investigation}`);
+		router.push(`/(tabs)/analyse-reports/${investigation}`);
 	};
 
 	return (
 		<View className="flex-1 bg-background">
-			<PageHeader text="Analyse Reports" showBack />
 			<ScrollView
 				className="flex-1"
 				contentContainerStyle={{ padding: 16, gap: 16 }}
