@@ -1,5 +1,7 @@
 import { useTheme } from '@/components/ThemeProvider';
 import { Text } from '@/components/ui/text';
+import { SORT_ORDER } from '@/constants/sort';
+import { sortReportsByTimestamp } from '@/lib/reportUtils';
 import { useEffect, useState } from 'react';
 import { View } from 'react-native';
 import Svg, { Circle, G, Line, Polyline, Rect, Text as SvgText } from 'react-native-svg';
@@ -53,9 +55,10 @@ export default function LineChart({ data = [], xAxisKey, yAxisKey, width, unit =
 		);
 	}
 
+	const chartData = sortReportsByTimestamp(data, SORT_ORDER.ASC);
 	const { points, innerHeight } = chartWidth
 		? buildLinePoints({
-			data,
+			data: chartData,
 			xKey: xAxisKey,
 			yKey: yAxisKey,
 			chartWidth,

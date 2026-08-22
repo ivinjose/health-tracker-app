@@ -4,6 +4,7 @@ import LineChart from '@/components/charts/LineChart';
 import PageHeader from '@/components/PageHeader';
 import ReportCard from '@/components/ReportCard';
 import { Text } from '@/components/ui/text';
+import { SORT_ORDER } from '@/constants/sort';
 import { getInvestigationUnit, withDisplayDates } from '@/lib/reportUtils';
 import useInvestigationsApiManager from '@/api-managers/InvestigationsApiManager';
 import useReportsApiManager from '@/api-managers/ReportsApiManager';
@@ -84,7 +85,7 @@ export default function AnalyseInvestigationScreen() {
 				investigation,
 				from: fromDate,
 				to: toDate,
-				order: 'DESC',
+				order: SORT_ORDER.DESC,
 			});
 			return withDisplayDates(response ?? []);
 		},

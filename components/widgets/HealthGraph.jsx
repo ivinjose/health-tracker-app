@@ -5,7 +5,8 @@ import { useTheme } from '@/components/ThemeProvider';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Text } from '@/components/ui/text';
 import WidgetView from '@/components/WidgetView';
-import { getInvestigationLabel, getInvestigationUnit, withDisplayDates } from '@/lib/reportUtils';
+import { SORT_ORDER } from '@/constants/sort';
+import { getInvestigationLabel, getInvestigationUnit, sortReportsByTimestamp, withDisplayDates } from '@/lib/reportUtils';
 import { useQuery } from '@tanstack/react-query';
 import { Link } from 'expo-router';
 import { ArrowRight } from 'lucide-react-native';
@@ -20,7 +21,7 @@ export default function HealthGraph({ investigation, count }) {
 		queryKey: ['reports', investigation, count],
 		queryFn: async () => {
 			const response = await reportsApiManager.readReports({ investigation, count });
-			return withDisplayDates(response ?? []);
+			return sortReportsByTimestamp(withDisplayDates(response ?? []), SORT_ORDER.ASC);
 		},
 	});
 
