@@ -2,8 +2,6 @@ import useInvestigationsApiManager from '@/api-managers/InvestigationsApiManager
 import useReportsApiManager from '@/api-managers/ReportsApiManager';
 import FormSheetModal from '@/components/FormSheetModal';
 import ReportFormFields from '@/components/ReportFormFields';
-import { useTheme } from '@/components/ThemeProvider';
-import { Button } from '@/components/ui/button';
 import { Form } from '@/components/ui/form';
 import { Text } from '@/components/ui/text';
 import { useToast } from '@/hooks/use-toast';
@@ -12,7 +10,6 @@ import { getInvestigationLabel } from '@/lib/reportUtils';
 import formSchema, { isEmptyDraft } from '@/schemas/Report';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
-import { Minus, Plus } from 'lucide-react-native';
 import { useEffect, useState } from 'react';
 import { useFieldArray, useForm, useWatch } from 'react-hook-form';
 import { Pressable, View } from 'react-native';
@@ -42,7 +39,6 @@ function draftLabel(row, investigations) {
 }
 
 export default function NewMultiReportDialog({ open, onOpenChange }) {
-	const theme = useTheme();
 	const { toast } = useToast();
 	const queryClient = useQueryClient();
 	const reportsApiManager = useReportsApiManager();
@@ -183,7 +179,7 @@ export default function NewMultiReportDialog({ open, onOpenChange }) {
 		<FormSheetModal
 			open={open}
 			onOpenChange={onOpenChange}
-			title="Add reports"
+			title="Report details"
 			onConfirm={() => saveReports()}
 			confirmDisabled={!canSubmit || isPending}
 			confirmLoading={isPending}
@@ -191,7 +187,7 @@ export default function NewMultiReportDialog({ open, onOpenChange }) {
 		>
 			<Form {...form}>
 				{saveErrors.length > 0 ? (
-					<View className="mb-4 rounded-[10px] border border-destructive p-3">
+					<View className="mb-4">
 						{saveErrors.map((item, index) => (
 							<Text
 								key={`${item.label}-${index}`}
@@ -203,13 +199,11 @@ export default function NewMultiReportDialog({ open, onOpenChange }) {
 					</View>
 				) : null}
 
-				<View className="gap-4">
-					{fields.map((field, index) => (
-						<View
-							key={field.id}
-							className="rounded-[10px] border border-input bg-card p-3"
-						>
-							<View className="mb-2 flex-row items-center justify-between">
+				{fields.map((field, index) => (
+					<View key={field.id}>
+						{index > 0 ? <View className="mb-4 mt-1 h-px bg-border" /> : null}
+						{fields.length > 1 ? (
+							<View className="mb-4 flex-row items-center justify-between">
 								<Text className="text-sm font-medium text-muted-foreground">
 									Report {index + 1}
 								</Text>
@@ -220,38 +214,41 @@ export default function NewMultiReportDialog({ open, onOpenChange }) {
 									accessibilityRole="button"
 									accessibilityLabel={`Remove report ${index + 1}`}
 									accessibilityState={{ disabled: !canRemove }}
-									className="h-8 w-8 items-center justify-center"
 								>
-									<Minus
-										size={20}
-										color={
+									<Text
+										className={
 											canRemove
-												? theme.colors.mutedForeground
-												: theme.colors.tintDisabled
+												? 'text-sm text-destructive'
+												: 'text-sm text-muted-foreground'
 										}
-									/>
+									>
+										Remove
+									</Text>
 								</Pressable>
 							</View>
-							<ReportFormFields
-								form={form}
-								namePrefix={`reports.${index}`}
-								investigations={investigations}
-								isInvestigationLoading={isInvestigationLoading}
-								maxDate={maxDate}
-							/>
-						</View>
-					))}
-				</View>
+						) : null}
+						<ReportFormFields
+							form={form}
+							namePrefix={`reports.${index}`}
+							investigations={investigations}
+							isInvestigationLoading={isInvestigationLoading}
+							maxDate={maxDate}
+						/>
+					</View>
+				))}
 
-				<Button
-					variant="outline"
+				<Pressable
 					onPress={addAnother}
 					disabled={isPending}
-					className="mt-4"
+					accessibilityRole="button"
+					accessibilityLabel="Add another report"
+					accessibilityState={{ disabled: isPending }}
+					className="mt-1 py-2"
 				>
-					<Plus size={16} color={theme.colors.foreground} />
-					<Text>Add another report</Text>
-				</Button>
+					<Text className={isPending ? 'text-muted-foreground' : 'text-primary'}>
+						Add another report
+					</Text>
+				</Pressable>
 			</Form>
 		</FormSheetModal>
 	);
