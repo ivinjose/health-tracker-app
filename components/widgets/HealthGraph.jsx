@@ -1,11 +1,11 @@
+import useInvestigationsApiManager from '@/api-managers/InvestigationsApiManager';
+import useReportsApiManager from '@/api-managers/ReportsApiManager';
 import LineChart from '@/components/charts/LineChart';
-import WidgetView from '@/components/WidgetView';
 import { useTheme } from '@/components/ThemeProvider';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Text } from '@/components/ui/text';
+import WidgetView from '@/components/WidgetView';
 import { getInvestigationLabel, withDisplayDates } from '@/lib/reportUtils';
-import useInvestigationsApiManager from '@/api-managers/InvestigationsApiManager';
-import useReportsApiManager from '@/api-managers/ReportsApiManager';
 import { useQuery } from '@tanstack/react-query';
 import { Link } from 'expo-router';
 import { ArrowRight } from 'lucide-react-native';

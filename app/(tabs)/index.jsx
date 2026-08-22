@@ -13,7 +13,7 @@ export default function OverviewScreen() {
 				{/* <AppointmentsWidget /> */}
 				{/* <AppointmentsWidget type={APPOINTMENT_TYPE.PAST} count={2} /> */}
 				<HealthGraph investigation="hba1c" count={5} />
-				<HealthGraph investigation="t4" count={5} />
+				<HealthGraph investigation="hdl" count={5} />
 			</ScrollView>
 		</View>
 	);

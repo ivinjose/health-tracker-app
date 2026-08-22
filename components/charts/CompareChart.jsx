@@ -7,6 +7,7 @@ import {
 	CHART_PADDING,
 	buildMultiLinePoints,
 	getChartWidth,
+	getXLabelAnchor,
 } from './chartUtils';
 
 export default function CompareChart({ data = [], xAxisKey, yAxisKeys = [], width }) {
@@ -78,7 +79,7 @@ export default function CompareChart({ data = [], xAxisKey, yAxisKeys = [], widt
 							y={CHART_HEIGHT - 10}
 							fontSize={10}
 							fill={theme.chart.label}
-							textAnchor="middle"
+							textAnchor={getXLabelAnchor(index, labelPoints.length)}
 						>
 							{String(point.item[xAxisKey] ?? '').slice(0, 8)}
 						</SvgText>

@@ -1,7 +1,14 @@
 import { Dimensions } from 'react-native';
 
 export const CHART_HEIGHT = 220;
-export const CHART_PADDING = { top: 28, right: 16, bottom: 36, left: 44 };
+export const CHART_PADDING = { top: 28, right: 10, bottom: 36, left: 8 };
+
+export function getXLabelAnchor(index, length) {
+	if (length <= 1) return 'middle';
+	if (index === 0) return 'start';
+	if (index === length - 1) return 'end';
+	return 'middle';
+}
 
 export function getChartWidth(horizontalPadding = 32) {
 	return Dimensions.get('window').width - horizontalPadding;
