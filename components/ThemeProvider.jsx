@@ -4,7 +4,7 @@ import { View } from 'react-native';
 
 const ThemeContext = createContext(getAppearance(APP_APPEARANCE));
 
-export function ThemeProvider({ appearance = APP_APPEARANCE, className, style, children }) {
+export function ThemeProvider({ appearance = APP_APPEARANCE, className, style = undefined, children }) {
 	const theme = useMemo(() => getAppearance(appearance), [appearance]);
 
 	return (
