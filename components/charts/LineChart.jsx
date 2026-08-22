@@ -69,23 +69,34 @@ export default function LineChart({
 		);
 	}
 
-	const padding = { ...CHART_PADDING, left: 36 };
-	const { series, innerHeight, minY, maxY, meanY } = chartWidth
+	const padding = { ...CHART_PADDING, left: 36, right: isMulti ? 36 : CHART_PADDING.right };
+	const { series, innerHeight } = chartWidth
 		? buildLinePoints({
 			data,
 			yKeys: keys,
 			chartWidth,
 			padding,
 		})
-		: { series: [], innerHeight: 0, minY: 0, maxY: 1, meanY: 0 };
+		: { series: [], innerHeight: 0 };
 	const axisPoints = series[0]?.points ?? [];
-	const yTicks = getYAxisTicks(
-		minY,
-		maxY,
-		isMulti ? undefined : meanY,
-		padding.top,
-		innerHeight
-	);
+	const leftTicks = series[0]
+		? getYAxisTicks(
+			series[0].minY,
+			series[0].maxY,
+			series[0].meanY,
+			padding.top,
+			innerHeight
+		)
+		: [];
+	const rightTicks = isMulti && series[1]
+		? getYAxisTicks(
+			series[1].minY,
+			series[1].maxY,
+			series[1].meanY,
+			padding.top,
+			innerHeight
+		)
+		: [];
 	const selectedRows = selectedIndex == null
 		? []
 		: series.flatMap((line, lineIndex) => {
@@ -132,9 +143,19 @@ export default function LineChart({
 							y1={padding.top}
 							x2={padding.left}
 							y2={padding.top + innerHeight}
-							stroke={axisColor}
+							stroke={isMulti ? lineColors[0] : axisColor}
 							strokeWidth={1}
 						/>
+						{isMulti ? (
+							<Line
+								x1={chartWidth - padding.right}
+								y1={padding.top}
+								x2={chartWidth - padding.right}
+								y2={padding.top + innerHeight}
+								stroke={lineColors[1]}
+								strokeWidth={1}
+							/>
+						) : null}
 						<Line
 							x1={padding.left}
 							y1={padding.top + innerHeight}
@@ -143,22 +164,43 @@ export default function LineChart({
 							stroke={axisColor}
 							strokeWidth={1}
 						/>
-						{yTicks.map((tick, index) => (
-							<G key={`y-tick-${index}`}>
+						{leftTicks.map((tick, index) => (
+							<G key={`y-tick-left-${index}`}>
 								<Line
 									x1={padding.left - 4}
 									y1={tick.y}
 									x2={padding.left}
 									y2={tick.y}
-									stroke={axisColor}
+									stroke={isMulti ? lineColors[0] : axisColor}
 									strokeWidth={1}
 								/>
 								<SvgText
 									x={padding.left - 8}
 									y={tick.y + 3}
 									fontSize={10}
-									fill={labelColor}
+									fill={isMulti ? lineColors[0] : labelColor}
 									textAnchor="end"
+								>
+									{formatAxisValue(tick.value)}
+								</SvgText>
+							</G>
+						))}
+						{rightTicks.map((tick, index) => (
+							<G key={`y-tick-right-${index}`}>
+								<Line
+									x1={chartWidth - padding.right}
+									y1={tick.y}
+									x2={chartWidth - padding.right + 4}
+									y2={tick.y}
+									stroke={lineColors[1]}
+									strokeWidth={1}
+								/>
+								<SvgText
+									x={chartWidth - padding.right + 8}
+									y={tick.y + 3}
+									fontSize={10}
+									fill={lineColors[1]}
+									textAnchor="start"
 								>
 									{formatAxisValue(tick.value)}
 								</SvgText>

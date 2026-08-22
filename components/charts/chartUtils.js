@@ -56,6 +56,17 @@ export function getYAxisTicks(minY, maxY, meanY, top, innerHeight) {
 	return ticks;
 }
 
+function getScale(values) {
+	if (values.length === 0) {
+		return { minY: 0, maxY: 1, meanY: 0 };
+	}
+
+	const minY = Math.min(...values);
+	const maxY = Math.max(...values);
+	const meanY = values.reduce((sum, value) => sum + value, 0) / values.length;
+	return { minY, maxY, meanY };
+}
+
 export function buildLinePoints({
 	data,
 	yKey,
@@ -67,43 +78,53 @@ export function buildLinePoints({
 	const keys = yKeys?.length ? yKeys : [yKey];
 	const innerWidth = chartWidth - padding.left - padding.right;
 	const innerHeight = height - padding.top - padding.bottom;
+	const independentScale = keys.length > 1;
 
-	const allValues = data.flatMap((item) =>
-		keys.map((key) => Number(item[key])).filter((value) => !Number.isNaN(value))
+	const seriesValues = keys.map((key) =>
+		data.map((item) => Number(item[key])).filter((value) => !Number.isNaN(value))
 	);
+	const sharedValues = seriesValues.flat();
+	const sharedScale = getScale(sharedValues);
 
-	if (allValues.length === 0) {
+	if (sharedValues.length === 0) {
 		return { series: [], points: [], minY: 0, maxY: 1, meanY: 0, innerWidth, innerHeight };
 	}
 
-	const minY = Math.min(...allValues);
-	const maxY = Math.max(...allValues);
-	const meanY = allValues.reduce((sum, value) => sum + value, 0) / allValues.length;
-	const range = maxY - minY;
+	const series = keys.map((key, keyIndex) => {
+		const { minY, maxY, meanY } = independentScale
+			? getScale(seriesValues[keyIndex])
+			: sharedScale;
+		const range = maxY - minY;
+		const hasValues = seriesValues[keyIndex].length > 0;
 
-	const series = keys.map((key) => ({
-		key,
-		points: data.map((item, index) => {
-			const value = Number(item[key]);
-			const x =
-				padding.left +
-				(data.length === 1 ? innerWidth / 2 : (index / (data.length - 1)) * innerWidth);
-			const y = Number.isNaN(value)
-				? Number.NaN
-				: range === 0
-					? padding.top + innerHeight / 2
-					: padding.top + innerHeight - ((value - minY) / range) * innerHeight;
+		return {
+			key,
+			minY,
+			maxY,
+			meanY,
+			points: data.map((item, index) => {
+				const value = Number(item[key]);
+				const x =
+					padding.left +
+					(data.length === 1 ? innerWidth / 2 : (index / (data.length - 1)) * innerWidth);
+				const y =
+					Number.isNaN(value) || !hasValues
+						? Number.NaN
+						: range === 0
+							? padding.top + innerHeight / 2
+							: padding.top + innerHeight - ((value - minY) / range) * innerHeight;
 
-			return { x, y, item, value };
-		}),
-	}));
+				return { x, y, item, value };
+			}),
+		};
+	});
 
 	return {
 		series,
 		points: series[0]?.points ?? [],
-		minY,
-		maxY,
-		meanY,
+		minY: sharedScale.minY,
+		maxY: sharedScale.maxY,
+		meanY: sharedScale.meanY,
 		innerWidth,
 		innerHeight,
 	};
