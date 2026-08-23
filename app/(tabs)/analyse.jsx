@@ -117,6 +117,7 @@ export default function AnalyseScreen() {
 					<LineChart
 						data={sortReportsByTimestamp(reports, SORT_ORDER.ASC)}
 						unit={getInvestigationUnit(investigations, investigation)}
+						showNodeValues
 					/>
 				) : investigation ? (
 					<Text className="text-muted-foreground">No reports in this range.</Text>

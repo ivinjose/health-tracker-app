@@ -47,6 +47,7 @@ export default function CompareGraph({
 				yAxisKeys={investigations}
 				seriesLabels={labels}
 				units={units}
+				showNodeValues
 			/>
 		</View>
 	);

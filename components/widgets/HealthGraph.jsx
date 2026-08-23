@@ -52,7 +52,7 @@ export default function HealthGraph({ investigation, count }) {
 			{isLoading ? (
 				<HealthGraphLoading />
 			) : reports.length > 0 ? (
-				<LineChart data={reports} unit={unit} />
+				<LineChart data={reports} unit={unit} showNodeValues />
 			) : (
 				<Text className="text-sm text-muted-foreground">No readings yet.</Text>
 			)}

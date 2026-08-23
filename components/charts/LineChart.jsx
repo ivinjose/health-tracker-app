@@ -8,10 +8,10 @@ import {
 	CHART_HEIGHT,
 	CHART_PADDING,
 	buildLinePoints,
+	formatAxisValue,
 	getChartAxisDate,
 	getChartTooltipDate,
 	getXLabelAnchor,
-	formatAxisValue,
 	getYAxisTicks,
 } from './chartUtils';
 
@@ -33,6 +33,7 @@ export default function LineChart({
 	unit = '',
 	units,
 	seriesLabels = [],
+	showNodeValues = true,
 }) {
 	const theme = useTheme();
 	const lineColors = [theme.chart.line, theme.chart.lineSecondary];
@@ -243,7 +244,7 @@ export default function LineChart({
 													r={selected ? 5 : 4}
 													fill={stroke}
 												/>
-												{isMulti ? null : (
+												{showNodeValues ? (
 													<SvgText
 														x={point.x}
 														y={point.y - 10}
@@ -254,7 +255,7 @@ export default function LineChart({
 													>
 														{String(point.value)}
 													</SvgText>
-												)}
+												) : null}
 											</G>
 										);
 									})}
