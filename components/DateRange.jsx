@@ -52,6 +52,7 @@ function DatePickerField({ enabled, value, onSelect, label, endOfDay = false }) 
 								</Button>
 							</View>
 							<Calendar
+								showSixWeeks
 								maxDate={maxDate}
 								onDayPress={(day) => {
 									const parsed = new Date(day.dateString);
