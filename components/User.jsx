@@ -4,7 +4,6 @@ import {
 	DropdownMenuContent,
 	DropdownMenuGroup,
 	DropdownMenuItem,
-	DropdownMenuPortal,
 	DropdownMenuSeparator,
 	DropdownMenuSub,
 	DropdownMenuSubContent,
@@ -78,26 +77,24 @@ export default function UserMenu() {
 						<DropdownMenuSubTrigger>
 							<Text>Switch Profile</Text>
 						</DropdownMenuSubTrigger>
-						<DropdownMenuPortal>
-							<DropdownMenuSubContent>
-								{profiles.map((profile) => (
-									<DropdownMenuItem
-										key={profile._id}
-										onPress={() => switchProfile(profile.user)}
-									>
-										<View className="flex-row items-center justify-between gap-3">
-											<View className="flex-row items-center gap-2">
-												<UserIcon size={20} color={theme.colors.foreground} />
-												<Text>{profile.name}</Text>
-											</View>
-											{profile.user === auth.id ? (
-												<Check size={15} color={theme.colors.tint} />
-											) : null}
+						<DropdownMenuSubContent>
+							{profiles.map((profile) => (
+								<DropdownMenuItem
+									key={profile._id}
+									onPress={() => switchProfile(profile.user)}
+								>
+									<View className="flex-row items-center justify-between gap-3">
+										<View className="flex-row items-center gap-2">
+											<UserIcon size={20} color={theme.colors.foreground} />
+											<Text>{profile.name}</Text>
 										</View>
-									</DropdownMenuItem>
-								))}
-							</DropdownMenuSubContent>
-						</DropdownMenuPortal>
+										{profile.user === auth.id ? (
+											<Check size={15} color={theme.colors.tint} />
+										) : null}
+									</View>
+								</DropdownMenuItem>
+							))}
+						</DropdownMenuSubContent>
 					</DropdownMenuSub>
 				</DropdownMenuGroup>
 				<DropdownMenuSeparator />
