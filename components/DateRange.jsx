@@ -10,7 +10,7 @@ import { Modal, Pressable, View } from 'react-native';
 import { Calendar } from 'react-native-calendars';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-function DatePickerField({ enabled, value, onSelect, label }) {
+function DatePickerField({ enabled, value, onSelect, label, endOfDay = false }) {
 	const theme = useTheme();
 	const insets = useSafeAreaInsets();
 	const [showCalendar, setShowCalendar] = useState(false);
@@ -54,7 +54,13 @@ function DatePickerField({ enabled, value, onSelect, label }) {
 							<Calendar
 								maxDate={maxDate}
 								onDayPress={(day) => {
-									onSelect(new Date(day.timestamp));
+									const parsed = new Date(day.dateString);
+									const start = Number.isNaN(parsed.getTime())
+										? new Date(day.timestamp)
+										: parsed;
+									onSelect(endOfDay
+										? new Date(start.getTime() + 24 * 60 * 60 * 1000 - 1)
+										: start);
 									setShowCalendar(false);
 								}}
 								markedDates={
@@ -124,6 +130,7 @@ export default function DateRange({
 					value={toDate}
 					onSelect={onToDateSelect}
 					label="To Date"
+					endOfDay
 				/>
 			</View>
 		</View>
