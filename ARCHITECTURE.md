@@ -30,7 +30,7 @@ Deferred in this client (schema and comments still mention them; no UI): report 
 | Auth storage | `expo-secure-store` (native), httpOnly cookie + `localStorage` persist flag (web) |
 | Charts | `react-native-svg` via `components/charts/LineChart.jsx` |
 | Dates | `date-fns` 4; calendars via `react-native-calendars` |
-| Theme | `lib/appearance.js` + `components/ThemeProvider.jsx`; live palette `APP_APPEARANCE = 'iosDark'` |
+| Theme | `lib/appearance.js` + `components/ThemeProvider.jsx`; live palette `APP_APPEARANCE = 'dark'` |
 | Tests | Jest + `jest-expo`, `watchman: false`, `@/` mapped in `jest.config.js` |
 
 `app.json` sets `userInterfaceStyle: "dark"`, `newArchEnabled: true`, experiments `typedRoutes` and `reactCompiler`, URL scheme `healthtrackerapp`. Web output is `"static"`.
@@ -341,7 +341,7 @@ Colors come from `useTheme().chart` (`line`, `lineSecondary`, `axis`, `label`) â
 
 Do not implement colors per screen. Full rules: [docs/THEMING.md](./docs/THEMING.md).
 
-- Switch the whole app with `APP_APPEARANCE` in `lib/appearance.js` (currently `'iosDark'`).
+- Switch the whole app with `APP_APPEARANCE` in `lib/appearance.js` (currently `'dark'`).
 - Leaves: NativeWind tokens (`bg-background`, `text-foreground`, `bg-card`, `text-muted-foreground`, `bg-primary`, `text-destructive`, `border-input`, â€¦).
 - `useTheme()` from `@/components/ThemeProvider` only for RN props that cannot take `className` (placeholder color, keyboard, calendar theme, lucide `color`, RefreshControl, SVG).
 - Re-apply `theme.vars` on portal roots (`SelectContent`, `DropdownMenuContent`, `AlertDialogContent`) and nest `ThemeProvider` inside every RN `Modal`.

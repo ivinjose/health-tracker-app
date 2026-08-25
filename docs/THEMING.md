@@ -2,7 +2,7 @@
 
 Reference for humans and coding agents working on **app-wide appearance** in health-tracker-app.
 
-This is **not** OS/system dark mode and **not** a user-facing light/dark toggle. The whole app uses one explicit palette (`APP_APPEARANCE`, currently `iosDark`). Child components do not check `isDark`. They use the same NativeWind class names and the same `useTheme()` fields everywhere; the root provider remaps what those tokens mean.
+This is **not** OS/system dark mode and **not** a user-facing light/dark toggle. The whole app uses one explicit palette (`APP_APPEARANCE`, currently `dark`). Child components do not check `isDark`. They use the same NativeWind class names and the same `useTheme()` fields everywhere; the root provider remaps what those tokens mean.
 
 Related: [ARCHITECTURE.md](../ARCHITECTURE.md) (structure, auth, forms, navigation). This file is the source of truth for colors and appearance.
 
@@ -15,7 +15,7 @@ Early iOS-dark work branched in every leaf (`isDark ? 'bg-[#2C2C2E]' : 'bg-card'
 The replacement is:
 
 1. One palette dictionary per appearance in `lib/appearance.js`.
-2. `APP_APPEARANCE` as the single switch (`'iosDark'` today).
+2. `APP_APPEARANCE` as the single switch (`'dark'` today).
 3. One `ThemeProvider` at the app root that sets React context **and** NativeWind CSS variables.
 4. Leaves always use semantic classes (`bg-background`, `text-foreground`, `bg-card`, `text-muted-foreground`, `text-destructive`, `border-input`, `bg-primary`).
 5. `useTheme()` only for React Native props that cannot take a `className` (placeholder color, keyboard, calendar theme, lucide `color`, `RefreshControl` tint, SVG strokes).
@@ -32,11 +32,11 @@ Do not confuse these three separate systems:
 
 | System | File | What it does |
 |--------|------|----------------|
-| **Appearance theming (this doc)** | `lib/appearance.js`, `components/ThemeProvider.jsx` | Explicit `light` / `iosDark` palettes; app-wide via `APP_APPEARANCE` |
+| **Appearance theming (this doc)** | `lib/appearance.js`, `components/ThemeProvider.jsx` | Explicit `light` / `dark` palettes; app-wide via `APP_APPEARANCE` |
 | **React Navigation theme** | `app/_layout.tsx` imports `ThemeProvider as NavigationThemeProvider` from `@react-navigation/native` | Aligned to `APP_APPEARANCE` (`DarkTheme` + `theme.reactNavigation.colors`). Does **not** follow OS `useColorScheme()` |
 | **Expo template color scheme** | `lib/theme.ts` `Colors`, `hooks/use-theme-color.ts`, `hooks/use-color-scheme.ts` | Legacy template lookup. Do **not** use for this appearance system |
 
-`global.css` still defines `:root` and `.dark` CSS variables (shadcn-style). Appearance theming **does not** toggle the `.dark` class. `iosDark` is a different palette from `.dark` (see palettes below). Tailwind `dark:` variants follow NativeWind/system color scheme, not `ThemeProvider`. Do not use `dark:` to implement this appearance system.
+`global.css` still defines `:root` and `.dark` CSS variables (shadcn-style). Appearance theming **does not** toggle the `.dark` class. The `dark` palette is not the same as those unused `.dark` tokens (see palettes below). Tailwind `dark:` variants follow NativeWind/system color scheme, not `ThemeProvider`. Do not use `dark:` to implement this appearance system.
 
 Root `StatusBar` in `app/_layout.tsx` uses `getAppearance(APP_APPEARANCE).statusBarStyle`. Screens should not mount their own `StatusBar` except inside a `Modal` (form sheets).
 
@@ -59,7 +59,7 @@ Root `StatusBar` in `app/_layout.tsx` uses `getAppearance(APP_APPEARANCE).status
 
 ## Palettes
 
-Defined as `PALETTES.light` and `PALETTES.iosDark` in `lib/appearance.js`. Each palette has:
+Defined as `PALETTES.light` and `PALETTES.dark` in `lib/appearance.js`. Each palette has:
 
 - `colors` — hex strings for RN props
 - `channels` — space-separated HSL **without** `hsl()`, matching `global.css` / `hsl(var(--token))`
@@ -69,7 +69,7 @@ Defined as `PALETTES.light` and `PALETTES.iosDark` in `lib/appearance.js`. Each 
 - `layout` — sheet chrome/padding (consumed only by `FormSheetModal`)
 - `chart` — `{ line, lineSecondary, axis, label }` hex for `LineChart` / `CompareChart`
 
-`APP_APPEARANCE` is `'iosDark'`. Changing that constant (and aligning `app.json` `userInterfaceStyle` if needed) is how you switch the whole app. There is no per-screen opt-in.
+`APP_APPEARANCE` is `'dark'`. Changing that constant (and aligning `app.json` `userInterfaceStyle` if needed) is how you switch the whole app. There is no per-screen opt-in.
 
 ### `light`
 
@@ -77,7 +77,8 @@ Matches the app’s default shadcn-like tokens (near-black primary, white backgr
 
 Notable `colors` values from code:
 
-- `background` / `card` / `popover`: `#ffffff`
+- `background` / `popover`: `#ffffff`
+- `card`: `#F2F2F7` (iOS grouped gray so cards read against the white page)
 - `foreground`: `#0a0a0a`
 - `primary`: `#171717`, `primaryForeground`: `#fafafa`
 - `mutedForeground`: `#737373`
@@ -91,7 +92,7 @@ Notable `colors` values from code:
 
 `chart`: `line: '#30425f'`, `lineSecondary: '#e54d2e'`, `axis: '#b8c0d9'`, `label: '#6b7280'`.
 
-### `iosDark`
+### `dark`
 
 iOS grouped dark, not shadcn `.dark` (shadcn dark uses near-black background and **white** primary; this palette uses charcoal surfaces and **blue** primary).
 
@@ -120,7 +121,7 @@ Because `--primary` is remapped to `#0A84FF`, default `Button` (`bg-primary`) is
 
 ```js
 {
-  name,                 // 'light' | 'iosDark'
+  name,                 // 'light' | 'dark'
   colors,               // hex dictionary above
   vars,                 // NativeWind vars(channels) style object
   calendar,             // react-native-calendars theme (from toCalendar(colors))
@@ -136,11 +137,10 @@ Because `--primary` is remapped to `#0A84FF`, default `Button` (`bg-primary`) is
 
 `resolveAppearanceName(name)`:
 
+- `'light'` and `'dark'` pass through
 - default / unknown / missing → `APP_APPEARANCE`
-- `'dark'` → `'iosDark'`
-- `'light'` and `'iosDark'` pass through
 
-`appearances.light` and `appearances.iosDark` are pre-built for call sites that need the object without a hook (layouts use `getAppearance(APP_APPEARANCE)`).
+`appearances.light` and `appearances.dark` are pre-built for call sites that need the object without a hook (layouts use `getAppearance(APP_APPEARANCE)`).
 
 `getAppearance` caches by resolved name so `vars()` is not rebuilt every render.
 
@@ -237,7 +237,7 @@ Use context hex/enums only where `className` cannot be used. Current call sites:
 | `dropdown-menu.tsx` `DropdownMenuContent` / `DropdownMenuSubContent` | `vars` on portal roots |
 | `alert-dialog.tsx` `AlertDialogContent` | `vars` on portal root only |
 
-Do **not** add `if (theme.name === 'iosDark')` in these files. If a color is wrong, change the palette.
+Do **not** add `if (theme.name === 'dark')` in these files. If a color is wrong, change the palette.
 
 ---
 
@@ -247,7 +247,7 @@ NativeWind `vars()` is a native **style**, not React context. It does not follow
 
 React context **does** follow portals. So `SelectContent`, `DropdownMenuContent`, `DropdownMenuSubContent`, and `AlertDialogContent` call `useTheme()` and wrap the portaled tree in `<View style={theme.vars}>`, then keep using `bg-popover`, `border-border`, `text-popover-foreground`, `bg-background`.
 
-If you add a new portaled overlay that uses semantic color classes, re-apply `theme.vars` on that portal root the same way. Skipping this makes the overlay use `:root` (light) even when the app is `iosDark`.
+If you add a new portaled overlay that uses semantic color classes, re-apply `theme.vars` on that portal root the same way. Skipping this makes the overlay use `:root` (light) even when the app is `dark`.
 
 ---
 
@@ -268,7 +268,7 @@ Do not pass an `appearance` prop. Sheets follow `APP_APPEARANCE`.
 
 `FormSheetBody` (inside the provider) is the only place allowed to branch on **layout**:
 
-- `theme.layout.header === 'toolbar'` (`iosDark`): row with `CircleX` | centered title | optional `CircleCheck` confirm (or an empty `h-8 w-8` spacer if no `onConfirm`).
+- `theme.layout.header === 'toolbar'` (`dark`): row with `CircleX` | centered title | optional `CircleCheck` confirm (or an empty `h-8 w-8` spacer if no `onConfirm`).
 - else (`light`): absolute `CircleX` top-left, optional confirm top-right, title below (`px-10 pt-14`).
 
 Confirm control: `onConfirm` + `confirmDisabled` / `confirmLoading`. Loading shows `ActivityIndicator` with `theme.colors.tint`. Inactive confirm uses `theme.colors.tintDisabled`. `NewReportDialog` uses this instead of a footer Save button. Sheets that still pass `footer` keep the footer `View` (`px-10 p-4`).
@@ -325,7 +325,7 @@ Edit `PALETTES` in `lib/appearance.js` only.
 - Channel format: `'211 100% 52%'` — no `hsl()`, same as `global.css`.
 - If you add a Tailwind color, add it to `tailwind.config.js` **and** to every palette’s `channels`.
 - To switch the live app, change `APP_APPEARANCE` (and `app.json` `userInterfaceStyle` if the new palette’s `userInterfaceStyle` differs).
-- Keep `resolveAppearanceName` aliases (`dark` → `iosDark`) documented if you add more.
+- Keep `resolveAppearanceName` aliases documented if you add more.
 
 Do not copy hex into screen files.
 
