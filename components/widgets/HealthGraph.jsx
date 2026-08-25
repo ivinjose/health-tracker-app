@@ -9,10 +9,10 @@ import { SORT_ORDER } from '@/constants/sort';
 import { getInvestigationLabel, getInvestigationUnit, sortReportsByTimestamp } from '@/lib/reportUtils';
 import { useQuery } from '@tanstack/react-query';
 import { Link } from 'expo-router';
-import { ArrowRight } from 'lucide-react-native';
+import { ArrowRight, X } from 'lucide-react-native';
 import { Pressable, View } from 'react-native';
 
-export default function HealthGraph({ investigation, count }) {
+export default function HealthGraph({ investigation, count, onRemove }) {
 	const theme = useTheme();
 	const reportsApiManager = useReportsApiManager();
 	const investigationsApiManager = useInvestigationsApiManager();
@@ -47,8 +47,19 @@ export default function HealthGraph({ investigation, count }) {
 		</Link>
 	);
 
+	const headerRight = onRemove ? (
+		<Pressable
+			onPress={onRemove}
+			hitSlop={8}
+			accessibilityRole="button"
+			accessibilityLabel={`Remove ${title} from overview`}
+		>
+			<X size={18} color={theme.colors.mutedForeground} />
+		</Pressable>
+	) : null;
+
 	return (
-		<WidgetView title={title} footer={footer}>
+		<WidgetView title={title} footer={footer} headerRight={headerRight}>
 			{isLoading ? (
 				<HealthGraphLoading />
 			) : reports.length > 0 ? (

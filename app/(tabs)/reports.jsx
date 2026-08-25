@@ -7,7 +7,7 @@ import { useTheme } from '@/components/ThemeProvider';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Text } from '@/components/ui/text';
-import { CARD_LIST_GAP } from '@/constants/layout';
+import { CARD_LIST_GAP, FAB_STYLE } from '@/constants/layout';
 import { SORT_ORDER } from '@/constants/sort';
 import { useToast } from '@/hooks/use-toast';
 import { withDisplayDates } from '@/lib/reportUtils';
@@ -16,14 +16,6 @@ import { useLocalSearchParams } from 'expo-router';
 import { CopyPlus, Plus } from 'lucide-react-native';
 import { useEffect, useState } from 'react';
 import { Pressable, RefreshControl, ScrollView, View } from 'react-native';
-
-const FAB_STYLE = {
-	shadowColor: '#000',
-	shadowOffset: { width: 0, height: 3 },
-	shadowOpacity: 0.35,
-	shadowRadius: 6,
-	elevation: 6,
-};
 
 export default function ReportsScreen() {
 	const theme = useTheme();
