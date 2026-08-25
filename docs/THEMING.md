@@ -222,8 +222,9 @@ Use context hex/enums only where `className` cannot be used. Current call sites:
 | `form-field-input.jsx` | `colors.placeholder`, `keyboardAppearance`, `colors.tint` (`selectionColor`) |
 | `form-field-textarea.jsx` | same |
 | `InvestigationSelect.jsx` | same |
-| `FormDateField.jsx` | `colors.tint` (calendar icon), `calendar`, `colors.background` (Calendar `style`) |
-| `DateRange.jsx` | `colors.mutedForeground`, `calendar`, `colors.background`; nested `ThemeProvider` inside calendar `Modal` |
+| `FormDateField.jsx` | `colors.tint` (calendar icon) |
+| `DatePickerCalendar.jsx` | `calendar`, `colors.background` (`Calendar` `style`), `colors.tint` / `tintDisabled` / `foreground` / `primaryForeground` (year picker) |
+| `DateRange.jsx` | `colors.mutedForeground`; nested `ThemeProvider` inside calendar `Modal` |
 | `CardView.jsx` | `colors.mutedForeground` (ellipsis icon) |
 | `ReportCard.jsx` | `colors.primary` (`CircleUserRound`) |
 | `AppointmentCard.jsx` / `ProfileCard.jsx` / `AppointmentsWidget.jsx` | `colors.primary` (icons) |
@@ -264,7 +265,7 @@ A RN `Modal` is a new native window, so it cannot inherit NativeWind vars from t
 
 Do not pass an `appearance` prop. Sheets follow `APP_APPEARANCE`.
 
-`DateRange` calendar is also a `Modal`; it nests `ThemeProvider appearance={theme.name}` the same way and passes `theme.calendar` to `Calendar`.
+`DateRange` calendar is also a `Modal`; it nests `ThemeProvider appearance={theme.name}` the same way. The calendar grid itself is `DatePickerCalendar`, which reads `theme.calendar`.
 
 `FormSheetBody` (inside the provider) is the only place allowed to branch on **layout**:
 

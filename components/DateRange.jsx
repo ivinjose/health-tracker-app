@@ -1,4 +1,5 @@
 import { ThemeProvider, useTheme } from '@/components/ThemeProvider';
+import DatePickerCalendar from '@/components/DatePickerCalendar';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
@@ -7,7 +8,6 @@ import { format } from 'date-fns';
 import { Calendar as CalendarIcon } from 'lucide-react-native';
 import { useState } from 'react';
 import { Modal, Pressable, View } from 'react-native';
-import { Calendar } from 'react-native-calendars';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 function DatePickerField({ enabled, value, onSelect, label, endOfDay = false }) {
@@ -17,6 +17,10 @@ function DatePickerField({ enabled, value, onSelect, label, endOfDay = false }) 
 	const dateValue = value ? new Date(Number(value)) : undefined;
 	const selectedKey = dateValue ? format(dateValue, 'yyyy-MM-dd') : undefined;
 	const maxDate = format(new Date(), 'yyyy-MM-dd');
+
+	const closeCalendar = () => {
+		setShowCalendar(false);
+	};
 
 	return (
 		<View className="gap-2">
@@ -38,7 +42,7 @@ function DatePickerField({ enabled, value, onSelect, label, endOfDay = false }) 
 				<ThemeProvider appearance={theme.name} className="flex-1">
 					<Pressable
 						className="flex-1 justify-end bg-black/50"
-						onPress={() => setShowCalendar(false)}
+						onPress={closeCalendar}
 					>
 						<Pressable
 							className="rounded-t-2xl bg-background"
@@ -47,13 +51,17 @@ function DatePickerField({ enabled, value, onSelect, label, endOfDay = false }) 
 						>
 							<View className="flex-row items-center justify-between border-b border-border px-4 py-3">
 								<Text className="text-lg font-semibold text-foreground">{label}</Text>
-								<Button variant="ghost" onPress={() => setShowCalendar(false)}>
+								<Button variant="ghost" onPress={closeCalendar}>
 									<Text>Done</Text>
 								</Button>
 							</View>
-							<Calendar
-								showSixWeeks
+							<DatePickerCalendar
+								active={showCalendar}
+								initialDate={selectedKey ?? maxDate}
 								maxDate={maxDate}
+								markedDates={
+									selectedKey ? { [selectedKey]: { selected: true } } : undefined
+								}
 								onDayPress={(day) => {
 									const parsed = new Date(day.dateString);
 									const start = Number.isNaN(parsed.getTime())
@@ -62,13 +70,8 @@ function DatePickerField({ enabled, value, onSelect, label, endOfDay = false }) 
 									onSelect(endOfDay
 										? new Date(start.getTime() + 24 * 60 * 60 * 1000 - 1)
 										: start);
-									setShowCalendar(false);
+									closeCalendar();
 								}}
-								markedDates={
-									selectedKey ? { [selectedKey]: { selected: true } } : undefined
-								}
-								theme={theme.calendar}
-								style={{ backgroundColor: theme.colors.background }}
 							/>
 						</Pressable>
 					</Pressable>

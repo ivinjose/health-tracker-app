@@ -1,3 +1,4 @@
+import DatePickerCalendar from '@/components/DatePickerCalendar';
 import { Expanding } from '@/components/ui/expanding';
 import { Text } from '@/components/ui/text';
 import { useTheme } from '@/components/ThemeProvider';
@@ -6,7 +7,6 @@ import { Calendar as CalendarIcon } from 'lucide-react-native';
 import { useState } from 'react';
 import { Controller } from 'react-hook-form';
 import { Pressable, View } from 'react-native';
-import { Calendar } from 'react-native-calendars';
 
 export default function FormDateField({
 	formControl,
@@ -57,13 +57,12 @@ export default function FormDateField({
 							)}
 						</Pressable>
 						<Expanding open={open}>
-							<Calendar
-								initialDate={
-									selectedDateKey ?? format(new Date(), 'yyyy-MM-dd')
-								}
-								enableSwipeMonths
+							<DatePickerCalendar
+								active={open}
+								initialDate={selectedDateKey ?? format(new Date(), 'yyyy-MM-dd')}
 								minDate={minDate}
 								maxDate={maxDate}
+								enableSwipeMonths
 								markedDates={
 									selectedDateKey
 										? { [selectedDateKey]: { selected: true } }
@@ -72,8 +71,6 @@ export default function FormDateField({
 								onDayPress={(day) => {
 									onChange(new Date(day.dateString));
 								}}
-								theme={theme.calendar}
-								style={{ backgroundColor: theme.colors.background }}
 							/>
 						</Expanding>
 
