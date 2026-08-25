@@ -40,12 +40,11 @@ const useProfileApiManager = () => {
 
     const changeProfile = async (data) => {
         const profile = data;
-        try {
-            const response = await axiosPrivate.post(`${PROFILES_API}/switch`, { profile });
-            return response.data.data;
-        } catch (err) {
-            console.log(err);
-        }
+        // Let the error propagate. A swallowed catch returns undefined, which
+        // React Query still treats as success — More would toast/navigate home
+        // even when the switch never happened.
+        const response = await axiosPrivate.post(`${PROFILES_API}/switch`, { profile });
+        return response.data.data;
     }
 
     return {

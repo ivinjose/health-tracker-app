@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 
-import { axiosPrivate } from "../api/axios";
+import { axiosPrivate, setPrivateAccessToken } from "../api/axios";
 import useAuth from "./useAuth";
 import useRefreshToken from "./useRefreshToken";
 
@@ -37,6 +37,9 @@ const useAxiosPrivate = () => {
                         return axiosPrivate(prevRequest);
                     } catch {
                         setAuth({});
+                        // Failed refresh must clear the axios default too, or
+                        // later requests keep the dead token and skip the interceptor.
+                        setPrivateAccessToken(null);
                         return Promise.reject(error);
                     }
                 }

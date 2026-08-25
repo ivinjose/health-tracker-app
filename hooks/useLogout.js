@@ -1,7 +1,7 @@
 import * as SecureStore from "expo-secure-store";
 import { Platform } from "react-native";
 
-import axios from "../api/axios";
+import axios, { setPrivateAccessToken } from "../api/axios";
 import { PERSIST_KEY } from "../constants/auth";
 import useAuth from "./useAuth";
 import { REFRESH_TOKEN_KEY } from "./useRefreshToken";
@@ -11,6 +11,9 @@ const useLogout = () => {
 
     const logout = async () => {
         setAuth({});
+        // Drop the default Authorization header. If it stays, the interceptor
+        // sees Authorization already set and will not attach the next login's token.
+        setPrivateAccessToken(null);
         setPersist(false);
 
         try {

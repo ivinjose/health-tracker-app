@@ -1,7 +1,7 @@
 import * as SecureStore from "expo-secure-store";
 import { Platform } from "react-native";
 
-import axios from "../api/axios";
+import axios, { setPrivateAccessToken } from "../api/axios";
 import useAuth from "./useAuth";
 
 const REFRESH_TOKEN_KEY = "refreshToken";
@@ -38,6 +38,9 @@ const useRefreshToken = () => {
         const { accessToken, isAdmin, name, id, refreshToken: newRefreshToken } =
             response?.data?.data ?? {};
 
+        // Same default-header sync as login/switch so a rotated access token
+        // is used on the next request, not the previous profile's JWT.
+        setPrivateAccessToken(accessToken);
         setAuth((prev) => ({
             ...prev,
             accessToken,

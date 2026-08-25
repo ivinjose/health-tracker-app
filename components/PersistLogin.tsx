@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import useAuth from "../hooks/useAuth";
 import useRefreshToken from "../hooks/useRefreshToken";
+import { setPrivateAccessToken } from "../api/axios";
 
 /**
  * PersistLogin silently verifies/refreshes the auth token on app start when
@@ -20,6 +21,7 @@ export function PersistLogin({ children }: { children: React.ReactNode }) {
 			} catch (err) {
 				console.warn("Refresh token verification failed:", err);
 				setAuth({});
+				setPrivateAccessToken(null); // keep axios defaults from pinning a dead token
 			} finally {
 				setIsLoading(false);
 			}

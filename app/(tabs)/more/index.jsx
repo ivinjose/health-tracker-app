@@ -3,7 +3,7 @@ import UserMenu from '@/components/User';
 import { Text } from '@/components/ui/text';
 import { CARD_LIST_GAP } from '@/constants/layout';
 import useLogout from '@/hooks/useLogout';
-import { Link, useRouter } from 'expo-router';
+import { Link } from 'expo-router';
 import { ChevronRight } from 'lucide-react-native';
 import { Pressable, ScrollView, View } from 'react-native';
 
@@ -25,21 +25,15 @@ const MENU_ITEMS = [
 export default function MoreScreen() {
 	const theme = useTheme();
 	const logout = useLogout();
-	const router = useRouter();
 
 	const onLogout = async () => {
 		await logout();
-		// agent added the below line, but looks like its not needed since logout will automatically redirect to login page.
-		// router.replace('/(auth)/login');
 	};
 
 	return (
 		<ScrollView className="flex-1 bg-background">
-			<View className="border-b border-border p-4">
-				<UserMenu />
-			</View>
-
 			<View className="p-4" style={{ gap: CARD_LIST_GAP }}>
+				<UserMenu />
 				{MENU_ITEMS.map((item) => (
 					<Link key={item.href} href={item.href} asChild>
 						<Pressable className="flex-row items-center justify-between rounded-lg border border-border bg-card px-4 py-4">

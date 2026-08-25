@@ -33,3 +33,24 @@ export const axiosPrivate = axios.create({
   },
   ...(Platform.OS === 'web' && { withCredentials: true }),
 });
+
+/**
+ * Write the access token onto axiosPrivate immediately.
+ *
+ * useAxiosPrivate's request interceptor closes over React `auth` state. After a
+ * profile switch we invalidate queries in the same turn — before that effect
+ * rebinds — so refetches would still send the *old* JWT (old `profile` claim)
+ * and home would look unchanged. Putting the token on defaults means those
+ * requests already have Authorization set, and the interceptor leaves it alone.
+ *
+ * Keep this in sync with every setAuth / clear-auth path (login, refresh,
+ * switch, logout). A stale default after logout would pin later sessions to
+ * the previous user's token.
+ */
+export function setPrivateAccessToken(token) {
+  if (token) {
+    axiosPrivate.defaults.headers.common.Authorization = `Bearer ${token}`;
+  } else {
+    delete axiosPrivate.defaults.headers.common.Authorization;
+  }
+}

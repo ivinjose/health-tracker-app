@@ -1,4 +1,4 @@
-import axios from '@/api/axios';
+import axios, { setPrivateAccessToken } from '@/api/axios';
 import { useTheme } from '@/components/ThemeProvider';
 import { Button } from '@/components/ui/button';
 import { Text } from '@/components/ui/text';
@@ -62,6 +62,8 @@ export default function LoginScreen() {
 
 			const { accessToken, isAdmin, name, id, refreshToken } = response?.data?.data ?? {};
 
+			// Keep axiosPrivate's default header in sync with auth (see setPrivateAccessToken).
+			setPrivateAccessToken(accessToken);
 			setAuth({ accessToken, isAdmin, name, id });
 			setPersist(shouldPersist);
 			await storeRefreshToken(refreshToken);
