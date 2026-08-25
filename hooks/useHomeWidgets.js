@@ -1,69 +1,61 @@
-import {
-	DEFAULT_HOME_WIDGET_SLUGS,
-	HOME_WIDGETS_KEY,
-	normalizeHomeWidgetSlugs,
-} from '@/lib/homeWidgets';
-import * as SecureStore from 'expo-secure-store';
-import { useCallback, useEffect, useState } from 'react';
-import { Platform } from 'react-native';
+import useHomeWidgetsApiManager from '@/api-managers/HomeWidgetsApiManager';
+import { useToast } from '@/hooks/use-toast';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
-async function readStoredSlugs() {
-	try {
-		const raw =
-			Platform.OS === 'web'
-				? localStorage.getItem(HOME_WIDGETS_KEY)
-				: await SecureStore.getItemAsync(HOME_WIDGETS_KEY);
-		if (raw == null) return DEFAULT_HOME_WIDGET_SLUGS;
-		return normalizeHomeWidgetSlugs(JSON.parse(raw)) ?? DEFAULT_HOME_WIDGET_SLUGS;
-	} catch {
-		return DEFAULT_HOME_WIDGET_SLUGS;
-	}
-}
-
-async function writeStoredSlugs(slugs) {
-	try {
-		const raw = JSON.stringify(slugs);
-		if (Platform.OS === 'web') {
-			localStorage.setItem(HOME_WIDGETS_KEY, raw);
-		} else {
-			await SecureStore.setItemAsync(HOME_WIDGETS_KEY, raw);
-		}
-	} catch {
-		// Ignore storage errors
-	}
-}
+export const HOME_WIDGETS_QUERY_KEY = ['home-widgets'];
 
 export default function useHomeWidgets() {
-	const [slugs, setSlugs] = useState(DEFAULT_HOME_WIDGET_SLUGS);
-	const [isReady, setIsReady] = useState(false);
+	const { toast } = useToast();
+	const queryClient = useQueryClient();
+	const homeWidgetsApiManager = useHomeWidgetsApiManager();
 
-	useEffect(() => {
-		let cancelled = false;
-		readStoredSlugs().then((value) => {
-			if (cancelled) return;
-			setSlugs(value);
-			setIsReady(true);
-		});
-		return () => {
-			cancelled = true;
-		};
-	}, []);
+	const { data: slugs = [] } = useQuery({
+		queryKey: HOME_WIDGETS_QUERY_KEY,
+		queryFn: () => homeWidgetsApiManager.readHomeWidgets(),
+	});
 
-	useEffect(() => {
-		if (!isReady) return;
-		writeStoredSlugs(slugs);
-	}, [isReady, slugs]);
+	const { mutate: addWidget } = useMutation({
+		mutationFn: (investigation) => homeWidgetsApiManager.createHomeWidget(investigation),
+		onMutate: async (investigation) => {
+			await queryClient.cancelQueries({ queryKey: HOME_WIDGETS_QUERY_KEY });
+			const previous = queryClient.getQueryData(HOME_WIDGETS_QUERY_KEY) ?? [];
+			if (!previous.includes(investigation)) {
+				queryClient.setQueryData(HOME_WIDGETS_QUERY_KEY, [...previous, investigation]);
+			}
+			return { previous };
+		},
+		onError: (error, _investigation, context) => {
+			if (context?.previous !== undefined) {
+				queryClient.setQueryData(HOME_WIDGETS_QUERY_KEY, context.previous);
+			}
+			toast({ description: error.message });
+		},
+		onSettled: () => {
+			queryClient.invalidateQueries({ queryKey: HOME_WIDGETS_QUERY_KEY });
+		},
+	});
 
-	const addWidget = useCallback((slug) => {
-		setSlugs((current) => {
-			const next = normalizeHomeWidgetSlugs([...current, slug]);
-			return next ?? current;
-		});
-	}, []);
+	const { mutate: removeWidget } = useMutation({
+		mutationFn: (investigation) => homeWidgetsApiManager.deleteHomeWidget(investigation),
+		onMutate: async (investigation) => {
+			await queryClient.cancelQueries({ queryKey: HOME_WIDGETS_QUERY_KEY });
+			const previous = queryClient.getQueryData(HOME_WIDGETS_QUERY_KEY) ?? [];
+			queryClient.setQueryData(
+				HOME_WIDGETS_QUERY_KEY,
+				previous.filter((slug) => slug !== investigation)
+			);
+			return { previous };
+		},
+		onError: (error, _investigation, context) => {
+			if (context?.previous !== undefined) {
+				queryClient.setQueryData(HOME_WIDGETS_QUERY_KEY, context.previous);
+			}
+			toast({ description: error.message });
+		},
+		onSettled: () => {
+			queryClient.invalidateQueries({ queryKey: HOME_WIDGETS_QUERY_KEY });
+		},
+	});
 
-	const removeWidget = useCallback((slug) => {
-		setSlugs((current) => current.filter((item) => item !== slug));
-	}, []);
-
-	return { slugs, addWidget, removeWidget, isReady };
+	return { slugs, addWidget, removeWidget };
 }

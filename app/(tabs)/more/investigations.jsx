@@ -1,13 +1,14 @@
-import NewInvestigationDialog from '@/components/NewInvestigationDialog';
+import useInvestigationsApiManager from '@/api-managers/InvestigationsApiManager';
 import InvestigationCard from '@/components/InvestigationCard';
 import CardView from '@/components/CardView';
+import NewInvestigationDialog from '@/components/NewInvestigationDialog';
 import { useTheme } from '@/components/ThemeProvider';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Text } from '@/components/ui/text';
-import useInvestigationsApiManager from '@/api-managers/InvestigationsApiManager';
 import { CARD_LIST_GAP } from '@/constants/layout';
 import { useToast } from '@/hooks/use-toast';
+import { HOME_WIDGETS_QUERY_KEY } from '@/hooks/useHomeWidgets';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Plus } from 'lucide-react-native';
 import { useState } from 'react';
@@ -39,6 +40,7 @@ export default function InvestigationsScreen() {
 		mutationFn: (id) => investigationsApiManager.deleteInvestigation(id),
 		onSuccess: async () => {
 			await queryClient.invalidateQueries({ queryKey: ['investigations'] });
+			await queryClient.invalidateQueries({ queryKey: HOME_WIDGETS_QUERY_KEY });
 			toast({ description: 'Your investigation was deleted successfully!' });
 		},
 		onError: (error) => {
