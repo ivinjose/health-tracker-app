@@ -4,20 +4,19 @@ import { Redirect, Tabs } from 'expo-router';
 import { CalendarPlus, ChartLine, FileText, GitCompareArrows, LayoutGrid } from 'lucide-react-native';
 import { ActivityIndicator, View } from 'react-native';
 
+import { useTheme } from '@/components/ThemeProvider';
 import { HapticTab } from '@/components/ui/haptic-tab';
 import { IconSymbol } from '@/components/ui/icon-symbol';
-import { APP_APPEARANCE, getAppearance } from '@/lib/appearance';
 import useAuth from '../../hooks/useAuth';
 
-const appTheme = getAppearance(APP_APPEARANCE);
-
 export default function AppLayout() {
+	const theme = useTheme();
 	const { auth, isLoading } = useAuth();
 
 	if (isLoading) {
 		return (
 			<View className="flex-1 items-center justify-center bg-background">
-				<ActivityIndicator size="large" color={appTheme.colors.tint} />
+				<ActivityIndicator size="large" color={theme.colors.tint} />
 			</View>
 		);
 	}
@@ -29,7 +28,7 @@ export default function AppLayout() {
 	return (
 		<Tabs
 			screenOptions={{
-				...appTheme.navigation,
+				...theme.navigation,
 				headerShown: true,
 				tabBarButton: HapticTab,
 			}}>

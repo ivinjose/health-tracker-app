@@ -16,6 +16,10 @@ const MENU_ITEMS = [
 		label: 'Investigations',
 		href: '/(tabs)/more/investigations',
 	},
+	{
+		label: 'Settings',
+		href: '/(tabs)/more/settings',
+	},
 ];
 
 export default function MoreScreen() {
