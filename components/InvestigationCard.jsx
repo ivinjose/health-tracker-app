@@ -39,7 +39,7 @@ export default function InvestigationCard({
 	);
 
 	return (
-		<>
+		<View>
 			<CardView actions={actions}>
 				<View className="flex-row gap-4 p-4">
 					{/* <FlaskConical size={40} color={theme.colors.primary} /> */}
@@ -72,6 +72,6 @@ export default function InvestigationCard({
 					</AlertDialogFooter>
 				</AlertDialogContent>
 			</AlertDialog>
-		</>
+		</View>
 	);
 }

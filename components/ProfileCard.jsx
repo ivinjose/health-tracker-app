@@ -32,7 +32,7 @@ export default function ProfileCard({ user, name, age, gender, parent, onDeleteC
 	}, [isAdmin, user, parent]);
 
 	return (
-		<>
+		<View>
 			<CardView actions={actions}>
 				<View className="flex-row gap-4 p-4">
 					<CircleUserRound size={40} color={theme.colors.primary} />
@@ -66,6 +66,6 @@ export default function ProfileCard({ user, name, age, gender, parent, onDeleteC
 					</AlertDialogFooter>
 				</AlertDialogContent>
 			</AlertDialog>
-		</>
+		</View>
 	);
 }

@@ -1,4 +1,4 @@
-export const CARD_LIST_GAP = 6;
+export const CARD_LIST_GAP = 10;
 
 export const FAB_STYLE = {
 	shadowColor: '#000',

@@ -3,7 +3,7 @@ import InvestigationPickerModal from '@/components/InvestigationPickerModal';
 import { useTheme } from '@/components/ThemeProvider';
 import { Text } from '@/components/ui/text';
 import HealthGraph from '@/components/widgets/HealthGraph';
-import { FAB_STYLE } from '@/constants/layout';
+import { CARD_LIST_GAP, FAB_STYLE } from '@/constants/layout';
 import useHomeWidgets from '@/hooks/useHomeWidgets';
 import { useQuery } from '@tanstack/react-query';
 import { Plus } from 'lucide-react-native';
@@ -42,7 +42,7 @@ export default function OverviewScreen() {
 		<View className="flex-1 bg-background">
 			<ScrollView
 				className="flex-1"
-				contentContainerStyle={{ padding: 16, gap: 16, paddingBottom: canAdd ? 96 : 32 }}
+				contentContainerStyle={{ padding: 16, gap: CARD_LIST_GAP, paddingBottom: canAdd ? 96 : 32 }}
 				showsVerticalScrollIndicator={false}
 			>
 				{/* TODO: Hiding for now since its convoluting the focus away from the health metrics */}

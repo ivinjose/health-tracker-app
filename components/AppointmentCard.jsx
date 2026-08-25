@@ -39,7 +39,7 @@ export default function AppointmentCard({
 	}, [isReadOnly]);
 
 	return (
-		<>
+		<View>
 			<CardView actions={actions}>
 				<View className="flex-row gap-4 p-4">
 					<CalendarPlus size={40} color={theme.colors.primary} />
@@ -90,6 +90,6 @@ export default function AppointmentCard({
 					</AlertDialogFooter>
 				</AlertDialogContent>
 			</AlertDialog>
-		</>
+		</View>
 	);
 }

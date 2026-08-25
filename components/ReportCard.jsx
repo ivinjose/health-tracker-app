@@ -59,7 +59,7 @@ export default function ReportCard({
 	const dateLabel = getDisplayDate({ displayDate, timestamp });
 
 	return (
-		<>
+		<View>
 			<CardView actions={actions}>
 				<View className="flex-row gap-4 p-4">
 					{/* TODO Phase 4: Add proper user avatar, hiding this icon till then */}
@@ -111,6 +111,6 @@ export default function ReportCard({
 					</AlertDialogFooter>
 				</AlertDialogContent>
 			</AlertDialog>
-		</>
+		</View>
 	);
 }

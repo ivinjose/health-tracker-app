@@ -1,6 +1,7 @@
 import { useTheme } from '@/components/ThemeProvider';
 import UserMenu from '@/components/User';
 import { Text } from '@/components/ui/text';
+import { CARD_LIST_GAP } from '@/constants/layout';
 import useLogout from '@/hooks/useLogout';
 import { Link, useRouter } from 'expo-router';
 import { ChevronRight } from 'lucide-react-native';
@@ -34,7 +35,7 @@ export default function MoreScreen() {
 				<UserMenu />
 			</View>
 
-			<View className="gap-1 p-4">
+			<View className="p-4" style={{ gap: CARD_LIST_GAP }}>
 				{MENU_ITEMS.map((item) => (
 					<Link key={item.href} href={item.href} asChild>
 						<Pressable className="flex-row items-center justify-between rounded-lg border border-border bg-card px-4 py-4">
