@@ -60,8 +60,8 @@ export default function ProfileCard({ user, name, age, gender, parent, onDeleteC
 						<AlertDialogCancel>
 							<Text>Cancel</Text>
 						</AlertDialogCancel>
-						<AlertDialogAction onPress={onDelete}>
-							<Text>Continue</Text>
+						<AlertDialogAction onPress={onDelete} className="bg-destructive">
+							<Text className="text-destructive-foreground">Continue</Text>
 						</AlertDialogAction>
 					</AlertDialogFooter>
 				</AlertDialogContent>

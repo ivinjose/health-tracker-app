@@ -40,7 +40,7 @@ export default function HealthGraph({ investigation, count, onRemove }) {
 			href={{ pathname: '/(tabs)/analyse', params: { investigation } }}
 			asChild
 		>
-			<Pressable className="flex-row items-center gap-1">
+			<Pressable className="flex-row items-center gap-1 self-end">
 				<Text className="text-sm text-primary">Analyse</Text>
 				<ArrowRight size={14} color={theme.colors.primary} />
 			</Pressable>
