@@ -1,4 +1,5 @@
 import FormDateField from '@/components/FormDateField';
+import FormFieldFile from '@/components/FormFieldFile';
 import FormFieldInput from '@/components/ui/form-field-input';
 import FormFieldSelect from '@/components/ui/form-field-select';
 import FormFieldTextarea from '@/components/ui/form-field-textarea';
@@ -14,6 +15,8 @@ export default function ReportFormFields({
 	isInvestigationLoading = false,
 	maxDate,
 	investigationDisabled = false,
+	showUpload = false,
+	uploadDisabled = false,
 }) {
 	return (
 		<>
@@ -44,6 +47,14 @@ export default function ReportFormFields({
 				placeholder="Enter any details you want to remember or note"
 				labelText="Remarks"
 			/>
+			{showUpload ? (
+				<FormFieldFile
+					formControl={form.control}
+					schemaProperty={fieldName(namePrefix, 'report')}
+					labelText="Upload report"
+					disabled={uploadDisabled}
+				/>
+			) : null}
 		</>
 	);
 }

@@ -38,4 +38,44 @@ describe('report form schema', () => {
 		expect(formSchema.safeParse({ ...validRow, value: '' }).success).toBe(false);
 		expect(formSchema.safeParse({ ...validRow, date: undefined }).success).toBe(false);
 	});
+
+	it('accepts an optional report file of a supported type', () => {
+		expect(formSchema.safeParse(validRow).success).toBe(true);
+		expect(
+			formSchema.safeParse({
+				...validRow,
+				report: {
+					uri: 'file:///tmp/a.pdf',
+					name: 'a.pdf',
+					size: 1024,
+					type: 'application/pdf',
+				},
+			}).success
+		).toBe(true);
+	});
+
+	it('rejects an oversized or unsupported report file', () => {
+		expect(
+			formSchema.safeParse({
+				...validRow,
+				report: {
+					uri: 'file:///tmp/a.pdf',
+					name: 'a.pdf',
+					size: 1024 * 1024 * 4,
+					type: 'application/pdf',
+				},
+			}).success
+		).toBe(false);
+		expect(
+			formSchema.safeParse({
+				...validRow,
+				report: {
+					uri: 'file:///tmp/a.txt',
+					name: 'a.txt',
+					size: 12,
+					type: 'text/plain',
+				},
+			}).success
+		).toBe(false);
+	});
 });

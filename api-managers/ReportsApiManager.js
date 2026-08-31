@@ -1,3 +1,4 @@
+import { buildCreateReportRequest } from "../lib/reportUpload";
 import useAxiosPrivate from "../hooks/useAxiosPrivate";
 
 const getErrorMessage = (err, fallback) => err?.response?.data?.message || fallback;
@@ -7,33 +8,10 @@ const useReportsApiManager = () => {
     const REPORTS_API = '/api/reports';
 
     const createReport = async (data) => {
-        const {
-            investigation,
-            value,
-            date,
-            remarks,
-            appointment,
-            report
-        } = data;
-
-        const parsedNumber = Number(value);
-
-        if (!investigation || !parsedNumber || !date) {
-            throw new Error('Could not create report.');
-        }
+        const { body, config } = buildCreateReportRequest(data);
 
         try {
-            const response = await axiosPrivate.post(
-                REPORTS_API,
-                {
-                    investigation,
-                    value: parsedNumber,
-                    timestamp: date.valueOf(),
-                    appointment: appointment || undefined,
-                    remarks,
-                    report
-                },
-            )
+            const response = await axiosPrivate.post(REPORTS_API, body, config);
             return response.data.data;
         } catch (err) {
             throw new Error(getErrorMessage(err, 'Could not create report.'));

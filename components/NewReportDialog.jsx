@@ -16,6 +16,7 @@ const EMPTY_VALUES = {
 	date: undefined,
 	appointment: undefined,
 	remarks: '',
+	report: undefined,
 };
 
 export default function NewReportDialog({ open, onOpenChange, appointmentId, report }) {
@@ -43,6 +44,7 @@ export default function NewReportDialog({ open, onOpenChange, appointmentId, rep
 						date: report.timestamp ? new Date(report.timestamp) : undefined,
 						appointment: report.appointment || undefined,
 						remarks: report.remarks ?? '',
+						report: undefined,
 					}
 				: {
 						...EMPTY_VALUES,
@@ -118,9 +120,11 @@ export default function NewReportDialog({ open, onOpenChange, appointmentId, rep
 					isInvestigationLoading={isInvestigationLoading}
 					maxDate={maxDate}
 					investigationDisabled={isEdit}
+					showUpload={!isEdit}
+					uploadDisabled={isPending}
 				/>
 				{/* TODO later: add appointments to the report */}
-				{/* TODO Phase 4: file upload + OCR */}
+				{/* TODO Phase 4: OCR */}
 			</Form>
 		</FormSheetModal>
 	);
