@@ -16,6 +16,7 @@ export default function FormSheetModal({
 	confirmAccessibilityLabel = 'Save',
 	scrollViewRef,
 	scrollable = true,
+	padded = true,
 }) {
 	const theme = useTheme();
 
@@ -41,6 +42,7 @@ export default function FormSheetModal({
 					onCancel={() => onOpenChange(false)}
 					scrollViewRef={scrollViewRef}
 					scrollable={scrollable}
+					padded={padded}
 				>
 					{children}
 				</FormSheetBody>
@@ -60,6 +62,7 @@ function FormSheetBody({
 	onCancel,
 	scrollViewRef,
 	scrollable,
+	padded,
 }) {
 	const theme = useTheme();
 	const confirmInactive = confirmDisabled || confirmLoading;
@@ -68,6 +71,13 @@ function FormSheetBody({
 	const contentPaddingTop = title
 		? theme.layout.contentPaddingTopWithTitle
 		: theme.layout.contentPaddingTopWithoutTitle;
+	const contentStyle = padded
+		? {
+				padding: theme.layout.contentPadding,
+				paddingTop: contentPaddingTop,
+				paddingBottom: 24,
+			}
+		: undefined;
 
 	return (
 		<>
@@ -160,25 +170,14 @@ function FormSheetBody({
 				<ScrollView
 					ref={scrollViewRef}
 					className="flex-1"
-					contentContainerStyle={{
-						padding: theme.layout.contentPadding,
-						paddingTop: contentPaddingTop,
-						paddingBottom: 24,
-					}}
+					contentContainerStyle={contentStyle}
 					showsVerticalScrollIndicator={false}
 					keyboardShouldPersistTaps="handled"
 				>
 					{children}
 				</ScrollView>
 			) : (
-				<View
-					className="flex-1"
-					style={{
-						padding: theme.layout.contentPadding,
-						paddingTop: contentPaddingTop,
-						paddingBottom: 24,
-					}}
-				>
+				<View className="flex-1" style={contentStyle}>
 					{children}
 				</View>
 			)}

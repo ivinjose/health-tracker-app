@@ -105,6 +105,22 @@ const useReportsApiManager = () => {
         }
     };
 
+    const downloadReport = async (filename) => {
+        if (!filename) {
+            throw new Error('Could not download report.');
+        }
+
+        try {
+            const response = await axiosPrivate.get(`${REPORTS_API}/download`, {
+                params: { filename },
+                responseType: 'arraybuffer',
+            });
+            return response.data;
+        } catch (err) {
+            throw new Error(getErrorMessage(err, 'Could not download report.'));
+        }
+    };
+
     const compareReports = async (filters) => {
         const {
             investigation1,
@@ -132,7 +148,7 @@ const useReportsApiManager = () => {
     };
 
     return {
-        createReport, createReports, updateReport, readReports, deleteReport, compareReports
+        createReport, createReports, updateReport, readReports, deleteReport, downloadReport, compareReports
     }
 }
 

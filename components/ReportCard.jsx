@@ -1,5 +1,6 @@
 import CardView from '@/components/CardView';
 import { useTheme } from '@/components/ThemeProvider';
+import ViewReportDialog from '@/components/ViewReportDialog';
 import {
 	AlertDialog,
 	AlertDialogAction,
@@ -10,6 +11,7 @@ import {
 	AlertDialogHeader,
 	AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
+import { Button } from '@/components/ui/button';
 import { Text } from '@/components/ui/text';
 import { formatInvestigationReading } from '@/lib/investigationUtils';
 import { getDisplayDate } from '@/lib/reportUtils';
@@ -33,6 +35,7 @@ export default function ReportCard({
 }) {
 	const theme = useTheme();
 	const [showConfirm, setShowConfirm] = useState(false);
+	const [showViewer, setShowViewer] = useState(false);
 
 	const onDelete = useCallback(() => {
 		onDeleteCb(_id);
@@ -83,10 +86,15 @@ export default function ReportCard({
 								<Text className="text-sm text-muted-foreground">{dateLabel}</Text>
 							) : null}
 							{filename ? (
-								<Text className="text-sm text-muted-foreground">
-									{/* TODO Phase 4: ViewReport */}
-									Report attached
-								</Text>
+								<Button
+									variant="link"
+									size="sm"
+									onPress={() => setShowViewer(true)}
+									className="h-auto min-h-0 shrink-0 px-0 py-0"
+									accessibilityLabel="View report"
+								>
+									<Text>View report</Text>
+								</Button>
 							) : null}
 						</View>
 					</View>
@@ -111,6 +119,15 @@ export default function ReportCard({
 					</AlertDialogFooter>
 				</AlertDialogContent>
 			</AlertDialog>
+
+			{filename ? (
+				<ViewReportDialog
+					open={showViewer}
+					onOpenChange={setShowViewer}
+					filename={filename}
+					title={investigationMeta.label}
+				/>
+			) : null}
 		</View>
 	);
 }
