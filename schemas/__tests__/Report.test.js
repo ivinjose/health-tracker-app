@@ -29,8 +29,10 @@ describe('report form schema', () => {
 		remarks: '',
 	};
 
-	it('accepts a complete row', () => {
+	it('accepts a complete row without a report file', () => {
 		expect(formSchema.safeParse(validRow).success).toBe(true);
+		expect(formSchema.safeParse({ ...validRow, report: undefined }).success).toBe(true);
+		expect(formSchema.safeParse({ ...validRow, report: null }).success).toBe(true);
 	});
 
 	it('rejects a missing investigation, value, or date', () => {
@@ -39,8 +41,7 @@ describe('report form schema', () => {
 		expect(formSchema.safeParse({ ...validRow, date: undefined }).success).toBe(false);
 	});
 
-	it('accepts an optional report file of a supported type', () => {
-		expect(formSchema.safeParse(validRow).success).toBe(true);
+	it('accepts an optional pdf or image report file', () => {
 		expect(
 			formSchema.safeParse({
 				...validRow,
@@ -49,6 +50,17 @@ describe('report form schema', () => {
 					name: 'a.pdf',
 					size: 1024,
 					type: 'application/pdf',
+				},
+			}).success
+		).toBe(true);
+		expect(
+			formSchema.safeParse({
+				...validRow,
+				report: {
+					uri: 'file:///tmp/b.jpg',
+					fileName: 'b.jpg',
+					type: 'image',
+					kind: 'image',
 				},
 			}).success
 		).toBe(true);

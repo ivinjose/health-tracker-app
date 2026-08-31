@@ -1,3 +1,4 @@
+import { FEATURE_REPORT_UPLOAD } from "../constants/features";
 import { buildCreateReportRequest } from "../lib/reportUpload";
 import useAxiosPrivate from "../hooks/useAxiosPrivate";
 
@@ -8,7 +9,10 @@ const useReportsApiManager = () => {
     const REPORTS_API = '/api/reports';
 
     const createReport = async (data) => {
-        const { body, config } = buildCreateReportRequest(data);
+        const { body, config } = buildCreateReportRequest({
+            ...data,
+            report: FEATURE_REPORT_UPLOAD ? data.report : undefined,
+        });
 
         try {
             const response = await axiosPrivate.post(REPORTS_API, body, config);

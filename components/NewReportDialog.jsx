@@ -3,6 +3,7 @@ import useReportsApiManager from '@/api-managers/ReportsApiManager';
 import FormSheetModal from '@/components/FormSheetModal';
 import ReportFormFields from '@/components/ReportFormFields';
 import { Form } from '@/components/ui/form';
+import { FEATURE_REPORT_UPLOAD } from '@/constants/features';
 import { useToast } from '@/hooks/use-toast';
 import useValidatedForm from '@/hooks/useValidatedForm';
 import formSchema from '@/schemas/Report';
@@ -120,7 +121,7 @@ export default function NewReportDialog({ open, onOpenChange, appointmentId, rep
 					isInvestigationLoading={isInvestigationLoading}
 					maxDate={maxDate}
 					investigationDisabled={isEdit}
-					showUpload={!isEdit}
+					showUpload={FEATURE_REPORT_UPLOAD && !isEdit}
 					uploadDisabled={isPending}
 				/>
 				{/* TODO later: add appointments to the report */}

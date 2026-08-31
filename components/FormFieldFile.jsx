@@ -2,8 +2,8 @@ import { useTheme } from '@/components/ThemeProvider';
 import { Text } from '@/components/ui/text';
 import { useToast } from '@/hooks/use-toast';
 import {
-	ACCEPTED_FILE_TYPES,
 	MAX_UPLOAD_SIZE,
+	REPORT_PICKER_TYPES,
 	getReportFileName,
 	normalizePickedFile,
 } from '@/lib/reportUpload';
@@ -24,8 +24,8 @@ export default function FormFieldFile({
 	const theme = useTheme();
 	const { toast } = useToast();
 
-	const applyPicked = (onChange, asset) => {
-		const file = normalizePickedFile(asset);
+	const applyPicked = (onChange, asset, options) => {
+		const file = normalizePickedFile(asset, options);
 		if (!file) return;
 		onChange(file);
 	};
@@ -33,7 +33,7 @@ export default function FormFieldFile({
 	const pickDocument = async (onChange) => {
 		try {
 			const result = await DocumentPicker.getDocumentAsync({
-				type: ACCEPTED_FILE_TYPES,
+				type: REPORT_PICKER_TYPES,
 				copyToCacheDirectory: true,
 				multiple: false,
 			});
@@ -59,7 +59,7 @@ export default function FormFieldFile({
 				allowsMultipleSelection: false,
 			});
 			if (result.canceled) return;
-			applyPicked(onChange, result.assets?.[0]);
+			applyPicked(onChange, result.assets?.[0], { kind: 'image' });
 		} catch (error) {
 			toast({ description: error.message || 'Could not attach report.' });
 		}
@@ -86,7 +86,9 @@ export default function FormFieldFile({
 								disabled={disabled}
 								className={`min-w-0 flex-1 flex-row items-center gap-2 rounded-[10px] border border-input bg-card px-3 py-3 ${disabled ? 'opacity-50' : ''}`}
 								accessibilityRole="button"
-								accessibilityLabel={fileName ? `Attached ${fileName}` : 'Choose file'}
+								accessibilityLabel={
+									fileName ? `Attached ${fileName}` : 'Choose PDF or image'
+								}
 								accessibilityState={{ disabled }}
 							>
 								<Paperclip size={20} color={theme.colors.tint} />
@@ -98,7 +100,7 @@ export default function FormFieldFile({
 									}
 									numberOfLines={1}
 								>
-									{fileName || 'Choose file'}
+									{fileName || 'Choose PDF or image'}
 								</Text>
 							</Pressable>
 							{fileName ? (
@@ -141,7 +143,7 @@ export default function FormFieldFile({
 						</Pressable>
 
 						<Text className="mt-1 text-xs text-muted-foreground">
-							PNG, JPEG, or PDF · max {MAX_UPLOAD_MB}MB
+							Optional · PDF or image · max {MAX_UPLOAD_MB}MB
 						</Text>
 
 						{error ? (

@@ -1,9 +1,8 @@
 import { z } from "zod";
 import {
-    ACCEPTED_FILE_TYPES,
-    MAX_UPLOAD_SIZE,
-    getReportFileSize,
-    getReportMimeType,
+    isMissingReportFile,
+    isPdfOrImage,
+    isWithinUploadLimit,
 } from "../lib/reportUpload";
 
 const formSchema = z.object({
@@ -20,16 +19,9 @@ const formSchema = z.object({
     report: z
         .any()
         .optional()
-        .refine((file) => {
-            if (!file) return true;
-            const size = getReportFileSize(file);
-            if (size == null) return true;
-            return size <= MAX_UPLOAD_SIZE;
-        }, 'Max file size is 3MB.')
-        .refine((file) => {
-            if (!file) return true;
-            return ACCEPTED_FILE_TYPES.includes(getReportMimeType(file));
-        }, 'Report must be an image or PDF')
+        .nullable()
+        .refine((file) => isMissingReportFile(file) || isWithinUploadLimit(file), 'Max file size is 3MB.')
+        .refine((file) => isMissingReportFile(file) || isPdfOrImage(file), 'Report must be a PDF or image'),
 });
 
 export function isEmptyDraft(row = {}) {
