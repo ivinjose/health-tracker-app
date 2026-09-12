@@ -9,7 +9,7 @@ export default function useHomeWidgets() {
 	const queryClient = useQueryClient();
 	const homeWidgetsApiManager = useHomeWidgetsApiManager();
 
-	const { data: slugs = [] } = useQuery({
+	const { data: widgetIds = [] } = useQuery({
 		queryKey: HOME_WIDGETS_QUERY_KEY,
 		queryFn: () => homeWidgetsApiManager.readHomeWidgets(),
 	});
@@ -42,7 +42,7 @@ export default function useHomeWidgets() {
 			const previous = queryClient.getQueryData(HOME_WIDGETS_QUERY_KEY) ?? [];
 			queryClient.setQueryData(
 				HOME_WIDGETS_QUERY_KEY,
-				previous.filter((slug) => slug !== investigation)
+				previous.filter((id) => id !== investigation)
 			);
 			return { previous };
 		},
@@ -57,5 +57,5 @@ export default function useHomeWidgets() {
 		},
 	});
 
-	return { slugs, addWidget, removeWidget };
+	return { widgetIds, addWidget, removeWidget };
 }

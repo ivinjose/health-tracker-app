@@ -13,28 +13,28 @@ import { Pressable, ScrollView, View } from 'react-native';
 export default function OverviewScreen() {
 	const theme = useTheme();
 	const investigationsApiManager = useInvestigationsApiManager();
-	const { slugs, addWidget, removeWidget } = useHomeWidgets();
+	const { widgetIds, addWidget, removeWidget } = useHomeWidgets();
 	const [pickerOpen, setPickerOpen] = useState(false);
 
 	const { data: investigations = [], isLoading } = useQuery({
 		queryKey: ['investigations'],
 		queryFn: async () => {
-			const result = await investigationsApiManager.readInvestigations({});
+			const result = await investigationsApiManager.readInvestigations();
 			return result ?? [];
 		},
 	});
 
-	const catalogValues = useMemo(
-		() => new Set(investigations.map((item) => item.value)),
+	const catalogIds = useMemo(
+		() => new Set(investigations.map((item) => String(item._id))),
 		[investigations]
 	);
 	const widgets =
-		isLoading || catalogValues.size === 0
-			? slugs
-			: slugs.filter((slug) => catalogValues.has(slug));
+		isLoading || catalogIds.size === 0
+			? widgetIds
+			: widgetIds.filter((id) => catalogIds.has(String(id)));
 	const addableInvestigations = useMemo(
-		() => investigations.filter((item) => !slugs.includes(item.value)),
-		[investigations, slugs]
+		() => investigations.filter((item) => !widgetIds.includes(String(item._id))),
+		[investigations, widgetIds]
 	);
 	const canAdd = !isLoading && addableInvestigations.length > 0;
 
@@ -49,12 +49,12 @@ export default function OverviewScreen() {
 				{/* <AppointmentsWidget /> */}
 				{/* <AppointmentsWidget type={APPOINTMENT_TYPE.PAST} count={2} /> */}
 				{widgets.length > 0 ? (
-					widgets.map((slug) => (
+					widgets.map((id) => (
 						<HealthGraph
-							key={slug}
-							investigation={slug}
+							key={id}
+							investigation={id}
 							count={5}
-							onRemove={() => removeWidget(slug)}
+							onRemove={() => removeWidget(id)}
 						/>
 					))
 				) : (

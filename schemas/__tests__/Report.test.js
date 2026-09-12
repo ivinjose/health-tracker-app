@@ -10,9 +10,11 @@ describe('isEmptyDraft', () => {
 	});
 
 	it('is not empty when investigation or value is present', () => {
-		expect(isEmptyDraft({ investigation: 'hba1c', value: '' })).toBe(false);
+		expect(isEmptyDraft({ investigation: '6a8962dd0274ed29b52dd702', value: '' })).toBe(false);
 		expect(isEmptyDraft({ investigation: '', value: '6.5' })).toBe(false);
-		expect(isEmptyDraft({ investigation: 'hba1c', value: '6.5' })).toBe(false);
+		expect(isEmptyDraft({ investigation: '6a8962dd0274ed29b52dd702', value: '6.5' })).toBe(
+			false
+		);
 	});
 
 	it('is empty when only remarks or date are set', () => {
@@ -23,7 +25,7 @@ describe('isEmptyDraft', () => {
 
 describe('report form schema', () => {
 	const validRow = {
-		investigation: 'hba1c',
+		investigation: '6a8962dd0274ed29b52dd702',
 		value: '6.5',
 		date: new Date(2026, 7, 22),
 		remarks: '',

@@ -13,7 +13,7 @@ export default function InvestigationSelect({
 	const [isOpen, setIsOpen] = useState(false);
 
 	const selectedLabel = useMemo(() => {
-		const match = results.find((item) => item.value === currentValue);
+		const match = results.find((item) => String(item._id) === String(currentValue));
 		return match?.label ?? 'Select your preference...';
 	}, [results, currentValue]);
 

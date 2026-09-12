@@ -73,7 +73,7 @@ export default function CompareScreen() {
 
 	const { data: investigations = [], isLoading: isInvestigationLoading } = useQuery({
 		queryKey: ['investigations'],
-		queryFn: () => investigationsApiManager.readInvestigations({}),
+		queryFn: () => investigationsApiManager.readInvestigations(),
 	});
 
 	const { data: reports = [], isLoading } = useQuery({

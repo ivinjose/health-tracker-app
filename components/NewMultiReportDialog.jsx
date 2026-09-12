@@ -69,7 +69,7 @@ export default function NewMultiReportDialog({ open, onOpenChange }) {
 	const { data: investigations = [], isLoading: isInvestigationLoading } = useQuery({
 		queryKey: ['investigations'],
 		queryFn: async () => {
-			const result = await investigationsApiManager.readInvestigations({});
+			const result = await investigationsApiManager.readInvestigations();
 			return result ?? [];
 		},
 		enabled: open,

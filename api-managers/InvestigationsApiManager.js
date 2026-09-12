@@ -6,18 +6,9 @@ const useInvestigationsApiManager = () => {
     const axiosPrivate = useAxiosPrivate();
     const INVESTIGATIONS_API = '/api/investigations';
 
-    const readInvestigations = async (filters = {}) => {
-        const {
-            investigation,
-        } = filters;
-
-        const searchParams = new URLSearchParams();
-        if (investigation) {
-            searchParams.set('investigation', investigation);
-        }
-
+    const readInvestigations = async () => {
         try {
-            const response = await axiosPrivate.get(`${INVESTIGATIONS_API}?${searchParams}`);
+            const response = await axiosPrivate.get(INVESTIGATIONS_API);
             return response.data.data;
         } catch (err) {
             console.log(err);
@@ -25,11 +16,11 @@ const useInvestigationsApiManager = () => {
     };
 
     const createInvestigation = async (data) => {
-        const { label, value, unit } = data;
+        const { label, unit } = data;
         try {
             const response = await axiosPrivate.post(
                 INVESTIGATIONS_API,
-                { label, value, unit: unit || '' },
+                { label, unit: unit || '' },
             );
             return response.data.data;
         } catch (err) {

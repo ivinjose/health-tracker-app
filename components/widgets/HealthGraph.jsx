@@ -27,11 +27,11 @@ export default function HealthGraph({ investigation, count, onRemove }) {
 
 	const { data: investigations = [], isLoading: isInvestigationLoading } = useQuery({
 		queryKey: ['investigations'],
-		queryFn: () => investigationsApiManager.readInvestigations({}),
+		queryFn: () => investigationsApiManager.readInvestigations(),
 	});
 
 	const title = isInvestigationLoading
-		? investigation
+		? ''
 		: getInvestigationLabel(investigations, investigation);
 	const unit = getInvestigationUnit(investigations, investigation);
 

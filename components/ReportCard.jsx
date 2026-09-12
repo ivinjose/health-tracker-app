@@ -14,7 +14,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Text } from '@/components/ui/text';
 import { formatInvestigationReading } from '@/lib/investigationUtils';
-import { getDisplayDate } from '@/lib/reportUtils';
+import { getDisplayDate, getInvestigationLabel, getInvestigationUnit } from '@/lib/reportUtils';
 import { useCallback, useMemo, useState } from 'react';
 import { View } from 'react-native';
 
@@ -54,10 +54,13 @@ export default function ReportCard({
 		];
 	}, [isReadOnly, _id, investigation, value, timestamp, remarks, appointment, onEditCb]);
 
-	const investigationMeta = useMemo(() => {
-		const match = investigations.find((inv) => inv.value === investigation);
-		return match ?? { label: investigation ?? 'unknown', unit: '' };
-	}, [investigation, investigations]);
+	const investigationMeta = useMemo(
+		() => ({
+			label: getInvestigationLabel(investigations, investigation),
+			unit: getInvestigationUnit(investigations, investigation),
+		}),
+		[investigation, investigations]
+	);
 
 	const dateLabel = getDisplayDate({ displayDate, timestamp });
 

@@ -5,12 +5,12 @@ Signed-in workspace for one health-tracker account. The user switches among prof
 ## Language
 
 **Report**:
-One numeric measurement at a sample-collection date, tagged with an investigation slug, owned by the active profile.
+One numeric measurement at a sample-collection date, tagged with an investigation `_id`, owned by the active profile.
 _Avoid_: bulk report, batch, bulk endpoint
 
 **Draft report**:
 An unsaved Report row in the New Multi Report sheet.
 
 **Investigation**:
-An account-level test type. `value` is the slug stored on a Report; `label` is the display name.
-_Avoid_: slug (as a separate field name), test type
+An account-level test type identified by Mongo `_id`. `label` is the display name; `unit` is optional.
+_Avoid_: slug, test type

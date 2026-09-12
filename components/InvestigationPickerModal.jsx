@@ -4,6 +4,8 @@ import { Text } from '@/components/ui/text';
 import { useMemo, useState } from 'react';
 import { FlatList, Pressable, TextInput } from 'react-native';
 
+const investigationId = (item) => String(item?._id ?? '');
+
 export default function InvestigationPickerModal({
 	open,
 	onOpenChange,
@@ -18,18 +20,14 @@ export default function InvestigationPickerModal({
 
 	const selectable = useMemo(() => {
 		if (!excludeValues?.length) return results;
-		const excluded = new Set(excludeValues);
-		return results.filter((item) => !excluded.has(item.value));
+		const excluded = new Set(excludeValues.map(String));
+		return results.filter((item) => !excluded.has(investigationId(item)));
 	}, [results, excludeValues]);
 
 	const filteredResults = useMemo(() => {
 		const query = search.trim().toLowerCase();
 		if (!query) return selectable;
-		return selectable.filter(
-			(item) =>
-				item.label?.toLowerCase().includes(query) ||
-				item.value?.toLowerCase().includes(query)
-		);
+		return selectable.filter((item) => item.label?.toLowerCase().includes(query));
 	}, [selectable, search]);
 
 	const handleOpenChange = (nextOpen) => {
@@ -37,10 +35,12 @@ export default function InvestigationPickerModal({
 		onOpenChange(nextOpen);
 	};
 
-	const handleSelect = (value) => {
-		onSelect(value);
+	const handleSelect = (id) => {
+		onSelect(id);
 		handleOpenChange(false);
 	};
+
+	const currentId = currentValue != null ? String(currentValue) : '';
 
 	return (
 		<FormSheetModal
@@ -60,7 +60,7 @@ export default function InvestigationPickerModal({
 			/>
 			<FlatList
 				data={filteredResults}
-				keyExtractor={(item) => item.value}
+				keyExtractor={(item) => investigationId(item)}
 				keyboardShouldPersistTaps="handled"
 				className="flex-1"
 				ListEmptyComponent={
@@ -68,22 +68,25 @@ export default function InvestigationPickerModal({
 						No results found
 					</Text>
 				}
-				renderItem={({ item }) => (
-					<Pressable
-						onPress={() => handleSelect(item.value)}
-						className="border-b border-border py-3"
-					>
-						<Text
-							className={
-								item.value === currentValue
-									? 'font-semibold text-primary'
-									: 'text-foreground'
-							}
+				renderItem={({ item }) => {
+					const id = investigationId(item);
+					return (
+						<Pressable
+							onPress={() => handleSelect(id)}
+							className="border-b border-border py-3"
 						>
-							{item.label}
-						</Text>
-					</Pressable>
-				)}
+							<Text
+								className={
+									id === currentId
+										? 'font-semibold text-primary'
+										: 'text-foreground'
+								}
+							>
+								{item.label}
+							</Text>
+						</Pressable>
+					);
+				}}
 			/>
 		</FormSheetModal>
 	);

@@ -31,7 +31,7 @@ export default function InvestigationsScreen() {
 	} = useQuery({
 		queryKey: ['investigations'],
 		queryFn: async () => {
-			const result = await investigationsApiManager.readInvestigations({});
+			const result = await investigationsApiManager.readInvestigations();
 			return result ?? [];
 		},
 	});

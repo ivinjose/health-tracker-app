@@ -107,9 +107,7 @@ Signed-in identity is **`auth.id`**, not `auth.accessToken`. Login stores `{ acc
 
 Appointments is still a registered tab route. It is hidden from the bar (comment in the layout: it pulled focus away from health metrics). Overview’s `AppointmentsWidget` is also commented out. Nothing in the More menu links to it. The screen is reachable only by a direct path or by the widget’s `href` if that widget is re-enabled.
 
-More stack (`app/(tabs)/more/_layout.tsx`): `index` (More), `profiles`, `investigations`. Header back title is `'More'`.
-
-There are also files at `app/(tabs)/more/analyse-reports/` (`index.jsx` and `[investigation].jsx`). They are **not** listed in the More stack options and **not** linked from `more/index.jsx`. The live Analyse UI is the **Analyse tab** (`app/(tabs)/analyse.jsx`). Treat the More copies as leftover routes unless you are deleting them.
+More stack (`app/(tabs)/more/_layout.tsx`): `index` (More), `profiles`, `investigations`. Header back title is `'More'`. The live Analyse UI is the **Analyse tab** (`app/(tabs)/analyse.jsx`); there is no `more/analyse-reports/[investigation]` route.
 
 ---
 
@@ -193,7 +191,7 @@ Invalidating a prefix invalidates longer keys (TanStack Query default).
 | Key | Used by |
 |---|---|
 | `['investigations']` | Overview, Analyse, Compare, reports screen, HealthGraph, dialogs, More/investigations |
-| `['investigations', investigation]` | leftover `more/analyse-reports/[investigation].jsx` only |
+| `['home-widgets']` | Overview widget ids |
 | `['reports']` | Manage Reports list |
 | `['reports', investigation, count]` | Home `HealthGraph` |
 | `['reports', fromDate, toDate, investigation]` | Analyse tab |
@@ -240,7 +238,7 @@ Success UI tells the user to check email; it does not auto-login.
 
 ### Overview (`app/(tabs)/index.jsx`)
 
-Loads `['investigations']`. Renders `HealthGraph` for slugs in `HOME_WIDGET_SLUGS = ['hba1c', 'hdl']`, **filtered** to slugs that exist in the account catalog. Each graph fetches `readReports({ investigation, count: 5 })` and sorts ASC for the chart. Footer link: Analyse tab with `params: { investigation }`.
+Loads `['investigations']` and `['home-widgets']`. Renders `HealthGraph` for widget `_id`s that exist in the account catalog. Each graph fetches `readReports({ investigation, count: 5 })` and sorts ASC for the chart. Footer link: Analyse tab with `params: { investigation }` (catalog `_id`).
 
 `AppointmentsWidget` is imported nowhere on this screen (commented out).
 
@@ -250,7 +248,7 @@ Filter state is **URL params**: `investigation`, `from`, `to`. `InvestigationSel
 
 ### Compare (`app/(tabs)/compare.jsx`)
 
-URL params `investigation1`, `investigation2`, `from`, `to`. Calls `compareReports` which hits `GET /api/reports/compare?investigations=a,b`. Renders `CompareGraph` → `LineChart` with `yAxisKeys` equal to the two slugs (independent Y scales per series inside `buildLinePoints`).
+URL params `investigation1`, `investigation2`, `from`, `to` (investigation values are catalog `_id`s). Calls `compareReports` which hits `GET /api/reports/compare?investigations=id1,id2`. Renders `CompareGraph` → `LineChart` with `yAxisKeys` equal to the two ids (independent Y scales per series inside `buildLinePoints`).
 
 ### Manage Reports (`app/(tabs)/reports.jsx`)
 
@@ -274,7 +272,7 @@ Switching profiles is only in `UserMenu` → Switch Profile. It posts `Profile.u
 
 ### Investigations (`more/investigations.jsx`)
 
-Account catalog CRUD. Create auto-slugifies `label` via `slugifyLabel` until the user edits the slug. Edit cannot change `value` (`editable={!isEdit}`), matching the server (slug immutable).
+Account catalog CRUD. Create/edit send `{ label, unit }`. Identity is `_id`; the UI shows label and unit only.
 
 ---
 
@@ -333,7 +331,7 @@ Feature code calls `useToast()` from `hooks/use-toast.ts` (`toast({ description 
 
 `components/charts/LineChart.jsx` (react-native-svg). Geometry lives in `chartUtils.js`: `buildLinePoints`, axis ticks (min / mean / max), date labels, independent scales when `yKeys.length > 1`.
 
-Colors come from `useTheme().chart` (`line`, `lineSecondary`, `axis`, `label`) — not hardcoded hex in the chart. Home and Analyse pass `yAxisKey` default `'value'`. Compare passes `yAxisKeys` = investigation slugs (the compare API returns objects keyed by slug plus `timestamp`).
+Colors come from `useTheme().chart` (`line`, `lineSecondary`, `axis`, `label`) — not hardcoded hex in the chart. Home and Analyse pass `yAxisKey` default `'value'` (the numeric reading). Compare passes `yAxisKeys` = investigation `_id`s (the compare API returns objects keyed by `_id` plus `timestamp`).
 
 ---
 
@@ -369,7 +367,7 @@ No screen, API-manager, or auth integration tests.
 1. **`(tabs)` redirects when `!auth.id`; `(auth)` redirects when `auth.id`.** Do not add a third gate that fights those.
 2. **Private HTTP goes through `useAxiosPrivate`.** Using the public axios instance on a protected route skips the Bearer interceptor and the 401 retry.
 3. **`req.user` vs `req.profile` on the server:** this client’s `auth.id` after login is the account id (primary profile). Reports/appointments the server returns are for the **access token’s `profile` claim**. Switching profiles without updating `auth` (current `User.jsx`) leaves the old claim in memory.
-4. **Investigation `value` is the slug** stored on reports and used as Compare series keys. Do not display it as the title when a `label` exists (`getInvestigationLabel`).
+4. **Investigation identity is `_id`**, stored on reports and used as Compare series keys and Analyse/Compare URL params. Do not display it as the title when a `label` exists (`getInvestigationLabel`).
 5. **Form create/edit = `FormSheetModal` + Zod + `useValidatedForm`.** Deletes = `AlertDialog`. Form dates = `FormDateField`.
 6. **`@/` imports from nested `app/` routes.** Especially `app/(auth)/verify/[emailToken].jsx`.
 7. **Do not wrap screens in `ThemeProvider`.** Only root, Modals, and portal roots.

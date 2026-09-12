@@ -25,7 +25,14 @@ export default function ReportFormFields({
 				schemaProperty={fieldName(namePrefix, 'investigation')}
 				placeholder="Choose from the list"
 				labelText="Investigation"
-				dropdownOptions={isInvestigationLoading ? [] : investigations}
+				dropdownOptions={
+					isInvestigationLoading
+						? []
+						: investigations.map((item) => ({
+								label: item.label,
+								value: String(item._id),
+							}))
+				}
 				disabled={investigationDisabled}
 			/>
 			<FormFieldInput

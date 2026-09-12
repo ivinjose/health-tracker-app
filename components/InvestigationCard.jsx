@@ -1,5 +1,4 @@
 import CardView from '@/components/CardView';
-import { useTheme } from '@/components/ThemeProvider';
 import {
 	AlertDialog,
 	AlertDialogAction,
@@ -17,12 +16,10 @@ import { View } from 'react-native';
 export default function InvestigationCard({
 	_id,
 	label,
-	value,
 	unit,
 	onEditCb,
 	onDeleteCb,
 }) {
-	const theme = useTheme();
 	const [showConfirm, setShowConfirm] = useState(false);
 
 	const onDelete = useCallback(() => {
@@ -32,20 +29,18 @@ export default function InvestigationCard({
 
 	const actions = useMemo(
 		() => [
-			{ label: 'Edit', action: () => onEditCb({ _id, label, value, unit }) },
+			{ label: 'Edit', action: () => onEditCb({ _id, label, unit }) },
 			{ label: 'Delete', action: () => setShowConfirm(true), variant: 'destructive' },
 		],
-		[_id, label, value, unit, onEditCb]
+		[_id, label, unit, onEditCb]
 	);
 
 	return (
 		<View>
 			<CardView actions={actions}>
 				<View className="flex-row gap-4 p-4">
-					{/* <FlaskConical size={40} color={theme.colors.primary} /> */}
 					<View className="flex-1 gap-1">
 						<Text className="text-base font-semibold text-foreground">{label}</Text>
-						<Text className="text-sm text-muted-foreground">{value}</Text>
 						{unit ? (
 							<Text className="text-sm text-muted-foreground">{unit}</Text>
 						) : null}

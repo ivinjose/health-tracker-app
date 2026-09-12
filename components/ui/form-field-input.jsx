@@ -1,6 +1,5 @@
 import { useTheme } from '@/components/ThemeProvider';
 import { Controller } from 'react-hook-form';
-import { useEffect, useRef } from 'react';
 import { Text, TextInput, View } from 'react-native';
 
 const FormFieldInput = ({
@@ -13,16 +12,8 @@ const FormFieldInput = ({
 	editable = true,
 	autoCapitalize,
 	onValueChange,
-	displayValue,
 }) => {
 	const theme = useTheme();
-	const inputRef = useRef(null);
-	const focusedRef = useRef(false);
-
-	useEffect(() => {
-		if (displayValue === undefined || focusedRef.current) return;
-		inputRef.current?.setNativeProps({ text: displayValue });
-	}, [displayValue]);
 
 	return (
 		<Controller
@@ -42,23 +33,15 @@ const FormFieldInput = ({
 					)}
 
 					<TextInput
-						ref={inputRef}
 						className={`rounded-[10px] border border-input bg-card px-3 py-3 text-base leading-tight text-foreground ${!editable ? 'opacity-50' : ''}`}
 						placeholder={placeholder}
 						placeholderTextColor={theme.colors.placeholder}
-						value={displayValue !== undefined ? displayValue : (value ?? '')}
+						value={value ?? ''}
 						onChangeText={(text) => {
-							if (displayValue !== undefined && !focusedRef.current) return;
 							onChange(text);
 							onValueChange?.(text);
 						}}
-						onFocus={() => {
-							focusedRef.current = true;
-						}}
-						onBlur={() => {
-							focusedRef.current = false;
-							onBlur();
-						}}
+						onBlur={onBlur}
 						editable={editable}
 						autoCapitalize={autoCapitalize}
 						keyboardType={inputType === 'number' ? 'numeric' : 'default'}

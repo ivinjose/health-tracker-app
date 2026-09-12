@@ -52,7 +52,7 @@ export default function ReportsScreen() {
 
 	const { data: investigations = [] } = useQuery({
 		queryKey: ['investigations'],
-		queryFn: () => investigationsApiManager.readInvestigations({}),
+		queryFn: () => investigationsApiManager.readInvestigations(),
 	});
 
 	const { mutateAsync: removeReport } = useMutation({
