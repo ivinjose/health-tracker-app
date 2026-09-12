@@ -1,8 +1,6 @@
 import FormSheetModal from '@/components/FormSheetModal';
-import { Button } from '@/components/ui/button';
 import { Form } from '@/components/ui/form';
 import FormFieldInput from '@/components/ui/form-field-input';
-import { Text } from '@/components/ui/text';
 import { useToast } from '@/hooks/use-toast';
 import useValidatedForm from '@/hooks/useValidatedForm';
 import useInvestigationsApiManager from '@/api-managers/InvestigationsApiManager';
@@ -84,16 +82,10 @@ export default function NewInvestigationDialog({ open, onOpenChange, investigati
 			open={open}
 			onOpenChange={onOpenChange}
 			title={isEdit ? 'Edit investigation' : 'Create new investigation'}
-			footer={
-				<Button
-					onPress={form.handleSubmit(saveInvestigation)}
-					disabled={!canSubmit || isPending}
-				>
-					<Text className="font-medium text-primary-foreground">
-						{isPending ? (isEdit ? 'Saving…' : 'Creating…') : isEdit ? 'Save' : 'Create investigation'}
-					</Text>
-				</Button>
-			}
+			onConfirm={form.handleSubmit(saveInvestigation)}
+			confirmDisabled={!canSubmit || isPending}
+			confirmLoading={isPending}
+			confirmAccessibilityLabel={isEdit ? 'Save' : 'Create investigation'}
 		>
 			<Form {...form}>
 				<FormFieldInput
