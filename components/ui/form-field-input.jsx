@@ -1,6 +1,6 @@
 import { useTheme } from '@/components/ThemeProvider';
 import { Controller } from 'react-hook-form';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import { Text, TextInput, View } from 'react-native';
 
 const FormFieldInput = ({
@@ -17,12 +17,12 @@ const FormFieldInput = ({
 }) => {
 	const theme = useTheme();
 	const inputRef = useRef(null);
-	const [focused, setFocused] = useState(false);
+	const focusedRef = useRef(false);
 
 	useEffect(() => {
-		if (displayValue === undefined || focused) return;
+		if (displayValue === undefined || focusedRef.current) return;
 		inputRef.current?.setNativeProps({ text: displayValue });
-	}, [displayValue, focused]);
+	}, [displayValue]);
 
 	return (
 		<Controller
@@ -48,13 +48,15 @@ const FormFieldInput = ({
 						placeholderTextColor={theme.colors.placeholder}
 						value={displayValue !== undefined ? displayValue : (value ?? '')}
 						onChangeText={(text) => {
-							if (displayValue !== undefined && !focused) return;
+							if (displayValue !== undefined && !focusedRef.current) return;
 							onChange(text);
 							onValueChange?.(text);
 						}}
-						onFocus={() => setFocused(true)}
+						onFocus={() => {
+							focusedRef.current = true;
+						}}
 						onBlur={() => {
-							setFocused(false);
+							focusedRef.current = false;
 							onBlur();
 						}}
 						editable={editable}
