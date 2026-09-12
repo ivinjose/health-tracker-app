@@ -1,9 +1,7 @@
 import FormSheetModal from '@/components/FormSheetModal';
-import { Button } from '@/components/ui/button';
 import { Form } from '@/components/ui/form';
 import FormFieldInput from '@/components/ui/form-field-input';
 import FormFieldSelect from '@/components/ui/form-field-select';
-import { Text } from '@/components/ui/text';
 import { useToast } from '@/hooks/use-toast';
 import useValidatedForm from '@/hooks/useValidatedForm';
 import useProfileApiManager from '@/api-managers/ProfileApiManager';
@@ -43,13 +41,10 @@ export default function NewProfileDialog({ open, onOpenChange }) {
 			open={open}
 			onOpenChange={onOpenChange}
 			title="Create new profile"
-			footer={
-				<Button onPress={form.handleSubmit(addProfile)} disabled={!canSubmit || isPending}>
-					<Text className="font-medium text-primary-foreground">
-						{isPending ? 'Creating…' : 'Create profile'}
-					</Text>
-				</Button>
-			}
+			onConfirm={form.handleSubmit(addProfile)}
+			confirmDisabled={!canSubmit || isPending}
+			confirmLoading={isPending}
+			confirmAccessibilityLabel="Create profile"
 		>
 			<Form {...form}>
 				<FormFieldInput
