@@ -7,12 +7,12 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Text } from '@/components/ui/text';
 import useAuth from '@/hooks/useAuth';
 import useProfileApiManager from '@/api-managers/ProfileApiManager';
-import { CARD_LIST_GAP } from '@/constants/layout';
+import { CARD_LIST_GAP, FAB_STYLE } from '@/constants/layout';
 import { useToast } from '@/hooks/use-toast';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Plus } from 'lucide-react-native';
 import { useState } from 'react';
-import { RefreshControl, ScrollView, View } from 'react-native';
+import { Pressable, RefreshControl, ScrollView, View } from 'react-native';
 
 export default function ProfilesScreen() {
 	const theme = useTheme();
@@ -43,13 +43,6 @@ export default function ProfilesScreen() {
 
 	return (
 		<View className="flex-1 bg-background">
-			<View className="px-4 py-3">
-				<Button onPress={() => setShowNewProfileDialog(true)}>
-					<Plus size={18} color={theme.colors.primaryForeground} />
-					<Text className="ml-2 font-medium text-primary-foreground">Create new profile</Text>
-				</Button>
-			</View>
-
 			{isLoading ? (
 				<ProfilesLoading />
 			) : isError ? (
@@ -60,16 +53,13 @@ export default function ProfilesScreen() {
 					</Button>
 				</View>
 			) : profiles.length === 0 ? (
-				<View className="flex-1 items-center justify-center gap-4 px-6">
+				<View className="flex-1 items-center justify-center px-6">
 					<Text className="text-center text-muted-foreground">No profiles yet.</Text>
-					<Button onPress={() => setShowNewProfileDialog(true)}>
-						<Text className="font-medium text-primary-foreground">Create profile</Text>
-					</Button>
 				</View>
 			) : (
 				<ScrollView
 					className="flex-1"
-					contentContainerStyle={{ padding: 16, gap: CARD_LIST_GAP }}
+					contentContainerStyle={{ padding: 16, paddingBottom: 96, gap: CARD_LIST_GAP }}
 					refreshControl={
 						<RefreshControl
 							refreshing={isRefetching}
@@ -89,6 +79,16 @@ export default function ProfilesScreen() {
 					))}
 				</ScrollView>
 			)}
+
+			<Pressable
+				onPress={() => setShowNewProfileDialog(true)}
+				accessibilityRole="button"
+				accessibilityLabel="New profile"
+				className="absolute bottom-6 right-5 z-10 h-14 w-14 items-center justify-center rounded-full bg-primary active:opacity-80"
+				style={FAB_STYLE}
+			>
+				<Plus size={28} color={theme.colors.primaryForeground} strokeWidth={2.5} />
+			</Pressable>
 
 			<NewProfileDialog open={showNewProfileDialog} onOpenChange={setShowNewProfileDialog} />
 		</View>

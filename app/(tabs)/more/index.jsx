@@ -9,11 +9,11 @@ import { Pressable, ScrollView, View } from 'react-native';
 
 const MENU_ITEMS = [
 	{
-		label: 'Profiles',
+		label: 'Manage Profiles',
 		href: '/(tabs)/more/profiles',
 	},
 	{
-		label: 'Investigations',
+		label: 'Manage Investigations',
 		href: '/(tabs)/more/investigations',
 	},
 	{

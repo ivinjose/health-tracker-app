@@ -1,13 +1,13 @@
+import useProfileApiManager from '@/api-managers/ProfileApiManager';
+import { setPrivateAccessToken } from '@/api/axios';
 import { useTheme } from '@/components/ThemeProvider';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Text } from '@/components/ui/text';
 import { CARD_LIST_GAP } from '@/constants/layout';
-import { cn } from '@/lib/utils';
-import { setPrivateAccessToken } from '@/api/axios';
 import { useToast } from '@/hooks/use-toast';
 import useAuth from '@/hooks/useAuth';
-import useProfileApiManager from '@/api-managers/ProfileApiManager';
 import { storeRefreshToken } from '@/hooks/useRefreshToken';
+import { cn } from '@/lib/utils';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'expo-router';
 import { Check, CircleUserRound } from 'lucide-react-native';
@@ -65,7 +65,7 @@ export default function UserMenu() {
 
 	return (
 		<View style={{ gap: CARD_LIST_GAP }}>
-			<Text className="text-sm font-medium text-muted-foreground">Profile</Text>
+			<Text className="text-sm font-medium text-muted-foreground">Current Profile</Text>
 			<View className="overflow-hidden rounded-lg border border-border bg-card">
 				{isLoading ? (
 					<ProfileListLoading />
