@@ -40,36 +40,46 @@ export default function SettingsScreen() {
 
 	return (
 		<ScrollView className="flex-1 bg-background">
-			<View className="p-4" style={{ gap: CARD_LIST_GAP }}>
-				<Text className="text-sm font-medium text-muted-foreground">Theme</Text>
-				<View className="overflow-hidden rounded-lg border border-border bg-card">
-					{APPEARANCE_NAMES.map((name, index) => {
-						const selected = theme.name === name;
-						return (
-							<Pressable
-								key={name}
-								onPress={() => setAppearance(name)}
-								className={cn(
-									'flex-row items-center justify-between px-4 py-4',
-									index > 0 && 'border-t border-border'
-								)}
-								accessibilityRole="radio"
-								accessibilityState={{ selected }}
-								accessibilityLabel={THEME_LABELS[name] ?? name}
-							>
-								<Text className="font-medium text-foreground">
-									{THEME_LABELS[name] ?? name}
-								</Text>
-								{selected ? <Check size={18} color={theme.colors.tint} /> : null}
-							</Pressable>
-						);
-					})}
-				</View>
+			<View className="gap-8 p-4">
+				<SettingsSection title="Theme">
+					<View className="overflow-hidden rounded-lg border border-border bg-card">
+						{APPEARANCE_NAMES.map((name, index) => {
+							const selected = theme.name === name;
+							return (
+								<Pressable
+									key={name}
+									onPress={() => setAppearance(name)}
+									className={cn(
+										'flex-row items-center justify-between px-4 py-4',
+										index > 0 && 'border-t border-border'
+									)}
+									accessibilityRole="radio"
+									accessibilityState={{ selected }}
+									accessibilityLabel={THEME_LABELS[name] ?? name}
+								>
+									<Text className="font-medium text-foreground">
+										{THEME_LABELS[name] ?? name}
+									</Text>
+									{selected ? <Check size={18} color={theme.colors.tint} /> : null}
+								</Pressable>
+							);
+						})}
+					</View>
+				</SettingsSection>
 
 				<BackupRestoreSection />
 				{auth.isAdmin ? <DeleteAccountSection /> : null}
 			</View>
 		</ScrollView>
+	);
+}
+
+function SettingsSection({ title, children }) {
+	return (
+		<View style={{ gap: CARD_LIST_GAP }}>
+			<Text className="text-sm font-semibold text-foreground">{title}</Text>
+			{children}
+		</View>
 	);
 }
 
@@ -138,36 +148,42 @@ function BackupRestoreSection() {
 	const actionsDisabled = busy || profilesLoading || !isPrimary;
 
 	return (
-		<View style={{ gap: CARD_LIST_GAP }}>
-			<Text className="text-sm font-medium text-muted-foreground">Backup</Text>
-			<Text className="text-sm text-muted-foreground">
-				Download a copy of every profile, lab type, reading, appointment, and attached
-				file. Backup does not remove anything from your account.
-			</Text>
-			{!profilesLoading && !isPrimary ? (
-				<Text className="text-sm text-muted-foreground">
-					Switch to your primary profile to back up or restore this account.
-				</Text>
-			) : null}
-			<Button
-				onPress={() => downloadBackup()}
-				disabled={actionsDisabled}
-				accessibilityLabel="Download backup"
-			>
-				<Text className="font-medium text-primary-foreground">
-					{isBackingUp ? 'Preparing backup…' : 'Download backup'}
-				</Text>
-			</Button>
-			<Button
-				variant="outline"
-				onPress={onRestorePress}
-				disabled={actionsDisabled}
-				accessibilityLabel="Restore backup"
-			>
-				<Text className="font-medium text-foreground">
-					{isRestoring ? 'Restoring…' : 'Restore backup'}
-				</Text>
-			</Button>
+		<View>
+			<SettingsSection title="Backup">
+				<View
+					className="rounded-lg border border-border bg-card p-4"
+					style={{ gap: CARD_LIST_GAP }}
+				>
+					<Text className="text-sm text-muted-foreground">
+						Download a copy of every profile, lab type, reading, appointment, and
+						attached file. Backup does not remove anything from your account.
+					</Text>
+					{!profilesLoading && !isPrimary ? (
+						<Text className="text-sm text-muted-foreground">
+							Switch to your primary profile to back up or restore this account.
+						</Text>
+					) : null}
+					<Button
+						onPress={() => downloadBackup()}
+						disabled={actionsDisabled}
+						accessibilityLabel="Download backup"
+					>
+						<Text className="font-medium text-primary-foreground">
+							{isBackingUp ? 'Preparing backup…' : 'Download backup'}
+						</Text>
+					</Button>
+					<Button
+						variant="outline"
+						onPress={onRestorePress}
+						disabled={actionsDisabled}
+						accessibilityLabel="Restore backup"
+					>
+						<Text className="font-medium text-foreground">
+							{isRestoring ? 'Restoring…' : 'Restore backup'}
+						</Text>
+					</Button>
+				</View>
+			</SettingsSection>
 
 			<AlertDialog
 				open={Boolean(restorePreview)}
@@ -242,20 +258,26 @@ function DeleteAccountSection() {
 	});
 
 	return (
-		<View style={{ gap: CARD_LIST_GAP }}>
-			<Text className="text-sm font-medium text-muted-foreground">Account</Text>
-			<Text className="text-sm text-muted-foreground">
-				Deleting your account permanently removes your login, every profile, and all
-				health data. This cannot be undone.
-			</Text>
-			<Button
-				variant="destructive"
-				onPress={() => setShowFirstConfirm(true)}
-				disabled={isPending}
-				accessibilityLabel="Delete account"
-			>
-				<Text className="font-medium text-white">Delete account</Text>
-			</Button>
+		<View>
+			<SettingsSection title="Account">
+				<View
+					className="rounded-lg border border-border bg-card p-4"
+					style={{ gap: CARD_LIST_GAP }}
+				>
+					<Text className="text-sm text-muted-foreground">
+						Deleting your account permanently removes your login, every profile, and all
+						health data. This cannot be undone.
+					</Text>
+					<Button
+						variant="destructive"
+						onPress={() => setShowFirstConfirm(true)}
+						disabled={isPending}
+						accessibilityLabel="Delete account"
+					>
+						<Text className="font-medium text-white">Delete account</Text>
+					</Button>
+				</View>
+			</SettingsSection>
 
 			<AlertDialog open={showFirstConfirm} onOpenChange={setShowFirstConfirm}>
 				<AlertDialogContent>
