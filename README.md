@@ -23,7 +23,7 @@ Conventions for structure, auth, data flow, forms, and navigation: [ARCHITECTURE
 
 ## Prerequisites
 
-- Node.js 18+
+- Node.js 20.19.4+ (22 recommended; see `.nvmrc`)
 - [health-tracker-server](https://github.com/your-org/health-tracker-server) or compatible API running (default: `http://localhost:4000`)
 - For physical devices: API reachable on your LAN
 

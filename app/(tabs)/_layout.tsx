@@ -30,7 +30,9 @@ export default function AppLayout() {
 			screenOptions={{
 				...theme.navigation,
 				headerShown: true,
-				tabBarButton: HapticTab,
+				tabBarButton: (props) => (
+					<HapticTab {...(props as React.ComponentProps<typeof HapticTab>)} />
+				),
 			}}>
 			<Tabs.Screen
 				name="index"

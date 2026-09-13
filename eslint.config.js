@@ -14,4 +14,13 @@ module.exports = defineConfig([
       globals: globals.jest,
     },
   },
+  {
+    // eslint-config-expo 57 enables React Compiler rules that flag existing
+    // setState-in-effect patterns across the app. Keep those as warnings so
+    // the SDK upgrade does not require a full effects rewrite.
+    rules: {
+      'react-hooks/set-state-in-effect': 'warn',
+      'react-hooks/refs': 'warn',
+    },
+  },
 ]);

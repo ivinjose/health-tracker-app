@@ -1,5 +1,4 @@
 import CardView from '@/components/CardView';
-import { useTheme } from '@/components/ThemeProvider';
 import ViewReportDialog from '@/components/ViewReportDialog';
 import {
 	AlertDialog,
@@ -33,7 +32,6 @@ export default function ReportCard({
 	filename,
 	investigations = [],
 }) {
-	const theme = useTheme();
 	const [showConfirm, setShowConfirm] = useState(false);
 	const [showViewer, setShowViewer] = useState(false);
 
