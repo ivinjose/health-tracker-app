@@ -1,16 +1,22 @@
 import DatePickerCalendar from '@/components/DatePickerCalendar';
 import { ThemeProvider, useTheme } from '@/components/ThemeProvider';
 import { Button } from '@/components/ui/button';
-import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { Text } from '@/components/ui/text';
 import { format } from 'date-fns';
-import { Calendar as CalendarIcon } from 'lucide-react-native';
+import { Calendar as CalendarIcon, CircleX } from 'lucide-react-native';
 import { useState } from 'react';
 import { Modal, Pressable, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-function DatePickerField({ enabled, value, onSelect, label, endOfDay = false }) {
+function DatePickerField({
+	value,
+	onSelect,
+	onClear,
+	label,
+	clearAccessibilityLabel,
+	endOfDay = false,
+}) {
 	const theme = useTheme();
 	const insets = useSafeAreaInsets();
 	const [showCalendar, setShowCalendar] = useState(false);
@@ -18,22 +24,53 @@ function DatePickerField({ enabled, value, onSelect, label, endOfDay = false }) 
 	const selectedKey = dateValue ? format(dateValue, 'yyyy-MM-dd') : undefined;
 	const maxDate = format(new Date(), 'yyyy-MM-dd');
 
+	const openCalendar = () => {
+		setShowCalendar(true);
+	};
+
 	const closeCalendar = () => {
 		setShowCalendar(false);
+	};
+
+	const handleClear = () => {
+		onClear();
+		closeCalendar();
 	};
 
 	return (
 		<View className="gap-2">
 			<Label>{label}</Label>
-			<View className="flex-row items-center gap-3">
+			<View className="flex-row items-center rounded-lg border border-input">
 				<Pressable
-					onPress={() => enabled && setShowCalendar(true)}
-					disabled={!enabled}
-					className={`flex-1 flex-row items-center justify-between rounded-lg border border-input px-3 py-3 ${!enabled ? 'opacity-50' : ''}`}
+					onPress={openCalendar}
+					className="min-h-11 flex-1 justify-center px-3 py-3"
+					accessibilityRole="button"
+					accessibilityLabel={
+						dateValue ? `${label}, ${format(dateValue, 'PP')}` : `${label}, Pick a date`
+					}
 				>
 					<Text className={dateValue ? 'text-foreground' : 'text-muted-foreground'}>
 						{dateValue ? format(dateValue, 'PP') : 'Pick a date'}
 					</Text>
+				</Pressable>
+				{dateValue ? (
+					<Pressable
+						onPress={onClear}
+						className="h-11 w-11 items-center justify-center"
+						hitSlop={8}
+						accessibilityRole="button"
+						accessibilityLabel={clearAccessibilityLabel}
+					>
+						<CircleX size={18} color={theme.colors.close} />
+					</Pressable>
+				) : null}
+				<Pressable
+					onPress={openCalendar}
+					className="h-11 w-11 items-center justify-center"
+					hitSlop={8}
+					accessibilityRole="button"
+					accessibilityLabel={`${label} calendar`}
+				>
 					<CalendarIcon size={18} color={theme.colors.mutedForeground} />
 				</Pressable>
 			</View>
@@ -49,11 +86,22 @@ function DatePickerField({ enabled, value, onSelect, label, endOfDay = false }) 
 							style={{ paddingBottom: insets.bottom }}
 							onPress={(event) => event.stopPropagation()}
 						>
-							<View className="flex-row items-center justify-between border-b border-border px-4 py-3">
-								<Text className="text-lg font-semibold text-foreground">{label}</Text>
-								<Button variant="ghost" onPress={closeCalendar}>
-									<Text>Done</Text>
-								</Button>
+							<View className="flex-row items-center border-b border-border px-2 py-3">
+								<View className="w-20">
+									{dateValue ? (
+										<Button variant="ghost" onPress={handleClear}>
+											<Text>Clear</Text>
+										</Button>
+									) : null}
+								</View>
+								<Text className="flex-1 text-center text-lg font-semibold text-foreground">
+									{label}
+								</Text>
+								<View className="w-20 items-end">
+									<Button variant="ghost" onPress={closeCalendar}>
+										<Text>Done</Text>
+									</Button>
+								</View>
 							</View>
 							<DatePickerCalendar
 								active={showCalendar}
@@ -81,29 +129,6 @@ function DatePickerField({ enabled, value, onSelect, label, endOfDay = false }) 
 	);
 }
 
-function FilterEnableRow({ checked, onCheckedChange, label }) {
-	return (
-		<Pressable
-			onPress={() => onCheckedChange(!checked)}
-			className="w-full flex-row items-center gap-3 py-3"
-			style={{ minHeight: 44 }}
-			hitSlop={8}
-			unstable_pressDelay={0}
-			accessibilityRole="checkbox"
-			accessibilityState={{ checked }}
-			accessibilityLabel={label}
-		>
-			<Checkbox
-				checked={checked}
-				className="h-5 w-5"
-				pointerEvents="none"
-				accessible={false}
-			/>
-			<Text className="flex-1 select-none text-sm text-foreground">{label}</Text>
-		</Pressable>
-	);
-}
-
 export default function DateRange({
 	fromDate,
 	onFromDateSelect,
@@ -112,53 +137,23 @@ export default function DateRange({
 	onToDateSelect,
 	onToDateReset,
 }) {
-	const [fromDateEnabled, setFromDateEnabled] = useState(Boolean(fromDate));
-	const [toDateEnabled, setToDateEnabled] = useState(Boolean(toDate));
-
-	const handleFromEnabledChange = (checked) => {
-		setFromDateEnabled(checked);
-		if (!checked) {
-			onFromDateReset();
-		}
-	};
-
-	const handleToEnabledChange = (checked) => {
-		setToDateEnabled(checked);
-		if (!checked) {
-			onToDateReset();
-		}
-	};
-
 	return (
 		<View className="gap-4">
-			<View className="gap-2">
-				<FilterEnableRow
-					checked={fromDateEnabled}
-					onCheckedChange={handleFromEnabledChange}
-					label="Click to enable"
-				/>
-				<DatePickerField
-					enabled={fromDateEnabled}
-					value={fromDate}
-					onSelect={onFromDateSelect}
-					label="From Date"
-				/>
-			</View>
-
-			<View className="gap-2">
-				<FilterEnableRow
-					checked={toDateEnabled}
-					onCheckedChange={handleToEnabledChange}
-					label="Click to enable"
-				/>
-				<DatePickerField
-					enabled={toDateEnabled}
-					value={toDate}
-					onSelect={onToDateSelect}
-					label="To Date"
-					endOfDay
-				/>
-			</View>
+			<DatePickerField
+				value={fromDate}
+				onSelect={onFromDateSelect}
+				onClear={onFromDateReset}
+				label="From Date"
+				clearAccessibilityLabel="Clear from date"
+			/>
+			<DatePickerField
+				value={toDate}
+				onSelect={onToDateSelect}
+				onClear={onToDateReset}
+				label="To Date"
+				clearAccessibilityLabel="Clear to date"
+				endOfDay
+			/>
 		</View>
 	);
 }
