@@ -40,7 +40,8 @@ export default function NewReportDialog({ open, onOpenChange, appointmentId, rep
 		form.reset(
 			report
 				? {
-						investigation: report.investigation ?? '',
+						investigation:
+							report.investigation != null ? String(report.investigation) : '',
 						value: report.value != null ? String(report.value) : '',
 						date: report.timestamp ? new Date(report.timestamp) : undefined,
 						appointment: report.appointment || undefined,
@@ -120,7 +121,6 @@ export default function NewReportDialog({ open, onOpenChange, appointmentId, rep
 					investigations={investigations}
 					isInvestigationLoading={isInvestigationLoading}
 					maxDate={maxDate}
-					investigationDisabled={isEdit}
 					showUpload={FEATURE_REPORT_UPLOAD && !isEdit}
 					uploadDisabled={isPending}
 				/>

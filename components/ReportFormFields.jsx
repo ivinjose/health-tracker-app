@@ -14,7 +14,6 @@ export default function ReportFormFields({
 	investigations = [],
 	isInvestigationLoading = false,
 	maxDate,
-	investigationDisabled = false,
 	showUpload = false,
 	uploadDisabled = false,
 }) {
@@ -33,7 +32,6 @@ export default function ReportFormFields({
 								value: String(item._id),
 							}))
 				}
-				disabled={investigationDisabled}
 			/>
 			<FormFieldInput
 				formControl={form.control}
