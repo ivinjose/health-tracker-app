@@ -291,11 +291,10 @@ export default function LineChart({
 									onPress={() =>
 										setSelectedIndex((current) => (current === index ? null : index))
 									}
-									hitSlop={8}
 									style={{
 										position: 'absolute',
-										left: point.x - HIT_SIZE / 2,
-										top: point.y - HIT_SIZE / 2 - 8,
+										left: Math.max(0, point.x - HIT_SIZE / 2),
+										top: Math.max(0, point.y - HIT_SIZE / 2 - 8),
 										width: HIT_SIZE,
 										height: HIT_SIZE,
 									}}

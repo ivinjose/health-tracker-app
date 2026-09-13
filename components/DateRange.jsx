@@ -85,13 +85,21 @@ function FilterEnableRow({ checked, onCheckedChange, label }) {
 	return (
 		<Pressable
 			onPress={() => onCheckedChange(!checked)}
-			className="min-h-11 flex-row items-center gap-3"
+			className="w-full flex-row items-center gap-3 py-3"
+			style={{ minHeight: 44 }}
+			hitSlop={8}
+			unstable_pressDelay={0}
 			accessibilityRole="checkbox"
 			accessibilityState={{ checked }}
 			accessibilityLabel={label}
 		>
-			<Checkbox checked={checked} pointerEvents="none" accessible={false} />
-			<Text className="flex-1 text-sm text-foreground">{label}</Text>
+			<Checkbox
+				checked={checked}
+				className="h-5 w-5"
+				pointerEvents="none"
+				accessible={false}
+			/>
+			<Text className="flex-1 select-none text-sm text-foreground">{label}</Text>
 		</Pressable>
 	);
 }

@@ -88,6 +88,7 @@ export default function AnalyseScreen() {
 			<ScrollView
 				className="flex-1"
 				contentContainerStyle={{ padding: 16, gap: 16, paddingBottom: 32 }}
+				keyboardShouldPersistTaps="handled"
 				showsVerticalScrollIndicator={false}
 			>
 				<Text className="text-muted-foreground">
@@ -101,14 +102,16 @@ export default function AnalyseScreen() {
 				/>
 
 				{investigation ? (
-					<DateRange
-						fromDate={fromDate}
-						onFromDateSelect={setFromDate}
-						onFromDateReset={clearFromDate}
-						toDate={toDate}
-						onToDateSelect={setToDate}
-						onToDateReset={clearToDate}
-					/>
+					<View className="z-10">
+						<DateRange
+							fromDate={fromDate}
+							onFromDateSelect={setFromDate}
+							onFromDateReset={clearFromDate}
+							toDate={toDate}
+							onToDateSelect={setToDate}
+							onToDateReset={clearToDate}
+						/>
+					</View>
 				) : null}
 
 				{isReportsLoading ? (
