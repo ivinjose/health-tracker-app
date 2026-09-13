@@ -1,5 +1,5 @@
-import { ThemeProvider, useTheme } from '@/components/ThemeProvider';
 import DatePickerCalendar from '@/components/DatePickerCalendar';
+import { ThemeProvider, useTheme } from '@/components/ThemeProvider';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
@@ -81,6 +81,21 @@ function DatePickerField({ enabled, value, onSelect, label, endOfDay = false }) 
 	);
 }
 
+function FilterEnableRow({ checked, onCheckedChange, label }) {
+	return (
+		<Pressable
+			onPress={() => onCheckedChange(!checked)}
+			className="min-h-11 flex-row items-center gap-3"
+			accessibilityRole="checkbox"
+			accessibilityState={{ checked }}
+			accessibilityLabel={label}
+		>
+			<Checkbox checked={checked} pointerEvents="none" accessible={false} />
+			<Text className="flex-1 text-sm text-foreground">{label}</Text>
+		</Pressable>
+	);
+}
+
 export default function DateRange({
 	fromDate,
 	onFromDateSelect,
@@ -109,13 +124,11 @@ export default function DateRange({
 	return (
 		<View className="gap-4">
 			<View className="gap-2">
-				<View className="flex-row items-center gap-2">
-					<Checkbox
-						checked={fromDateEnabled}
-						onCheckedChange={handleFromEnabledChange}
-					/>
-					<Text className="text-sm text-foreground">Enable from date filter</Text>
-				</View>
+				<FilterEnableRow
+					checked={fromDateEnabled}
+					onCheckedChange={handleFromEnabledChange}
+					label="Click to enable"
+				/>
 				<DatePickerField
 					enabled={fromDateEnabled}
 					value={fromDate}
@@ -125,10 +138,11 @@ export default function DateRange({
 			</View>
 
 			<View className="gap-2">
-				<View className="flex-row items-center gap-2">
-					<Checkbox checked={toDateEnabled} onCheckedChange={handleToEnabledChange} />
-					<Text className="text-sm text-foreground">Enable to date filter</Text>
-				</View>
+				<FilterEnableRow
+					checked={toDateEnabled}
+					onCheckedChange={handleToEnabledChange}
+					label="Click to enable"
+				/>
 				<DatePickerField
 					enabled={toDateEnabled}
 					value={toDate}
