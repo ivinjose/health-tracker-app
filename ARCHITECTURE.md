@@ -309,9 +309,11 @@ All create/edit flows use `components/FormSheetModal.jsx`: React Native `Modal`,
 
 ### Date picking
 
-In forms: **`FormDateField`** — accordion (`Expanding`) + inline `react-native-calendars`. No popover, no extra Modal.
+Every calendar opens **`DatePickerSheet`** — a transparent bottom-sheet `Modal` (scrim + Clear/Done header + `DatePickerCalendar`) that nests `ThemeProvider`. In forms go through **`FormDateField`** (adds the `Controller` binding and error line); on full screens go through **`DateRange`**. Do not re-implement the sheet: `DateRange` used to own a private copy.
 
-On full screens (Analyse / Compare): **`DateRange`** may open a bottom-sheet `Modal` for the calendar. That is valid **outside** a form sheet. It nests `ThemeProvider` inside that Modal.
+Render these sheets unconditionally with `open` passed as `visible`. RN's `Modal.render()` already returns `null` while hidden (and on iOS stays rendered until the native dismiss event), so gating the element on a "has opened" flag buys nothing and risks cutting the dismiss animation.
+
+Selecting a day closes the sheet. `onClear` is optional and only renders the Clear button when there is a value, so required form dates simply omit it.
 
 ### Cards and overflow menus
 
@@ -370,7 +372,7 @@ No screen, API-manager, or auth integration tests.
 2. **Private HTTP goes through `useAxiosPrivate`.** Using the public axios instance on a protected route skips the Bearer interceptor and the 401 retry.
 3. **`req.user` vs `req.profile` on the server:** this client’s `auth.id` after login is the account id (primary profile). Reports/appointments the server returns are for the **access token’s `profile` claim**. Switching profiles without updating `auth` (current `User.jsx`) leaves the old claim in memory.
 4. **Investigation identity is `_id`**, stored on reports and used as Compare series keys and Analyse/Compare URL params. Do not display it as the title when a `label` exists (`getInvestigationLabel`).
-5. **Form create/edit = `FormSheetModal` + Zod + `useValidatedForm`.** Deletes = `AlertDialog`. Form dates = `FormDateField`.
+5. **Form create/edit = `FormSheetModal` + Zod + `useValidatedForm`.** Deletes = `AlertDialog`. Form dates = `FormDateField` (→ `DatePickerSheet`).
 6. **`@/` imports from nested `app/` routes.** Especially `app/(auth)/verify/[emailToken].jsx`.
 7. **Do not wrap screens in `ThemeProvider`.** Only root, Modals, and portal roots.
 8. **Keep `/download` and file/OCR work in Phase 4.** Wiring a file input into `createReport` as JSON will not match the server’s multer field `report`.

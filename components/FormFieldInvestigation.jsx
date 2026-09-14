@@ -15,9 +15,6 @@ export default function FormFieldInvestigation({
 	disabled = false,
 }) {
 	const [open, setOpen] = useState(false);
-	// Keep the sheet mounted after the first open so closing keeps its dismiss
-	// animation, while untouched fields never mount a Modal at all.
-	const [mounted, setMounted] = useState(false);
 
 	return (
 		<Controller
@@ -38,10 +35,7 @@ export default function FormFieldInvestigation({
 						) : null}
 
 						<Pressable
-							onPress={() => {
-								setMounted(true);
-								setOpen(true);
-							}}
+							onPress={() => setOpen(true)}
 							disabled={disabled}
 							className={`flex-row items-center justify-between gap-2 rounded-[10px] border border-input bg-card px-3 py-3 ${disabled ? 'opacity-50' : ''}`}
 							accessibilityRole="button"
@@ -70,15 +64,13 @@ export default function FormFieldInvestigation({
 							<Text className="mt-1 text-sm text-destructive">{error.message}</Text>
 						) : null}
 
-						{mounted ? (
-							<InvestigationPickerModal
-								open={open}
-								onOpenChange={setOpen}
-								results={investigations}
-								currentValue={currentValue}
-								onSelect={onChange}
-							/>
-						) : null}
+						<InvestigationPickerModal
+							open={open}
+							onOpenChange={setOpen}
+							results={investigations}
+							currentValue={currentValue}
+							onSelect={onChange}
+						/>
 					</View>
 				);
 			}}
