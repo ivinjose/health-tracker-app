@@ -9,13 +9,14 @@ export default function InvestigationSelect({
 	currentValue,
 	onSelectCb,
 	labelText = 'Investigation',
+	placeholder = 'Choose from the list',
 }) {
 	const [isOpen, setIsOpen] = useState(false);
 
 	const selectedLabel = useMemo(() => {
 		const match = results.find((item) => String(item._id) === String(currentValue));
-		return match?.label ?? 'Select your preference...';
-	}, [results, currentValue]);
+		return match?.label ?? placeholder;
+	}, [results, currentValue, placeholder]);
 
 	return (
 		<View className="gap-2">
