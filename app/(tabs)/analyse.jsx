@@ -1,16 +1,23 @@
 import DateRange from '@/components/DateRange';
 import InvestigationSelect from '@/components/InvestigationSelect';
+import ChartExpandButton from '@/components/charts/ChartExpandButton';
+import ChartExpandDialog from '@/components/charts/ChartExpandDialog';
 import LineChart from '@/components/charts/LineChart';
 import ReportCard from '@/components/ReportCard';
 import { Text } from '@/components/ui/text';
 import { CARD_LIST_GAP } from '@/constants/layout';
 import { SORT_ORDER } from '@/constants/sort';
-import { getInvestigationUnit, sortReportsByTimestamp, withDisplayDates } from '@/lib/reportUtils';
+import {
+	getInvestigationLabel,
+	getInvestigationUnit,
+	sortReportsByTimestamp,
+	withDisplayDates,
+} from '@/lib/reportUtils';
 import useInvestigationsApiManager from '@/api-managers/InvestigationsApiManager';
 import useReportsApiManager from '@/api-managers/ReportsApiManager';
 import { useQuery } from '@tanstack/react-query';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { useCallback } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { ScrollView, View } from 'react-native';
 
 export default function AnalyseScreen() {
@@ -23,6 +30,7 @@ export default function AnalyseScreen() {
 	const toParam = Array.isArray(params.to) ? params.to[0] : params.to;
 	const fromDate = fromParam ? Number(fromParam) : undefined;
 	const toDate = toParam ? Number(toParam) : undefined;
+	const [expandOpen, setExpandOpen] = useState(false);
 
 	const investigationsApiManager = useInvestigationsApiManager();
 	const reportsApiManager = useReportsApiManager();
@@ -83,6 +91,13 @@ export default function AnalyseScreen() {
 		enabled: Boolean(investigation),
 	});
 
+	const chartData = useMemo(
+		() => sortReportsByTimestamp(reports, SORT_ORDER.ASC),
+		[reports]
+	);
+	const investigationLabel = getInvestigationLabel(investigations, investigation);
+	const investigationUnit = getInvestigationUnit(investigations, investigation);
+
 	return (
 		<View className="flex-1 bg-background">
 			<ScrollView
@@ -117,11 +132,23 @@ export default function AnalyseScreen() {
 				{isReportsLoading ? (
 					<Text className="text-muted-foreground">Loading reports…</Text>
 				) : reports.length > 0 ? (
-					<LineChart
-						data={sortReportsByTimestamp(reports, SORT_ORDER.ASC)}
-						unit={getInvestigationUnit(investigations, investigation)}
-						showNodeValues
-					/>
+					<View>
+						<View className="flex-row justify-end">
+							<ChartExpandButton onPress={() => setExpandOpen(true)} />
+						</View>
+						<LineChart
+							data={chartData}
+							unit={investigationUnit}
+							showNodeValues
+						/>
+						<ChartExpandDialog
+							open={expandOpen}
+							onOpenChange={setExpandOpen}
+							title={investigationLabel}
+							data={chartData}
+							unit={investigationUnit}
+						/>
+					</View>
 				) : investigation ? (
 					<Text className="text-muted-foreground">No reports in this range.</Text>
 				) : null}

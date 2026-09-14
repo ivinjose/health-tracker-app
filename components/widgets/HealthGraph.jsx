@@ -1,21 +1,30 @@
 import useInvestigationsApiManager from '@/api-managers/InvestigationsApiManager';
 import useReportsApiManager from '@/api-managers/ReportsApiManager';
+import ChartExpandButton from '@/components/charts/ChartExpandButton';
+import ChartExpandDialog from '@/components/charts/ChartExpandDialog';
 import LineChart from '@/components/charts/LineChart';
 import { useTheme } from '@/components/ThemeProvider';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Text } from '@/components/ui/text';
 import WidgetView from '@/components/WidgetView';
 import { SORT_ORDER } from '@/constants/sort';
-import { getInvestigationLabel, getInvestigationUnit, sortReportsByTimestamp } from '@/lib/reportUtils';
+import {
+	getInvestigationLabel,
+	getInvestigationUnit,
+	sortReportsByTimestamp,
+	withDisplayDates,
+} from '@/lib/reportUtils';
 import { useQuery } from '@tanstack/react-query';
 import { Link } from 'expo-router';
 import { ArrowRight, X } from 'lucide-react-native';
+import { useState } from 'react';
 import { Pressable, View } from 'react-native';
 
 export default function HealthGraph({ investigation, count, onRemove }) {
 	const theme = useTheme();
 	const reportsApiManager = useReportsApiManager();
 	const investigationsApiManager = useInvestigationsApiManager();
+	const [expandOpen, setExpandOpen] = useState(false);
 
 	const { data: reports = [], isLoading } = useQuery({
 		queryKey: ['reports', investigation, count],
@@ -23,6 +32,15 @@ export default function HealthGraph({ investigation, count, onRemove }) {
 			const response = await reportsApiManager.readReports({ investigation, count });
 			return sortReportsByTimestamp(response ?? [], SORT_ORDER.ASC);
 		},
+	});
+
+	const { data: expandedReports = [], isLoading: isExpandLoading } = useQuery({
+		queryKey: ['reports', undefined, undefined, investigation],
+		queryFn: async () => {
+			const response = await reportsApiManager.readReports({ investigation });
+			return sortReportsByTimestamp(withDisplayDates(response ?? []), SORT_ORDER.ASC);
+		},
+		enabled: expandOpen && Boolean(investigation),
 	});
 
 	const { data: investigations = [], isLoading: isInvestigationLoading } = useQuery({
@@ -47,7 +65,7 @@ export default function HealthGraph({ investigation, count, onRemove }) {
 		</Link>
 	);
 
-	const headerRight = onRemove ? (
+	const removeButton = onRemove ? (
 		<Pressable
 			onPress={onRemove}
 			hitSlop={8}
@@ -58,6 +76,16 @@ export default function HealthGraph({ investigation, count, onRemove }) {
 		</Pressable>
 	) : null;
 
+	const headerRight =
+		reports.length > 0 || removeButton ? (
+			<View className="flex-row items-center">
+				{reports.length > 0 ? (
+					<ChartExpandButton onPress={() => setExpandOpen(true)} />
+				) : null}
+				{removeButton}
+			</View>
+		) : null;
+
 	return (
 		<WidgetView title={title} footer={footer} headerRight={headerRight}>
 			{isLoading ? (
@@ -67,6 +95,14 @@ export default function HealthGraph({ investigation, count, onRemove }) {
 			) : (
 				<Text className="text-sm text-muted-foreground">No readings yet.</Text>
 			)}
+			<ChartExpandDialog
+				open={expandOpen}
+				onOpenChange={setExpandOpen}
+				title={title}
+				data={expandedReports}
+				isLoading={expandOpen && isExpandLoading}
+				unit={unit}
+			/>
 		</WidgetView>
 	);
 }

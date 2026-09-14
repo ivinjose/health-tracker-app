@@ -6,18 +6,22 @@ import Svg, { Circle, G, Line, Polyline, Rect, Text as SvgText } from 'react-nat
 
 import {
 	CHART_HEIGHT,
+	CHART_HIT_SIZE,
 	CHART_PADDING,
 	buildLinePoints,
 	formatAxisValue,
 	getChartAxisDate,
 	getChartTooltipDate,
+	getVisibleTickIndices,
 	getXLabelAnchor,
 	getYAxisTicks,
+	nearestPointIndex,
+	shouldShowChartNodeValues,
+	shouldUseNearestPointHit,
 } from './chartUtils';
 
 const TOOLTIP_WIDTH = 120;
 const MULTI_TOOLTIP_WIDTH = 160;
-const HIT_SIZE = 44;
 
 function getTooltipLeft(pointX, chartWidth, tooltipWidth) {
 	const margin = 4;
@@ -30,6 +34,7 @@ export default function LineChart({
 	yAxisKey = 'value',
 	yAxisKeys,
 	width,
+	height = CHART_HEIGHT,
 	unit = '',
 	units,
 	seriesLabels = [],
@@ -43,6 +48,7 @@ export default function LineChart({
 	const [selectedIndex, setSelectedIndex] = useState(null);
 	const [tooltipHeight, setTooltipHeight] = useState(56);
 	const chartWidth = width ?? measuredWidth;
+	const chartHeight = height || CHART_HEIGHT;
 	const keys = yAxisKeys?.length ? yAxisKeys : [yAxisKey];
 	const isMulti = keys.length > 1;
 	const tooltipWidth = isMulti ? MULTI_TOOLTIP_WIDTH : TOOLTIP_WIDTH;
@@ -62,7 +68,7 @@ export default function LineChart({
 	if (!data.length) {
 		return (
 			<View
-				style={{ height: CHART_HEIGHT, width: width ?? '100%' }}
+				style={{ height: chartHeight, width: width ?? '100%' }}
 				className="items-center justify-center"
 			>
 				<Text className="text-sm text-muted-foreground">No chart data</Text>
@@ -71,15 +77,19 @@ export default function LineChart({
 	}
 
 	const padding = { ...CHART_PADDING, left: 36, right: isMulti ? 36 : CHART_PADDING.right };
-	const { series, innerHeight } = chartWidth
+	const { series, innerHeight, innerWidth } = chartWidth
 		? buildLinePoints({
 			data,
 			yKeys: keys,
 			chartWidth,
+			height: chartHeight,
 			padding,
 		})
-		: { series: [], innerHeight: 0 };
+		: { series: [], innerHeight: 0, innerWidth: 0 };
 	const axisPoints = series[0]?.points ?? [];
+	const visibleTickIndices = getVisibleTickIndices(axisPoints.length, innerWidth);
+	const drawNodeValues = showNodeValues && shouldShowChartNodeValues(data.length, innerWidth);
+	const useNearestHit = shouldUseNearestPointHit(data.length, innerWidth);
 	const leftTicks = series[0]
 		? getYAxisTicks(
 			series[0].minY,
@@ -123,19 +133,24 @@ export default function LineChart({
 			: selectedPoint.y + 14
 		: 0;
 
+	const toggleIndex = (index) => {
+		if (index == null) return;
+		setSelectedIndex((current) => (current === index ? null : index));
+	};
+
 	return (
 		<View
-			style={{ height: CHART_HEIGHT, width: width ?? '100%' }}
+			style={{ height: chartHeight, width: width ?? '100%' }}
 			onLayout={handleLayout}
 		>
 			{chartWidth > 0 ? (
 				<>
-					<Svg width={chartWidth} height={CHART_HEIGHT}>
+					<Svg width={chartWidth} height={chartHeight}>
 						<Rect
 							x={0}
 							y={0}
 							width={chartWidth}
-							height={CHART_HEIGHT}
+							height={chartHeight}
 							fill="transparent"
 							onPress={() => setSelectedIndex(null)}
 						/>
@@ -244,7 +259,7 @@ export default function LineChart({
 													r={selected ? 5 : 4}
 													fill={stroke}
 												/>
-												{showNodeValues ? (
+												{drawNodeValues ? (
 													<SvgText
 														x={point.x}
 														y={point.y - 10}
@@ -262,45 +277,64 @@ export default function LineChart({
 								</G>
 							);
 						})}
-						{axisPoints.map((point, index) => (
-							<SvgText
-								key={`label-${index}`}
-								x={point.x}
-								y={CHART_HEIGHT - 10}
-								fontSize={10}
-								fill={labelColor}
-								textAnchor={getXLabelAnchor(index, axisPoints.length)}
-							>
-								{getChartAxisDate(point.item)}
-							</SvgText>
-						))}
-					</Svg>
-					{series.flatMap((line) =>
-						line.points.map((point, index) => {
-							if (Number.isNaN(point.value)) return null;
-							const seriesUnit = units?.[keys.indexOf(line.key)] ?? (isMulti ? '' : unit);
+						{axisPoints.map((point, index) => {
+							const visibleAt = visibleTickIndices.indexOf(index);
+							if (visibleAt < 0) return null;
 							return (
-								<Pressable
-									key={`hit-${line.key}-${index}`}
-									accessibilityRole="button"
-									accessibilityLabel={
-										isMulti
-											? `Show details for ${getChartTooltipDate(point.item)}`
-											: `Show details for ${point.value}${seriesUnit ? ` ${seriesUnit}` : ''}`
-									}
-									onPress={() =>
-										setSelectedIndex((current) => (current === index ? null : index))
-									}
-									style={{
-										position: 'absolute',
-										left: Math.max(0, point.x - HIT_SIZE / 2),
-										top: Math.max(0, point.y - HIT_SIZE / 2 - 8),
-										width: HIT_SIZE,
-										height: HIT_SIZE,
-									}}
-								/>
+								<SvgText
+									key={`label-${index}`}
+									x={point.x}
+									y={chartHeight - 10}
+									fontSize={10}
+									fill={labelColor}
+									textAnchor={getXLabelAnchor(visibleAt, visibleTickIndices.length)}
+								>
+									{getChartAxisDate(point.item)}
+								</SvgText>
 							);
-						})
+						})}
+					</Svg>
+					{useNearestHit ? (
+						<Pressable
+							accessibilityRole="button"
+							accessibilityLabel="Show details for the nearest reading"
+							onPress={(event) => {
+								toggleIndex(nearestPointIndex(event.nativeEvent.locationX, axisPoints));
+							}}
+							style={{
+								position: 'absolute',
+								left: 0,
+								top: 0,
+								width: chartWidth,
+								height: chartHeight,
+							}}
+						/>
+					) : (
+						series.flatMap((line) =>
+							line.points.map((point, index) => {
+								if (Number.isNaN(point.value)) return null;
+								const seriesUnit = units?.[keys.indexOf(line.key)] ?? (isMulti ? '' : unit);
+								return (
+									<Pressable
+										key={`hit-${line.key}-${index}`}
+										accessibilityRole="button"
+										accessibilityLabel={
+											isMulti
+												? `Show details for ${getChartTooltipDate(point.item)}`
+												: `Show details for ${point.value}${seriesUnit ? ` ${seriesUnit}` : ''}`
+										}
+										onPress={() => toggleIndex(index)}
+										style={{
+											position: 'absolute',
+											left: Math.max(0, point.x - CHART_HIT_SIZE / 2),
+											top: Math.max(0, point.y - CHART_HIT_SIZE / 2 - 8),
+											width: CHART_HIT_SIZE,
+											height: CHART_HIT_SIZE,
+										}}
+									/>
+								);
+							})
+						)
 					)}
 					{selectedItem ? (
 						<View

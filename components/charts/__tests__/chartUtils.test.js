@@ -5,8 +5,13 @@ import {
 	formatAxisValue,
 	getChartAxisDate,
 	getChartTooltipDate,
+	getLandscapeLayout,
+	getVisibleTickIndices,
 	getXLabelAnchor,
 	getYAxisTicks,
+	nearestPointIndex,
+	shouldShowChartNodeValues,
+	shouldUseNearestPointHit,
 } from '../chartUtils';
 
 const januaryFifth = new Date(2024, 0, 5, 12, 0, 0, 0);
@@ -282,5 +287,114 @@ describe('buildLinePoints', () => {
 		expect(result.innerHeight).toBe(60);
 		expect(result.points[0].x).toBe(10);
 		expect(result.points[1].x).toBe(90);
+	});
+});
+
+describe('getVisibleTickIndices', () => {
+	it('returns an empty array for a non-positive length', () => {
+		expect(getVisibleTickIndices(0, 200)).toEqual([]);
+		expect(getVisibleTickIndices(-1, 200)).toEqual([]);
+		expect(getVisibleTickIndices(1.5, 200)).toEqual([]);
+	});
+
+	it('returns the only index for a single point', () => {
+		expect(getVisibleTickIndices(1, 200)).toEqual([0]);
+	});
+
+	it('returns every index when labels fit', () => {
+		expect(getVisibleTickIndices(4, 200, 40)).toEqual([0, 1, 2, 3]);
+	});
+
+	it('keeps first and last when only two labels fit', () => {
+		expect(getVisibleTickIndices(10, 80, 40)).toEqual([0, 9]);
+	});
+
+	it('inserts evenly spaced interior ticks and always keeps the ends', () => {
+		expect(getVisibleTickIndices(10, 120, 40)).toEqual([0, 5, 9]);
+	});
+});
+
+describe('shouldShowChartNodeValues', () => {
+	it('is true for one point', () => {
+		expect(shouldShowChartNodeValues(1, 10)).toBe(true);
+	});
+
+	it('is true when points are spaced far enough apart', () => {
+		expect(shouldShowChartNodeValues(3, 80, 32)).toBe(true);
+	});
+
+	it('is false when points would overlap', () => {
+		expect(shouldShowChartNodeValues(10, 80, 32)).toBe(false);
+	});
+});
+
+describe('shouldUseNearestPointHit', () => {
+	it('is false for a single point', () => {
+		expect(shouldUseNearestPointHit(1, 20, 44)).toBe(false);
+	});
+
+	it('is true when 44px targets would overlap', () => {
+		expect(shouldUseNearestPointHit(10, 200, 44)).toBe(true);
+	});
+
+	it('is false when each point has a full hit target', () => {
+		expect(shouldUseNearestPointHit(3, 200, 44)).toBe(false);
+	});
+});
+
+describe('nearestPointIndex', () => {
+	const points = [
+		{ x: 10, value: 1 },
+		{ x: 50, value: 2 },
+		{ x: 90, value: Number.NaN },
+	];
+
+	it('returns the closest valid point', () => {
+		expect(nearestPointIndex(12, points)).toBe(0);
+		expect(nearestPointIndex(40, points)).toBe(1);
+	});
+
+	it('skips NaN values', () => {
+		expect(nearestPointIndex(90, points)).toBe(1);
+	});
+
+	it('returns null when there is nothing to compare', () => {
+		expect(nearestPointIndex(Number.NaN, points)).toBeNull();
+		expect(nearestPointIndex(10, [])).toBeNull();
+	});
+});
+
+describe('getLandscapeLayout', () => {
+	it('fills a wide box without rotating', () => {
+		expect(getLandscapeLayout(800, 400)).toEqual({
+			shouldRotate: false,
+			chartWidth: 800,
+			chartHeight: 400,
+			style: { width: 800, height: 400 },
+		});
+	});
+
+	it('swaps edges and rotates a tall box', () => {
+		const layout = getLandscapeLayout(390, 620);
+		expect(layout.shouldRotate).toBe(true);
+		expect(layout.chartWidth).toBe(620);
+		expect(layout.chartHeight).toBe(390);
+		expect(layout.style).toEqual({
+			width: 620,
+			height: 390,
+			transform: [
+				{ translateX: (390 - 620) / 2 },
+				{ translateY: (620 - 390) / 2 },
+				{ rotate: '90deg' },
+			],
+		});
+	});
+
+	it('returns a zero layout until the body is measured', () => {
+		expect(getLandscapeLayout(0, 100)).toMatchObject({
+			shouldRotate: false,
+			chartWidth: 0,
+			chartHeight: 0,
+		});
 	});
 });

@@ -4,6 +4,9 @@ export const CHART_HEIGHT = 220;
 export const CHART_PADDING = { top: 36, right: 10, bottom: 36, left: 8 };
 export const CHART_AXIS_DATE_FORMAT = "MMM, ''yy";
 export const CHART_TOOLTIP_DATE_FORMAT = 'MMM dd, yyyy';
+export const CHART_HIT_SIZE = 44;
+export const CHART_AXIS_LABEL_MIN_WIDTH = 40;
+export const CHART_NODE_VALUE_MIN_WIDTH = 32;
 
 /**
  * Formats a chart item's timestamp, or returns an empty string when the
@@ -214,5 +217,158 @@ export function buildLinePoints({
 		meanY: sharedScale.meanY,
 		innerWidth,
 		innerHeight,
+	};
+}
+
+/**
+ * Picks which X-axis labels to draw so they do not collide.
+ *
+ * Always includes the first and last index when there are at least two
+ * points. Returns an empty array when `length` is not a positive integer.
+ *
+ * @param {number} length - Number of points.
+ * @param {number} innerWidth - Plot width in pixels.
+ * @param {number} [minWidth=40] - Minimum pixels reserved per label.
+ * @returns {number[]}
+ */
+export function getVisibleTickIndices(
+	length,
+	innerWidth,
+	minWidth = CHART_AXIS_LABEL_MIN_WIDTH
+) {
+	if (!Number.isInteger(length) || length <= 0) return [];
+	if (length === 1) return [0];
+	if (!Number.isFinite(innerWidth) || innerWidth <= 0 || !Number.isFinite(minWidth) || minWidth <= 0) {
+		return [0, length - 1];
+	}
+
+	const maxLabels = Math.max(2, Math.floor(innerWidth / minWidth));
+	if (length <= maxLabels) {
+		return Array.from({ length }, (_, index) => index);
+	}
+
+	const indices = [0, length - 1];
+	const innerCount = maxLabels - 2;
+	for (let step = 1; step <= innerCount; step += 1) {
+		const index = Math.round((step / (maxLabels - 1)) * (length - 1));
+		if (index > 0 && index < length - 1 && !indices.includes(index)) {
+			indices.push(index);
+		}
+	}
+	return indices.sort((left, right) => left - right);
+}
+
+/**
+ * Whether node values above points have enough horizontal room to stay readable.
+ *
+ * @param {number} length
+ * @param {number} innerWidth
+ * @param {number} [minWidth=32]
+ * @returns {boolean}
+ */
+export function shouldShowChartNodeValues(
+	length,
+	innerWidth,
+	minWidth = CHART_NODE_VALUE_MIN_WIDTH
+) {
+	if (!Number.isInteger(length) || length <= 1) return true;
+	if (!Number.isFinite(innerWidth) || innerWidth <= 0 || !Number.isFinite(minWidth)) {
+		return false;
+	}
+	return innerWidth / (length - 1) >= minWidth;
+}
+
+/**
+ * Whether 44px hit targets would overlap, so a single nearest-point press should be used.
+ *
+ * @param {number} length
+ * @param {number} innerWidth
+ * @param {number} [hitSize=44]
+ * @returns {boolean}
+ */
+export function shouldUseNearestPointHit(
+	length,
+	innerWidth,
+	hitSize = CHART_HIT_SIZE
+) {
+	if (!Number.isInteger(length) || length <= 1) return false;
+	if (!Number.isFinite(innerWidth) || innerWidth <= 0 || !Number.isFinite(hitSize)) {
+		return false;
+	}
+	return innerWidth / (length - 1) < hitSize;
+}
+
+/**
+ * Returns the index of the nearest valid point to `x`, or `null`.
+ *
+ * @param {number} x
+ * @param {Array<{ x?: number, value?: number }>} [points]
+ * @returns {number|null}
+ */
+export function nearestPointIndex(x, points = []) {
+	if (!Number.isFinite(x) || !Array.isArray(points) || points.length === 0) {
+		return null;
+	}
+
+	let bestIndex = null;
+	let bestDistance = Infinity;
+	for (let index = 0; index < points.length; index += 1) {
+		const point = points[index];
+		if (!Number.isFinite(point?.x) || Number.isNaN(point.value)) continue;
+		const distance = Math.abs(point.x - x);
+		if (distance < bestDistance) {
+			bestDistance = distance;
+			bestIndex = index;
+		}
+	}
+	return bestIndex;
+}
+
+/**
+ * Sizes a chart to fill a measured box, rotating into landscape when the box is taller than it is wide.
+ *
+ * @param {number} bodyWidth
+ * @param {number} bodyHeight
+ * @returns {{
+ *   shouldRotate: boolean,
+ *   chartWidth: number,
+ *   chartHeight: number,
+ *   style: { width: number, height: number, transform?: Array<Object> },
+ * }}
+ */
+export function getLandscapeLayout(bodyWidth, bodyHeight) {
+	const width = Math.round(bodyWidth);
+	const height = Math.round(bodyHeight);
+	if (!Number.isFinite(width) || !Number.isFinite(height) || width <= 0 || height <= 0) {
+		return {
+			shouldRotate: false,
+			chartWidth: 0,
+			chartHeight: 0,
+			style: { width: 0, height: 0 },
+		};
+	}
+
+	if (height <= width) {
+		return {
+			shouldRotate: false,
+			chartWidth: width,
+			chartHeight: height,
+			style: { width, height },
+		};
+	}
+
+	return {
+		shouldRotate: true,
+		chartWidth: height,
+		chartHeight: width,
+		style: {
+			width: height,
+			height: width,
+			transform: [
+				{ translateX: (width - height) / 2 },
+				{ translateY: (height - width) / 2 },
+				{ rotate: '90deg' },
+			],
+		},
 	};
 }
