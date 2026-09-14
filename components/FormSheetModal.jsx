@@ -2,7 +2,43 @@ import { ThemeProvider, useTheme } from '@/components/ThemeProvider';
 import { Text } from '@/components/ui/text';
 import { StatusBar } from 'expo-status-bar';
 import { CircleCheck, CircleX } from 'lucide-react-native';
-import { ActivityIndicator, Modal, Pressable, ScrollView, View } from 'react-native';
+import { useEffect, useState } from 'react';
+import {
+	ActivityIndicator,
+	Keyboard,
+	Modal,
+	Platform,
+	Pressable,
+	ScrollView,
+	View,
+} from 'react-native';
+
+function useKeyboardHeight(enabled) {
+	const [height, setHeight] = useState(0);
+
+	useEffect(() => {
+		if (!enabled || Platform.OS === 'web') {
+			setHeight(0);
+			return undefined;
+		}
+
+		const show = Keyboard.addListener(
+			Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow',
+			(event) => setHeight(event.endCoordinates.height)
+		);
+		const hide = Keyboard.addListener(
+			Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide',
+			() => setHeight(0)
+		);
+
+		return () => {
+			show.remove();
+			hide.remove();
+		};
+	}, [enabled]);
+
+	return height;
+}
 
 export default function FormSheetModal({
 	open,
@@ -33,6 +69,7 @@ export default function FormSheetModal({
 			<StatusBar style={theme.statusBarStyle} />
 			<ThemeProvider appearance={theme.name} className="flex-1 bg-background">
 				<FormSheetBody
+					open={open}
 					title={title}
 					footer={footer}
 					onConfirm={onConfirm}
@@ -52,6 +89,7 @@ export default function FormSheetModal({
 }
 
 function FormSheetBody({
+	open,
 	title,
 	children,
 	footer,
@@ -65,6 +103,7 @@ function FormSheetBody({
 	padded,
 }) {
 	const theme = useTheme();
+	const keyboardHeight = useKeyboardHeight(open);
 	const confirmInactive = confirmDisabled || confirmLoading;
 	const confirmColor = confirmInactive ? theme.colors.tintDisabled : theme.colors.tint;
 	const useToolbar = theme.layout.header === 'toolbar';
@@ -78,6 +117,12 @@ function FormSheetBody({
 				paddingBottom: 24,
 			}
 		: undefined;
+	const scrollContentStyle = padded
+		? {
+				...contentStyle,
+				paddingBottom: 24 + keyboardHeight,
+			}
+		: { paddingBottom: keyboardHeight };
 
 	return (
 		<>
@@ -170,9 +215,10 @@ function FormSheetBody({
 				<ScrollView
 					ref={scrollViewRef}
 					className="flex-1"
-					contentContainerStyle={contentStyle}
+					contentContainerStyle={scrollContentStyle}
 					showsVerticalScrollIndicator={false}
 					keyboardShouldPersistTaps="handled"
+					keyboardDismissMode="interactive"
 				>
 					{children}
 				</ScrollView>
