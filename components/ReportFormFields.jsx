@@ -1,7 +1,7 @@
 import FormDateField from '@/components/FormDateField';
 import FormFieldFile from '@/components/FormFieldFile';
+import FormFieldInvestigation from '@/components/FormFieldInvestigation';
 import FormFieldInput from '@/components/ui/form-field-input';
-import FormFieldSelect from '@/components/ui/form-field-select';
 import FormFieldTextarea from '@/components/ui/form-field-textarea';
 
 function fieldName(namePrefix, name) {
@@ -19,19 +19,15 @@ export default function ReportFormFields({
 }) {
 	return (
 		<>
-			<FormFieldSelect
+			<FormFieldInvestigation
 				formControl={form.control}
 				schemaProperty={fieldName(namePrefix, 'investigation')}
-				placeholder="Choose from the list"
-				labelText="Investigation"
-				dropdownOptions={
-					isInvestigationLoading
-						? []
-						: investigations.map((item) => ({
-								label: item.label,
-								value: String(item._id),
-							}))
+				placeholder={
+					isInvestigationLoading ? 'Loading investigations…' : 'Choose from the list'
 				}
+				labelText="Investigation"
+				investigations={isInvestigationLoading ? [] : investigations}
+				disabled={isInvestigationLoading}
 			/>
 			<FormFieldInput
 				formControl={form.control}

@@ -288,7 +288,7 @@ Create/edit sheets:
 4. Submit: `form.handleSubmit(mutationFn)`
 5. On success: reset form, `onOpenChange(false)`, invalidate query keys, `toast({ description })`
 
-Field components: `form-field-input`, `form-field-select`, `form-field-textarea`, `FormDateField`. Select options are `{ label, value }` arrays.
+Field components: `form-field-input`, `form-field-select`, `form-field-textarea`, `FormDateField`, `FormFieldInvestigation`. Select options are `{ label, value }` arrays.
 
 Auth screens (login/register) are **not** on this stack; they use raw `TextInput` + regex/required checks.
 
@@ -317,9 +317,11 @@ On full screens (Analyse / Compare): **`DateRange`** may open a bottom-sheet `Mo
 
 `CardView` is `rounded-[10px] bg-card` plus an optional ellipsis `DropdownMenu` of `{ label, action, variant? }`. Destructive items use `variant: 'destructive'`.
 
-### Investigation picking on Analyse/Compare
+### Investigation picking
 
-`InvestigationSelect` is a searchable list in `FormSheetModal`, **not** `form-field-select`. Form dialogs that pick an investigation (new report) use `FormFieldSelect` with the catalog as `dropdownOptions`.
+Every investigation picker opens **`InvestigationPickerModal`** — a searchable `FlatList` in a `FormSheetModal` — never `form-field-select`. On full screens (Analyse / Compare) go through `InvestigationSelect`; in report form sheets go through `FormFieldInvestigation`, which adds the `Controller` binding and error line. The catalog can be long, and a portaled `SelectContent` inside a `FormSheetModal` renders into the root `PortalHost`, which sits outside that native modal window.
+
+`form-field-select` stays for short fixed option sets (profile gender, appointment time slot).
 
 ### Toasts
 
