@@ -12,6 +12,7 @@ import {
 	formatAxisValue,
 	getChartAxisDate,
 	getChartTooltipDate,
+	getSeriesColors,
 	getVisibleTickIndices,
 	getXLabelAnchor,
 	getYAxisTicks,
@@ -42,7 +43,7 @@ export default function LineChart({
 	paddingTop,
 }) {
 	const theme = useTheme();
-	const lineColors = [theme.chart.line, theme.chart.lineSecondary];
+	const lineColors = getSeriesColors(theme);
 	const axisColor = theme.chart.axis;
 	const labelColor = theme.chart.label;
 	const [measuredWidth, setMeasuredWidth] = useState(0);

@@ -1,3 +1,4 @@
+import ChartLegend from '@/components/charts/ChartLegend';
 import LineChart from '@/components/charts/LineChart';
 import { getLandscapeLayout } from '@/components/charts/chartUtils';
 import FormSheetModal from '@/components/FormSheetModal';
@@ -13,11 +14,10 @@ const OVERLAY_LEGEND_EDGE_INSET = 28;
 const OVERLAY_CHART_PADDING_TOP = 14;
 
 function OverlayLegend({ labels, width, height }) {
-	const theme = useTheme();
-	const colors = [theme.chart.line, theme.chart.lineSecondary];
-
 	return (
-		<View
+		<ChartLegend
+			labels={labels}
+			numberOfLines={1}
 			className="flex-row flex-wrap items-end justify-center gap-x-4 gap-y-2"
 			style={{
 				width,
@@ -26,23 +26,7 @@ function OverlayLegend({ labels, width, height }) {
 				paddingBottom: 2,
 				paddingHorizontal: 16,
 			}}
-		>
-			{labels.map((label, index) => (
-				<View key={`${label}-${index}`} className="flex-row items-center gap-2">
-					<View
-						style={{
-							width: 10,
-							height: 10,
-							borderRadius: 5,
-							backgroundColor: colors[index % colors.length],
-						}}
-					/>
-					<Text className="text-sm text-foreground" numberOfLines={1}>
-						{label}
-					</Text>
-				</View>
-			))}
-		</View>
+		/>
 	);
 }
 

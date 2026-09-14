@@ -9,6 +9,16 @@ export const CHART_AXIS_LABEL_MIN_WIDTH = 40;
 export const CHART_NODE_VALUE_MIN_WIDTH = 32;
 
 /**
+ * Line colors for chart series, in plot order.
+ *
+ * @param {{ chart: { line: string, lineSecondary: string } }} theme
+ * @returns {[string, string]}
+ */
+export function getSeriesColors(theme) {
+	return [theme.chart.line, theme.chart.lineSecondary];
+}
+
+/**
  * Formats a chart item's timestamp, or returns an empty string when the
  * timestamp is missing or not a number.
  *

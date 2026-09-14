@@ -6,6 +6,7 @@ import {
 	getChartAxisDate,
 	getChartTooltipDate,
 	getLandscapeLayout,
+	getSeriesColors,
 	getVisibleTickIndices,
 	getXLabelAnchor,
 	getYAxisTicks,
@@ -396,5 +397,13 @@ describe('getLandscapeLayout', () => {
 			chartWidth: 0,
 			chartHeight: 0,
 		});
+	});
+});
+
+describe('getSeriesColors', () => {
+	it('returns line and lineSecondary from the theme', () => {
+		expect(
+			getSeriesColors({ chart: { line: '#111111', lineSecondary: '#222222' } })
+		).toEqual(['#111111', '#222222']);
 	});
 });

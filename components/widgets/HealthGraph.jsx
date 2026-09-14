@@ -1,8 +1,6 @@
 import useInvestigationsApiManager from '@/api-managers/InvestigationsApiManager';
 import useReportsApiManager from '@/api-managers/ReportsApiManager';
-import ChartExpandButton from '@/components/charts/ChartExpandButton';
-import ChartExpandDialog from '@/components/charts/ChartExpandDialog';
-import LineChart from '@/components/charts/LineChart';
+import ExpandableChart from '@/components/charts/ExpandableChart';
 import { useTheme } from '@/components/ThemeProvider';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Text } from '@/components/ui/text';
@@ -76,33 +74,23 @@ export default function HealthGraph({ investigation, count, onRemove }) {
 		</Pressable>
 	) : null;
 
-	const headerRight =
-		reports.length > 0 || removeButton ? (
-			<View className="flex-row items-center">
-				{reports.length > 0 ? (
-					<ChartExpandButton onPress={() => setExpandOpen(true)} />
-				) : null}
-				{removeButton}
-			</View>
-		) : null;
-
 	return (
-		<WidgetView title={title} footer={footer} headerRight={headerRight}>
+		<WidgetView title={title} footer={footer} headerRight={removeButton}>
 			{isLoading ? (
 				<HealthGraphLoading />
 			) : reports.length > 0 ? (
-				<LineChart data={reports} unit={unit} showNodeValues />
+				<ExpandableChart
+					data={reports}
+					unit={unit}
+					showExpandButton={false}
+					expandTitle={title}
+					expandData={expandedReports}
+					expandLoading={expandOpen && isExpandLoading}
+					onExpandOpenChange={setExpandOpen}
+				/>
 			) : (
 				<Text className="text-sm text-muted-foreground">No readings yet.</Text>
 			)}
-			<ChartExpandDialog
-				open={expandOpen}
-				onOpenChange={setExpandOpen}
-				title={title}
-				data={expandedReports}
-				isLoading={expandOpen && isExpandLoading}
-				unit={unit}
-			/>
 		</WidgetView>
 	);
 }
