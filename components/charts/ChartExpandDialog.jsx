@@ -8,7 +8,9 @@ import { ActivityIndicator, useWindowDimensions, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const SHEET_HEADER_ALLOWANCE = 96;
-const OVERLAY_LEGEND_HEIGHT = 48;
+const OVERLAY_LEGEND_HEIGHT = 56;
+const OVERLAY_LEGEND_EDGE_INSET = 28;
+const OVERLAY_CHART_PADDING_TOP = 14;
 
 function OverlayLegend({ labels, width, height }) {
 	const theme = useTheme();
@@ -16,8 +18,14 @@ function OverlayLegend({ labels, width, height }) {
 
 	return (
 		<View
-			className="flex-row flex-wrap items-center justify-center gap-x-4 gap-y-2 px-3"
-			style={{ width, height }}
+			className="flex-row flex-wrap items-end justify-center gap-x-4 gap-y-2"
+			style={{
+				width,
+				height,
+				paddingTop: OVERLAY_LEGEND_EDGE_INSET,
+				paddingBottom: 2,
+				paddingHorizontal: 16,
+			}}
 		>
 			{labels.map((label, index) => (
 				<View key={`${label}-${index}`} className="flex-row items-center gap-2">
@@ -150,6 +158,7 @@ export default function ChartExpandDialog({
 										width={layout.chartWidth}
 										height={plotHeight}
 										showNodeValues
+										paddingTop={showLegend ? OVERLAY_CHART_PADDING_TOP : undefined}
 									/>
 								</View>
 							</View>

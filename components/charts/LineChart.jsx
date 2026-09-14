@@ -39,6 +39,7 @@ export default function LineChart({
 	units,
 	seriesLabels = [],
 	showNodeValues = true,
+	paddingTop,
 }) {
 	const theme = useTheme();
 	const lineColors = [theme.chart.line, theme.chart.lineSecondary];
@@ -76,7 +77,12 @@ export default function LineChart({
 		);
 	}
 
-	const padding = { ...CHART_PADDING, left: 36, right: isMulti ? 36 : CHART_PADDING.right };
+	const padding = {
+		...CHART_PADDING,
+		...(paddingTop != null ? { top: paddingTop } : {}),
+		left: 36,
+		right: isMulti ? 36 : CHART_PADDING.right,
+	};
 	const { series, innerHeight, innerWidth } = chartWidth
 		? buildLinePoints({
 			data,
