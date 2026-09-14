@@ -12,6 +12,8 @@ import useAuth from '../../hooks/useAuth';
 export default function AppLayout() {
 	const theme = useTheme();
 	const { auth, isLoading } = useAuth();
+	const profileName = typeof auth?.name === 'string' ? auth.name.trim() : '';
+	const overviewTitle = profileName ? `${profileName}'s Overview` : 'Overview';
 
 	if (isLoading) {
 		return (
@@ -38,8 +40,16 @@ export default function AppLayout() {
 				name="index"
 				options={{
 					tabBarLabel: 'Home',
-					title: 'Overview',
+					title: overviewTitle,
 					tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />,
+				}}
+			/>
+			<Tabs.Screen
+				name="reports"
+				options={{
+					tabBarLabel: 'Manage',
+					headerTitle: 'Manage Reports',
+					tabBarIcon: ({ color }) => <FileText size={26} color={color} strokeWidth={1.5} />,
 				}}
 			/>
 			<Tabs.Screen
@@ -64,14 +74,6 @@ export default function AppLayout() {
 					tabBarLabel: 'Compare',
 					headerTitle: 'Compare Reports',
 					tabBarIcon: ({ color }) => <GitCompareArrows size={26} color={color} strokeWidth={1.5} />,
-				}}
-			/>
-			<Tabs.Screen
-				name="reports"
-				options={{
-					tabBarLabel: 'Manage',
-					headerTitle: 'Manage Reports',
-					tabBarIcon: ({ color }) => <FileText size={26} color={color} strokeWidth={1.5} />,
 				}}
 			/>
 			<Tabs.Screen
