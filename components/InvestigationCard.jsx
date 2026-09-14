@@ -1,14 +1,5 @@
 import CardView from '@/components/CardView';
-import {
-	AlertDialog,
-	AlertDialogAction,
-	AlertDialogCancel,
-	AlertDialogContent,
-	AlertDialogDescription,
-	AlertDialogFooter,
-	AlertDialogHeader,
-	AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
+import ConfirmDialog from '@/components/ConfirmDialog';
 import { Text } from '@/components/ui/text';
 import { useCallback, useMemo, useState } from 'react';
 import { View } from 'react-native';
@@ -48,25 +39,13 @@ export default function InvestigationCard({
 				</View>
 			</CardView>
 
-			<AlertDialog open={showConfirm} onOpenChange={setShowConfirm}>
-				<AlertDialogContent>
-					<AlertDialogHeader>
-						<AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-						<AlertDialogDescription>
-							This will permanently delete this investigation. Types that still have reports cannot
-							be removed.
-						</AlertDialogDescription>
-					</AlertDialogHeader>
-					<AlertDialogFooter>
-						<AlertDialogCancel>
-							<Text>Cancel</Text>
-						</AlertDialogCancel>
-						<AlertDialogAction onPress={onDelete} className="bg-destructive">
-							<Text className="text-destructive-foreground">Continue</Text>
-						</AlertDialogAction>
-					</AlertDialogFooter>
-				</AlertDialogContent>
-			</AlertDialog>
+			<ConfirmDialog
+				open={showConfirm}
+				onOpenChange={setShowConfirm}
+				description="This will permanently delete this investigation. Types that still have reports cannot be removed."
+				destructive
+				onConfirm={onDelete}
+			/>
 		</View>
 	);
 }

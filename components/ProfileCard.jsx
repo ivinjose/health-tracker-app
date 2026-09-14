@@ -1,15 +1,6 @@
 import CardView from '@/components/CardView';
+import ConfirmDialog from '@/components/ConfirmDialog';
 import { useTheme } from '@/components/ThemeProvider';
-import {
-	AlertDialog,
-	AlertDialogAction,
-	AlertDialogCancel,
-	AlertDialogContent,
-	AlertDialogDescription,
-	AlertDialogFooter,
-	AlertDialogHeader,
-	AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
 import { Text } from '@/components/ui/text';
 import { CircleUserRound } from 'lucide-react-native';
 import { useCallback, useMemo, useState } from 'react';
@@ -48,24 +39,13 @@ export default function ProfileCard({ user, name, age, gender, parent, onDeleteC
 				</View>
 			</CardView>
 
-			<AlertDialog open={showConfirm} onOpenChange={setShowConfirm}>
-				<AlertDialogContent>
-					<AlertDialogHeader>
-						<AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-						<AlertDialogDescription>
-							This will permanently delete all data associated with this particular profile.
-						</AlertDialogDescription>
-					</AlertDialogHeader>
-					<AlertDialogFooter>
-						<AlertDialogCancel>
-							<Text>Cancel</Text>
-						</AlertDialogCancel>
-						<AlertDialogAction onPress={onDelete} className="bg-destructive">
-							<Text className="text-destructive-foreground">Continue</Text>
-						</AlertDialogAction>
-					</AlertDialogFooter>
-				</AlertDialogContent>
-			</AlertDialog>
+			<ConfirmDialog
+				open={showConfirm}
+				onOpenChange={setShowConfirm}
+				description="This will permanently delete all data associated with this particular profile."
+				destructive
+				onConfirm={onDelete}
+			/>
 		</View>
 	);
 }

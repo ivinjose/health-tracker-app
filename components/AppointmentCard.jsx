@@ -1,15 +1,6 @@
 import CardView from '@/components/CardView';
+import ConfirmDialog from '@/components/ConfirmDialog';
 import { useTheme } from '@/components/ThemeProvider';
-import {
-	AlertDialog,
-	AlertDialogAction,
-	AlertDialogCancel,
-	AlertDialogContent,
-	AlertDialogDescription,
-	AlertDialogFooter,
-	AlertDialogHeader,
-	AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
 import { Text } from '@/components/ui/text';
 import { Link } from 'expo-router';
 import { format } from 'date-fns';
@@ -72,24 +63,12 @@ export default function AppointmentCard({
 				</View>
 			</CardView>
 
-			<AlertDialog open={showConfirm} onOpenChange={setShowConfirm}>
-				<AlertDialogContent>
-					<AlertDialogHeader>
-						<AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-						<AlertDialogDescription>
-							This will permanently delete this appointment.
-						</AlertDialogDescription>
-					</AlertDialogHeader>
-					<AlertDialogFooter>
-						<AlertDialogCancel>
-							<Text>Cancel</Text>
-						</AlertDialogCancel>
-						<AlertDialogAction onPress={onDelete}>
-							<Text>Continue</Text>
-						</AlertDialogAction>
-					</AlertDialogFooter>
-				</AlertDialogContent>
-			</AlertDialog>
+			<ConfirmDialog
+				open={showConfirm}
+				onOpenChange={setShowConfirm}
+				description="This will permanently delete this appointment."
+				onConfirm={onDelete}
+			/>
 		</View>
 	);
 }

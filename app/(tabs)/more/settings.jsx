@@ -1,17 +1,8 @@
 import useBackupApiManager from '@/api-managers/BackupApiManager';
 import useProfileApiManager from '@/api-managers/ProfileApiManager';
 import useUserApiManager from '@/api-managers/UserApiManager';
+import ConfirmDialog from '@/components/ConfirmDialog';
 import { useSetAppearance, useTheme } from '@/components/ThemeProvider';
-import {
-	AlertDialog,
-	AlertDialogAction,
-	AlertDialogCancel,
-	AlertDialogContent,
-	AlertDialogDescription,
-	AlertDialogFooter,
-	AlertDialogHeader,
-	AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
 import { Text } from '@/components/ui/text';
 import { CARD_LIST_GAP } from '@/constants/layout';
@@ -185,7 +176,7 @@ function BackupRestoreSection() {
 				</View>
 			</SettingsSection>
 
-			<AlertDialog
+			<ConfirmDialog
 				open={Boolean(restorePreview)}
 				onOpenChange={(open) => {
 					if (!open && !restoreStarted.current) {
@@ -193,43 +184,29 @@ function BackupRestoreSection() {
 						setRestoreAsset(null);
 					}
 				}}
-			>
-				<AlertDialogContent>
-					<AlertDialogHeader>
-						<AlertDialogTitle>Restore this snapshot?</AlertDialogTitle>
-						<AlertDialogDescription>
-							{restorePreview
-								? [
-										`This backup was created on ${restorePreview.milestoneLabel}.`,
-										restorePreview.countsLabel
-											? `It includes ${restorePreview.countsLabel}.`
-											: '',
-										'Restoring will replace the current health data on this account with that snapshot. Anything saved after that time, or that is not in this backup, will be gone. Your login stays the same.',
-									]
-										.filter(Boolean)
-										.join(' ')
-								: ''}
-						</AlertDialogDescription>
-					</AlertDialogHeader>
-					<AlertDialogFooter>
-						<AlertDialogCancel disabled={isRestoring}>
-							<Text>Cancel</Text>
-						</AlertDialogCancel>
-						<AlertDialogAction
-							disabled={isRestoring || !restoreAsset}
-							className="bg-destructive"
-							onPress={() => {
-								restoreStarted.current = true;
-								restoreBackup(restoreAsset);
-							}}
-						>
-							<Text className="text-destructive-foreground">
-								{isRestoring ? 'Restoring…' : 'Replace with this backup'}
-							</Text>
-						</AlertDialogAction>
-					</AlertDialogFooter>
-				</AlertDialogContent>
-			</AlertDialog>
+				title="Restore this snapshot?"
+				description={
+					restorePreview
+						? [
+								`This backup was created on ${restorePreview.milestoneLabel}.`,
+								restorePreview.countsLabel
+									? `It includes ${restorePreview.countsLabel}.`
+									: '',
+								'Restoring will replace the current health data on this account with that snapshot. Anything saved after that time, or that is not in this backup, will be gone. Your login stays the same.',
+							]
+								.filter(Boolean)
+								.join(' ')
+						: ''
+				}
+				confirmLabel={isRestoring ? 'Restoring…' : 'Replace with this backup'}
+				destructive
+				cancelDisabled={isRestoring}
+				confirmDisabled={isRestoring || !restoreAsset}
+				onConfirm={() => {
+					restoreStarted.current = true;
+					restoreBackup(restoreAsset);
+				}}
+			/>
 		</View>
 	);
 }
@@ -279,59 +256,30 @@ function DeleteAccountSection() {
 				</View>
 			</SettingsSection>
 
-			<AlertDialog open={showFirstConfirm} onOpenChange={setShowFirstConfirm}>
-				<AlertDialogContent>
-					<AlertDialogHeader>
-						<AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-						<AlertDialogDescription>
-							This action cannot be undone. This will permanently delete your account
-							and all health data, including every profile.
-						</AlertDialogDescription>
-					</AlertDialogHeader>
-					<AlertDialogFooter>
-						<AlertDialogCancel disabled={isPending}>
-							<Text>Cancel</Text>
-						</AlertDialogCancel>
-						<AlertDialogAction
-							disabled={isPending}
-							className="bg-destructive"
-							onPress={() => {
-								setShowFirstConfirm(false);
-								setShowSecondConfirm(true);
-							}}
-						>
-							<Text className="text-destructive-foreground">Continue</Text>
-						</AlertDialogAction>
-					</AlertDialogFooter>
-				</AlertDialogContent>
-			</AlertDialog>
+			<ConfirmDialog
+				open={showFirstConfirm}
+				onOpenChange={setShowFirstConfirm}
+				description="This action cannot be undone. This will permanently delete your account and all health data, including every profile."
+				destructive
+				cancelDisabled={isPending}
+				confirmDisabled={isPending}
+				onConfirm={() => {
+					setShowFirstConfirm(false);
+					setShowSecondConfirm(true);
+				}}
+			/>
 
-			<AlertDialog open={showSecondConfirm} onOpenChange={setShowSecondConfirm}>
-				<AlertDialogContent>
-					<AlertDialogHeader>
-						<AlertDialogTitle>This cannot be reversed</AlertDialogTitle>
-						<AlertDialogDescription>
-							This is a one-time, non-reversible action. Your login, every profile,
-							reports, and appointments will be permanently removed, and you will be
-							signed out.
-						</AlertDialogDescription>
-					</AlertDialogHeader>
-					<AlertDialogFooter>
-						<AlertDialogCancel disabled={isPending}>
-							<Text>Cancel</Text>
-						</AlertDialogCancel>
-						<AlertDialogAction
-							disabled={isPending}
-							className="bg-destructive"
-							onPress={() => deleteAccount()}
-						>
-							<Text className="text-destructive-foreground">
-								{isPending ? 'Deleting…' : 'Delete permanently'}
-							</Text>
-						</AlertDialogAction>
-					</AlertDialogFooter>
-				</AlertDialogContent>
-			</AlertDialog>
+			<ConfirmDialog
+				open={showSecondConfirm}
+				onOpenChange={setShowSecondConfirm}
+				title="This cannot be reversed"
+				description="This is a one-time, non-reversible action. Your login, every profile, reports, and appointments will be permanently removed, and you will be signed out."
+				confirmLabel={isPending ? 'Deleting…' : 'Delete permanently'}
+				destructive
+				cancelDisabled={isPending}
+				confirmDisabled={isPending}
+				onConfirm={() => deleteAccount()}
+			/>
 		</View>
 	);
 }

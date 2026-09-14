@@ -1,15 +1,6 @@
 import CardView from '@/components/CardView';
+import ConfirmDialog from '@/components/ConfirmDialog';
 import ViewReportDialog from '@/components/ViewReportDialog';
-import {
-	AlertDialog,
-	AlertDialogAction,
-	AlertDialogCancel,
-	AlertDialogContent,
-	AlertDialogDescription,
-	AlertDialogFooter,
-	AlertDialogHeader,
-	AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
 import { Text } from '@/components/ui/text';
 import { formatInvestigationReading } from '@/lib/investigationUtils';
@@ -102,24 +93,13 @@ export default function ReportCard({
 				</View>
 			</CardView>
 
-			<AlertDialog open={showConfirm} onOpenChange={setShowConfirm}>
-				<AlertDialogContent>
-					<AlertDialogHeader>
-						<AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-						<AlertDialogDescription>
-							This action cannot be undone. This will permanently delete your report.
-						</AlertDialogDescription>
-					</AlertDialogHeader>
-					<AlertDialogFooter>
-						<AlertDialogCancel>
-							<Text>Cancel</Text>
-						</AlertDialogCancel>
-						<AlertDialogAction onPress={onDelete} className="bg-destructive">
-							<Text className="text-destructive-foreground">Continue</Text>
-						</AlertDialogAction>
-					</AlertDialogFooter>
-				</AlertDialogContent>
-			</AlertDialog>
+			<ConfirmDialog
+				open={showConfirm}
+				onOpenChange={setShowConfirm}
+				description="This action cannot be undone. This will permanently delete your report."
+				destructive
+				onConfirm={onDelete}
+			/>
 
 			{filename ? (
 				<ViewReportDialog
