@@ -2,7 +2,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm, useFormState, useWatch } from 'react-hook-form';
 
 /**
- * Shared setup for create/edit forms (sheet tick, footer button, etc.).
+ * Shared setup for create/edit forms (sheet Save, footer button, etc.).
  *
  * Disables submit while required fields are empty or the schema is invalid:
  *

@@ -1,7 +1,7 @@
 import { ThemeProvider, useTheme } from '@/components/ThemeProvider';
 import { Text } from '@/components/ui/text';
 import { StatusBar } from 'expo-status-bar';
-import { CircleCheck, CircleX } from 'lucide-react-native';
+import { CircleX } from 'lucide-react-native';
 import { useEffect, useState } from 'react';
 import {
 	ActivityIndicator,
@@ -38,6 +38,42 @@ function useKeyboardHeight(enabled) {
 	}, [enabled]);
 
 	return height;
+}
+
+function ConfirmControl({
+	onConfirm,
+	confirmInactive,
+	confirmLoading,
+	confirmColor,
+	confirmAccessibilityLabel,
+	tintColor,
+	className,
+}) {
+	return (
+		<Pressable
+			onPress={onConfirm}
+			disabled={confirmInactive}
+			className={className}
+			hitSlop={8}
+			accessibilityRole="button"
+			accessibilityLabel={confirmAccessibilityLabel}
+			accessibilityState={{
+				disabled: confirmInactive,
+				busy: confirmLoading,
+			}}
+		>
+			{confirmLoading ? (
+				<ActivityIndicator size="small" color={tintColor} />
+			) : (
+				<Text
+					className="text-[17px] font-semibold"
+					style={{ color: confirmColor }}
+				>
+					Save
+				</Text>
+			)}
+		</Pressable>
+	);
 }
 
 export default function FormSheetModal({
@@ -128,16 +164,18 @@ function FormSheetBody({
 		<>
 			{useToolbar ? (
 				<View className="flex-row items-center px-4 pb-3 pt-4">
-					<Pressable
-						onPress={onCancel}
-						className="h-8 w-8 items-center justify-center"
-						hitSlop={8}
-						accessibilityRole="button"
-						accessibilityLabel="Close"
-					>
-						<CircleX size={28} color={theme.colors.close} />
-					</Pressable>
-					<View className="min-w-0 flex-1 px-2">
+					<View className="min-w-[48px] flex-1 items-start">
+						<Pressable
+							onPress={onCancel}
+							className="h-8 w-8 items-center justify-center"
+							hitSlop={8}
+							accessibilityRole="button"
+							accessibilityLabel="Close"
+						>
+							<CircleX size={28} color={theme.colors.close} />
+						</Pressable>
+					</View>
+					<View className="min-w-0 max-w-[55%] px-2">
 						{title ? (
 							<Text
 								className="text-center text-[17px] font-semibold text-foreground"
@@ -147,28 +185,21 @@ function FormSheetBody({
 							</Text>
 						) : null}
 					</View>
-					{onConfirm ? (
-						<Pressable
-							onPress={onConfirm}
-							disabled={confirmInactive}
-							className="h-8 w-8 items-center justify-center"
-							hitSlop={8}
-							accessibilityRole="button"
-							accessibilityLabel={confirmAccessibilityLabel}
-							accessibilityState={{
-								disabled: confirmInactive,
-								busy: confirmLoading,
-							}}
-						>
-							{confirmLoading ? (
-								<ActivityIndicator size="small" color={theme.colors.tint} />
-							) : (
-								<CircleCheck size={28} color={confirmColor} />
-							)}
-						</Pressable>
-					) : (
-						<View className="h-8 w-8" />
-					)}
+					<View className="min-w-[48px] flex-1 items-end">
+						{onConfirm ? (
+							<ConfirmControl
+								onConfirm={onConfirm}
+								confirmInactive={confirmInactive}
+								confirmLoading={confirmLoading}
+								confirmColor={confirmColor}
+								confirmAccessibilityLabel={confirmAccessibilityLabel}
+								tintColor={theme.colors.tint}
+								className="h-8 items-center justify-center"
+							/>
+						) : (
+							<View className="h-8 w-8" />
+						)}
+					</View>
 				</View>
 			) : (
 				<>
@@ -183,24 +214,15 @@ function FormSheetBody({
 					</Pressable>
 
 					{onConfirm ? (
-						<Pressable
-							onPress={onConfirm}
-							disabled={confirmInactive}
-							className="absolute right-4 top-4 z-10"
-							hitSlop={8}
-							accessibilityRole="button"
-							accessibilityLabel={confirmAccessibilityLabel}
-							accessibilityState={{
-								disabled: confirmInactive,
-								busy: confirmLoading,
-							}}
-						>
-							{confirmLoading ? (
-								<ActivityIndicator size="small" color={theme.colors.tint} />
-							) : (
-								<CircleCheck size={28} color={confirmColor} />
-							)}
-						</Pressable>
+						<ConfirmControl
+							onConfirm={onConfirm}
+							confirmInactive={confirmInactive}
+							confirmLoading={confirmLoading}
+							confirmColor={confirmColor}
+							confirmAccessibilityLabel={confirmAccessibilityLabel}
+							tintColor={theme.colors.tint}
+							className="absolute right-4 top-4 z-10 h-8 items-center justify-center"
+						/>
 					) : null}
 
 					{title ? (
