@@ -69,7 +69,7 @@ export default function ExpandableChart({
 				showNodeValues={showNodeValues}
 			/>
 
-			{showExpandButton ? (
+			{canExpand ? (
 				<ChartExpandDialog
 					open={expandOpen}
 					onOpenChange={setOpen}

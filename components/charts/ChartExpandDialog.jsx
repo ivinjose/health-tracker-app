@@ -9,9 +9,10 @@ import { ActivityIndicator, useWindowDimensions, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const SHEET_HEADER_ALLOWANCE = 96;
-const OVERLAY_LEGEND_HEIGHT = 56;
+const OVERLAY_LEGEND_HEIGHT = 72;
 const OVERLAY_LEGEND_EDGE_INSET = 28;
-const OVERLAY_CHART_PADDING_TOP = 14;
+const OVERLAY_LEGEND_CHART_GAP = 16;
+const OVERLAY_CHART_PADDING_TOP = 24;
 
 function OverlayLegend({ labels, width, height }) {
 	return (
@@ -23,7 +24,7 @@ function OverlayLegend({ labels, width, height }) {
 				width,
 				height,
 				paddingTop: OVERLAY_LEGEND_EDGE_INSET,
-				paddingBottom: 2,
+				paddingBottom: OVERLAY_LEGEND_CHART_GAP,
 				paddingHorizontal: 16,
 			}}
 		/>
