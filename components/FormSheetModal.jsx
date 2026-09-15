@@ -15,6 +15,7 @@ import {
 } from 'react-native';
 
 const CLOSE_ICON_SIZE = 36;
+const DELETE_ICON_SIZE = 22;
 
 function useKeyboardHeight(enabled) {
 	const [height, setHeight] = useState(0);
@@ -70,6 +71,41 @@ function CloseControl({ onCancel, color, className }) {
 	);
 }
 
+function DeleteControl({
+	onDelete,
+	color,
+	className,
+	disabled = false,
+	accessibilityLabel = 'Remove',
+}) {
+	return (
+		<Pressable
+			onPress={onDelete}
+			disabled={disabled}
+			className={className}
+			hitSlop={8}
+			style={({ pressed }) => (pressed || disabled ? { opacity: 0.6 } : undefined)}
+			accessibilityRole="button"
+			accessibilityLabel={accessibilityLabel}
+			accessibilityState={{ disabled }}
+		>
+			<SymbolView
+				name="trash.fill"
+				size={DELETE_ICON_SIZE}
+				tintColor={color}
+				type="hierarchical"
+				fallback={
+					<IconSymbol
+						name="trash.fill"
+						size={DELETE_ICON_SIZE}
+						color={color}
+					/>
+				}
+			/>
+		</Pressable>
+	);
+}
+
 function ConfirmControl({
 	onConfirm,
 	confirmInactive,
@@ -116,6 +152,9 @@ export default function FormSheetModal({
 	confirmDisabled = false,
 	confirmLoading = false,
 	confirmAccessibilityLabel = 'Save',
+	onDelete,
+	deleteDisabled = false,
+	deleteAccessibilityLabel = 'Remove',
 	scrollViewRef,
 	scrollable = true,
 	padded = true,
@@ -142,6 +181,9 @@ export default function FormSheetModal({
 					confirmDisabled={confirmDisabled}
 					confirmLoading={confirmLoading}
 					confirmAccessibilityLabel={confirmAccessibilityLabel}
+					onDelete={onDelete}
+					deleteDisabled={deleteDisabled}
+					deleteAccessibilityLabel={deleteAccessibilityLabel}
 					onCancel={() => onOpenChange(false)}
 					scrollViewRef={scrollViewRef}
 					scrollable={scrollable}
@@ -163,6 +205,9 @@ function FormSheetBody({
 	confirmDisabled,
 	confirmLoading,
 	confirmAccessibilityLabel,
+	onDelete,
+	deleteDisabled,
+	deleteAccessibilityLabel,
 	onCancel,
 	scrollViewRef,
 	scrollable,
@@ -222,6 +267,14 @@ function FormSheetBody({
 								tintColor={theme.colors.tint}
 								className="h-8 items-center justify-center"
 							/>
+						) : onDelete ? (
+							<DeleteControl
+								onDelete={onDelete}
+								disabled={deleteDisabled}
+								accessibilityLabel={deleteAccessibilityLabel}
+								color={theme.colors.destructive}
+								className="h-8 w-8 items-center justify-center"
+							/>
 						) : (
 							<View className="h-8 w-8" />
 						)}
@@ -244,6 +297,14 @@ function FormSheetBody({
 							confirmAccessibilityLabel={confirmAccessibilityLabel}
 							tintColor={theme.colors.tint}
 							className="absolute right-4 top-4 z-10 h-8 items-center justify-center"
+						/>
+					) : onDelete ? (
+						<DeleteControl
+							onDelete={onDelete}
+							disabled={deleteDisabled}
+							accessibilityLabel={deleteAccessibilityLabel}
+							color={theme.colors.destructive}
+							className="absolute right-4 top-4 z-10 h-8 w-8 items-center justify-center"
 						/>
 					) : null}
 

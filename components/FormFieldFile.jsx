@@ -1,16 +1,17 @@
 import { useTheme } from '@/components/ThemeProvider';
+import ViewReportDialog from '@/components/ViewReportDialog';
 import { Text } from '@/components/ui/text';
 import { useToast } from '@/hooks/use-toast';
 import {
 	MAX_UPLOAD_SIZE,
 	REPORT_PICKER_TYPES,
 	getReportFileLabel,
-	isExistingReportFile,
 	normalizePickedFile,
 } from '@/lib/reportUpload';
 import * as DocumentPicker from 'expo-document-picker';
 import * as ImagePicker from 'expo-image-picker';
 import { Paperclip } from 'lucide-react-native';
+import { useEffect, useState } from 'react';
 import { Controller } from 'react-hook-form';
 import { ActionSheetIOS, Alert, Platform, Pressable, View } from 'react-native';
 
@@ -110,75 +111,103 @@ export default function FormFieldFile({
 		<Controller
 			control={formControl}
 			name={schemaProperty}
-			render={({ field: { onChange, value }, fieldState: { error } }) => {
-				const fileName = getReportFileLabel(value);
-				const attachedLabel = isExistingReportFile(value)
-					? 'Attached report'
-					: fileName
-						? `Attached ${fileName}`
-						: PLACEHOLDER;
-
-				return (
-					<View className="mb-4">
-						{labelText ? (
-							<Text className="mb-1 text-sm font-medium text-muted-foreground">
-								{labelText}
-							</Text>
-						) : null}
-
-						<View className="flex-row items-center gap-2">
-							<Pressable
-								onPress={() => onChooseFile(onChange)}
-								disabled={disabled}
-								className={`min-w-0 flex-1 flex-row items-center gap-2 rounded-[10px] border border-input bg-card px-3 py-3 ${disabled ? 'opacity-50' : ''}`}
-								accessibilityRole="button"
-								accessibilityLabel={attachedLabel}
-								accessibilityState={{ disabled }}
-							>
-								<Paperclip size={20} color={theme.colors.tint} />
-								<Text
-									className={
-										fileName
-											? 'min-w-0 flex-1 text-foreground'
-											: 'text-muted-foreground'
-									}
-									numberOfLines={1}
-								>
-									{fileName || PLACEHOLDER}
-								</Text>
-							</Pressable>
-							{fileName ? (
-								<Pressable
-									onPress={() => onChange(undefined)}
-									disabled={disabled}
-									hitSlop={8}
-									accessibilityRole="button"
-									accessibilityLabel="Remove attached report"
-									accessibilityState={{ disabled }}
-								>
-									<Text
-										className={
-											disabled
-												? 'text-sm text-muted-foreground'
-												: 'text-sm text-destructive'
-										}
-									>
-										Remove
-									</Text>
-								</Pressable>
-							) : null}
-						</View>
-
-						<Text className="mt-1 text-xs text-muted-foreground">
-							Optional · PDF or image · max {MAX_UPLOAD_MB}MB
-						</Text>
-
-						{error ? (
-							<Text className="mt-1 text-sm text-destructive">{error.message}</Text>
-						) : null}
-					</View>
-				);
-			}}
+			render={({ field: { onChange, value }, fieldState: { error } }) => (
+				<ReportFileField
+					value={value}
+					onChange={onChange}
+					error={error}
+					disabled={disabled}
+					labelText={labelText}
+					theme={theme}
+					onChooseFile={onChooseFile}
+				/>
+			)}
 		/>
+	);
+}
+
+function ReportFileField({
+	value,
+	onChange,
+	error,
+	disabled,
+	labelText,
+	theme,
+	onChooseFile,
+}) {
+	const [showViewer, setShowViewer] = useState(false);
+	const fileName = getReportFileLabel(value);
+	const attached = Boolean(fileName);
+	const fieldChrome = `min-w-0 flex-1 flex-row items-center gap-2 rounded-[10px] border border-input bg-card px-3 py-3 ${disabled ? 'opacity-50' : ''}`;
+
+	useEffect(() => {
+		if (!attached) setShowViewer(false);
+	}, [attached]);
+
+	return (
+		<View className="mb-4">
+			{labelText ? (
+				<Text className="mb-1 text-sm font-medium text-muted-foreground">
+					{labelText}
+				</Text>
+			) : null}
+
+			{attached ? (
+				<View className={fieldChrome}>
+					<Pressable
+						onPress={() => onChooseFile(onChange)}
+						disabled={disabled}
+						hitSlop={8}
+						accessibilityRole="button"
+						accessibilityLabel="Replace attached report"
+						accessibilityState={{ disabled }}
+					>
+						<Paperclip size={20} color={theme.colors.tint} />
+					</Pressable>
+					<Pressable
+						onPress={() => setShowViewer(true)}
+						disabled={disabled}
+						className="min-w-0 flex-1"
+						accessibilityRole="button"
+						accessibilityLabel="View attached report"
+						accessibilityState={{ disabled }}
+					>
+						<Text className="min-w-0 flex-1 text-foreground" numberOfLines={1}>
+							{fileName}
+						</Text>
+					</Pressable>
+				</View>
+			) : (
+				<Pressable
+					onPress={() => onChooseFile(onChange)}
+					disabled={disabled}
+					className={fieldChrome}
+					accessibilityRole="button"
+					accessibilityLabel={PLACEHOLDER}
+					accessibilityState={{ disabled }}
+				>
+					<Paperclip size={20} color={theme.colors.tint} />
+					<Text className="text-muted-foreground" numberOfLines={1}>
+						{PLACEHOLDER}
+					</Text>
+				</Pressable>
+			)}
+
+			<Text className="mt-1 text-xs text-muted-foreground">
+				Optional · PDF or image · max {MAX_UPLOAD_MB}MB
+			</Text>
+
+			{error ? (
+				<Text className="mt-1 text-sm text-destructive">{error.message}</Text>
+			) : null}
+
+			<ViewReportDialog
+				open={showViewer}
+				onOpenChange={setShowViewer}
+				file={value}
+				onRemove={() => onChange(undefined)}
+				removeDisabled={disabled}
+			/>
+		</View>
 	);
 }

@@ -8,31 +8,55 @@ import {
 	createReportPreview,
 	revokeReportPreview,
 } from '@/lib/reportPreview';
+import {
+	getReportFileName,
+	getReportMimeType,
+	isExistingReportFile,
+	isLocalReportFile,
+	readReportFileBytes,
+} from '@/lib/reportUpload';
 import { useQuery } from '@tanstack/react-query';
 import { Image } from 'expo-image';
 import { createElement, useEffect, useMemo } from 'react';
 import { ActivityIndicator, Platform, View } from 'react-native';
 import { WebView } from 'react-native-webview';
 
-export default function ViewReportDialog({ open, onOpenChange, filename, title }) {
+export default function ViewReportDialog({
+	open,
+	onOpenChange,
+	filename,
+	file,
+	title,
+	onRemove,
+	removeDisabled = false,
+}) {
 	const theme = useTheme();
 	const reportsApiManager = useReportsApiManager();
+	const localFile = isLocalReportFile(file) ? file : undefined;
+	const serverName = filename || (isExistingReportFile(file) ? file.name : undefined);
+	const previewName = getReportFileName(localFile) || serverName;
+	const mimeHint = localFile ? getReportMimeType(localFile) : undefined;
 
 	const { data, error, isError, isFetching, isLoading, refetch } = useQuery({
-		queryKey: ['report-file', filename],
-		queryFn: () => reportsApiManager.downloadReport(filename),
-		enabled: open && Boolean(filename),
+		queryKey: localFile
+			? ['report-file-local', localFile.uri, getReportFileName(localFile)]
+			: ['report-file', serverName],
+		queryFn: () =>
+			localFile
+				? readReportFileBytes(localFile)
+				: reportsApiManager.downloadReport(serverName),
+		enabled: open && (Boolean(localFile) || Boolean(serverName)),
 		staleTime: 5 * 60 * 1000,
 	});
 
 	const preview = useMemo(() => {
 		if (!data) return null;
 		try {
-			return createReportPreview(data, filename);
+			return createReportPreview(data, previewName, mimeHint);
 		} catch {
 			return { kind: 'unknown' };
 		}
-	}, [data, filename]);
+	}, [data, previewName, mimeHint]);
 
 	useEffect(() => {
 		return () => {
@@ -42,13 +66,23 @@ export default function ViewReportDialog({ open, onOpenChange, filename, title }
 
 	const busy = open && !data && (isLoading || isFetching);
 
+	const handleRemove = onRemove
+		? () => {
+				onRemove();
+				onOpenChange(false);
+			}
+		: undefined;
+
 	return (
 		<FormSheetModal
 			open={open}
 			onOpenChange={onOpenChange}
-			title={title || 'Report'}
+			title={title || (localFile && previewName) || 'Report'}
 			scrollable={false}
 			padded={false}
+			onDelete={handleRemove}
+			deleteDisabled={removeDisabled}
+			deleteAccessibilityLabel="Remove attached report"
 		>
 			{busy ? (
 				<View className="flex-1 items-center justify-center">
