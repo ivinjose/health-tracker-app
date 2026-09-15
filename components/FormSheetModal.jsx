@@ -1,7 +1,8 @@
 import { ThemeProvider, useTheme } from '@/components/ThemeProvider';
+import { IconSymbol } from '@/components/ui/icon-symbol';
 import { Text } from '@/components/ui/text';
 import { StatusBar } from 'expo-status-bar';
-import { CircleX } from 'lucide-react-native';
+import { SymbolView } from 'expo-symbols';
 import { useEffect, useState } from 'react';
 import {
 	ActivityIndicator,
@@ -12,6 +13,8 @@ import {
 	ScrollView,
 	View,
 } from 'react-native';
+
+const CLOSE_ICON_SIZE = 36;
 
 function useKeyboardHeight(enabled) {
 	const [height, setHeight] = useState(0);
@@ -38,6 +41,33 @@ function useKeyboardHeight(enabled) {
 	}, [enabled]);
 
 	return height;
+}
+
+function CloseControl({ onCancel, color, className }) {
+	return (
+		<Pressable
+			onPress={onCancel}
+			className={className}
+			hitSlop={8}
+			style={({ pressed }) => (pressed ? { opacity: 0.6 } : undefined)}
+			accessibilityRole="button"
+			accessibilityLabel="Close"
+		>
+			<SymbolView
+				name="xmark.circle.fill"
+				size={CLOSE_ICON_SIZE}
+				tintColor={color}
+				type="hierarchical"
+				fallback={
+					<IconSymbol
+						name="xmark.circle.fill"
+						size={CLOSE_ICON_SIZE}
+						color={color}
+					/>
+				}
+			/>
+		</Pressable>
+	);
 }
 
 function ConfirmControl({
@@ -148,16 +178,16 @@ function FormSheetBody({
 		: theme.layout.contentPaddingTopWithoutTitle;
 	const contentStyle = padded
 		? {
-				padding: theme.layout.contentPadding,
-				paddingTop: contentPaddingTop,
-				paddingBottom: 24,
-			}
+			padding: theme.layout.contentPadding,
+			paddingTop: contentPaddingTop,
+			paddingBottom: 24,
+		}
 		: undefined;
 	const scrollContentStyle = padded
 		? {
-				...contentStyle,
-				paddingBottom: 24 + keyboardHeight,
-			}
+			...contentStyle,
+			paddingBottom: 24 + keyboardHeight,
+		}
 		: { paddingBottom: keyboardHeight };
 
 	return (
@@ -165,15 +195,11 @@ function FormSheetBody({
 			{useToolbar ? (
 				<View className="flex-row items-center px-4 pb-3 pt-4">
 					<View className="min-w-[48px] flex-1 items-start">
-						<Pressable
-							onPress={onCancel}
+						<CloseControl
+							onCancel={onCancel}
+							color={theme.colors.close}
 							className="h-8 w-8 items-center justify-center"
-							hitSlop={8}
-							accessibilityRole="button"
-							accessibilityLabel="Close"
-						>
-							<CircleX size={28} color={theme.colors.close} />
-						</Pressable>
+						/>
 					</View>
 					<View className="min-w-0 max-w-[55%] px-2">
 						{title ? (
@@ -203,15 +229,11 @@ function FormSheetBody({
 				</View>
 			) : (
 				<>
-					<Pressable
-						onPress={onCancel}
-						className="absolute left-4 top-4 z-10"
-						hitSlop={8}
-						accessibilityRole="button"
-						accessibilityLabel="Close"
-					>
-						<CircleX size={28} color={theme.colors.close} />
-					</Pressable>
+					<CloseControl
+						onCancel={onCancel}
+						color={theme.colors.close}
+						className="absolute left-4 top-4 z-10 h-8 w-8 items-center justify-center"
+					/>
 
 					{onConfirm ? (
 						<ConfirmControl
