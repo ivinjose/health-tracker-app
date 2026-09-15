@@ -4,7 +4,8 @@ import { useToast } from '@/hooks/use-toast';
 import {
 	MAX_UPLOAD_SIZE,
 	REPORT_PICKER_TYPES,
-	getReportFileName,
+	getReportFileLabel,
+	isExistingReportFile,
 	normalizePickedFile,
 } from '@/lib/reportUpload';
 import * as DocumentPicker from 'expo-document-picker';
@@ -70,7 +71,12 @@ export default function FormFieldFile({
 			control={formControl}
 			name={schemaProperty}
 			render={({ field: { onChange, value }, fieldState: { error } }) => {
-				const fileName = value ? getReportFileName(value) : '';
+				const fileName = getReportFileLabel(value);
+				const attachedLabel = isExistingReportFile(value)
+					? 'Attached report'
+					: fileName
+						? `Attached ${fileName}`
+						: 'Choose PDF or image';
 
 				return (
 					<View className="mb-4">
@@ -86,9 +92,7 @@ export default function FormFieldFile({
 								disabled={disabled}
 								className={`min-w-0 flex-1 flex-row items-center gap-2 rounded-[10px] border border-input bg-card px-3 py-3 ${disabled ? 'opacity-50' : ''}`}
 								accessibilityRole="button"
-								accessibilityLabel={
-									fileName ? `Attached ${fileName}` : 'Choose PDF or image'
-								}
+								accessibilityLabel={attachedLabel}
 								accessibilityState={{ disabled }}
 							>
 								<Paperclip size={20} color={theme.colors.tint} />

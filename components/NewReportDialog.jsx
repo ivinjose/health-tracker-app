@@ -3,9 +3,9 @@ import useReportsApiManager from '@/api-managers/ReportsApiManager';
 import FormSheetModal from '@/components/FormSheetModal';
 import ReportFormFields from '@/components/ReportFormFields';
 import { Form } from '@/components/ui/form';
-import { FEATURE_REPORT_UPLOAD } from '@/constants/features';
 import { useToast } from '@/hooks/use-toast';
 import useValidatedForm from '@/hooks/useValidatedForm';
+import { existingReportFile } from '@/lib/reportUpload';
 import formSchema from '@/schemas/Report';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
@@ -46,7 +46,7 @@ export default function NewReportDialog({ open, onOpenChange, appointmentId, rep
 						date: report.timestamp ? new Date(report.timestamp) : undefined,
 						appointment: report.appointment || undefined,
 						remarks: report.remarks ?? '',
-						report: undefined,
+						report: existingReportFile(report.filename),
 					}
 				: {
 						...EMPTY_VALUES,
@@ -80,6 +80,7 @@ export default function NewReportDialog({ open, onOpenChange, appointmentId, rep
 					value: data.value,
 					date: data.date,
 					remarks: data.remarks,
+					report: data.report,
 				});
 			}
 			return reportsApiManager.createReport(data);
@@ -121,7 +122,7 @@ export default function NewReportDialog({ open, onOpenChange, appointmentId, rep
 					investigations={investigations}
 					isInvestigationLoading={isInvestigationLoading}
 					maxDate={maxDate}
-					showUpload={FEATURE_REPORT_UPLOAD && !isEdit}
+					showUpload
 					uploadDisabled={isPending}
 				/>
 				{/* TODO later: add appointments to the report */}

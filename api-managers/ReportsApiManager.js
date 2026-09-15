@@ -1,5 +1,4 @@
-import { FEATURE_REPORT_UPLOAD } from "../constants/features";
-import { buildCreateReportRequest } from "../lib/reportUpload";
+import { buildCreateReportRequest, buildUpdateReportRequest } from "../lib/reportUpload";
 import useAxiosPrivate from "../hooks/useAxiosPrivate";
 
 const getErrorMessage = (err, fallback) => err?.response?.data?.message || fallback;
@@ -9,10 +8,7 @@ const useReportsApiManager = () => {
     const REPORTS_API = '/api/reports';
 
     const createReport = async (data) => {
-        const { body, config } = buildCreateReportRequest({
-            ...data,
-            report: FEATURE_REPORT_UPLOAD ? data.report : undefined,
-        });
+        const { body, config } = buildCreateReportRequest(data);
 
         try {
             const response = await axiosPrivate.post(REPORTS_API, body, config);
@@ -23,22 +19,13 @@ const useReportsApiManager = () => {
     };
 
     const updateReport = async (data) => {
-        const { id, investigation, value, date, remarks } = data;
-        const parsedNumber = Number(value);
-
-        if (!id || !investigation || !parsedNumber || !date) {
-            throw new Error('Could not update report.');
-        }
+        const { body, config } = buildUpdateReportRequest(data);
 
         try {
             const response = await axiosPrivate.put(
-                `${REPORTS_API}/${id}`,
-                {
-                    investigation,
-                    value: parsedNumber,
-                    timestamp: date.valueOf(),
-                    remarks,
-                },
+                `${REPORTS_API}/${data.id}`,
+                body,
+                config,
             );
             return response.data.data;
         } catch (err) {

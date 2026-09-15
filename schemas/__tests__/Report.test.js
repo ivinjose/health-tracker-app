@@ -68,6 +68,15 @@ describe('report form schema', () => {
 		).toBe(true);
 	});
 
+	it('accepts an existing server attachment sentinel', () => {
+		expect(
+			formSchema.safeParse({
+				...validRow,
+				report: { existing: true, name: 'profile-1_1_abc.png' },
+			}).success
+		).toBe(true);
+	});
+
 	it('rejects an oversized or unsupported report file', () => {
 		expect(
 			formSchema.safeParse({

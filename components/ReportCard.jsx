@@ -37,11 +37,11 @@ export default function ReportCard({
 			{
 				label: 'Edit',
 				action: () =>
-					onEditCb({ _id, investigation, value, timestamp, remarks, appointment }),
+					onEditCb({ _id, investigation, value, timestamp, remarks, appointment, filename }),
 			},
 			{ label: 'Delete', action: () => setShowConfirm(true), variant: 'destructive' },
 		];
-	}, [isReadOnly, _id, investigation, value, timestamp, remarks, appointment, onEditCb]);
+	}, [isReadOnly, _id, investigation, value, timestamp, remarks, appointment, filename, onEditCb]);
 
 	const investigationMeta = useMemo(
 		() => ({
