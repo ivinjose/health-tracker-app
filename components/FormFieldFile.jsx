@@ -12,9 +12,42 @@ import * as DocumentPicker from 'expo-document-picker';
 import * as ImagePicker from 'expo-image-picker';
 import { Paperclip } from 'lucide-react-native';
 import { Controller } from 'react-hook-form';
-import { Pressable, View } from 'react-native';
+import { ActionSheetIOS, Alert, Platform, Pressable, View } from 'react-native';
 
 const MAX_UPLOAD_MB = MAX_UPLOAD_SIZE / (1024 * 1024);
+const PLACEHOLDER = 'Choose PDF or photo';
+const PICKER_DELAY_MS = 300;
+
+function runAfterSheet(fn) {
+	setTimeout(fn, PICKER_DELAY_MS);
+}
+
+function chooseSource({ onPhoto, onFiles }) {
+	if (Platform.OS === 'web') {
+		onFiles();
+		return;
+	}
+
+	if (Platform.OS === 'ios') {
+		ActionSheetIOS.showActionSheetWithOptions(
+			{
+				options: ['Photo library', 'Files', 'Cancel'],
+				cancelButtonIndex: 2,
+			},
+			(buttonIndex) => {
+				if (buttonIndex === 0) runAfterSheet(onPhoto);
+				if (buttonIndex === 1) runAfterSheet(onFiles);
+			}
+		);
+		return;
+	}
+
+	Alert.alert('Attach report', undefined, [
+		{ text: 'Photo library', onPress: () => runAfterSheet(onPhoto) },
+		{ text: 'Files', onPress: () => runAfterSheet(onFiles) },
+		{ text: 'Cancel', style: 'cancel' },
+	]);
+}
 
 export default function FormFieldFile({
 	formControl,
@@ -66,6 +99,13 @@ export default function FormFieldFile({
 		}
 	};
 
+	const onChooseFile = (onChange) => {
+		chooseSource({
+			onPhoto: () => pickPhoto(onChange),
+			onFiles: () => pickDocument(onChange),
+		});
+	};
+
 	return (
 		<Controller
 			control={formControl}
@@ -76,7 +116,7 @@ export default function FormFieldFile({
 					? 'Attached report'
 					: fileName
 						? `Attached ${fileName}`
-						: 'Choose PDF or image';
+						: PLACEHOLDER;
 
 				return (
 					<View className="mb-4">
@@ -88,7 +128,7 @@ export default function FormFieldFile({
 
 						<View className="flex-row items-center gap-2">
 							<Pressable
-								onPress={() => pickDocument(onChange)}
+								onPress={() => onChooseFile(onChange)}
 								disabled={disabled}
 								className={`min-w-0 flex-1 flex-row items-center gap-2 rounded-[10px] border border-input bg-card px-3 py-3 ${disabled ? 'opacity-50' : ''}`}
 								accessibilityRole="button"
@@ -104,7 +144,7 @@ export default function FormFieldFile({
 									}
 									numberOfLines={1}
 								>
-									{fileName || 'Choose PDF or image'}
+									{fileName || PLACEHOLDER}
 								</Text>
 							</Pressable>
 							{fileName ? (
@@ -128,23 +168,6 @@ export default function FormFieldFile({
 								</Pressable>
 							) : null}
 						</View>
-
-						<Pressable
-							onPress={() => pickPhoto(onChange)}
-							disabled={disabled}
-							className="mt-2 py-1"
-							accessibilityRole="button"
-							accessibilityLabel="Choose photo"
-							accessibilityState={{ disabled }}
-						>
-							<Text
-								className={
-									disabled ? 'text-sm text-muted-foreground' : 'text-sm text-primary'
-								}
-							>
-								Choose photo
-							</Text>
-						</Pressable>
 
 						<Text className="mt-1 text-xs text-muted-foreground">
 							Optional · PDF or image · max {MAX_UPLOAD_MB}MB
