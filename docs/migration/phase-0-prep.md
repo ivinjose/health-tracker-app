@@ -111,11 +111,7 @@ Reference: `health-tracker/src/hooks/useAxiosPrivate.js`
 
 ## 0.5 Environment & API config
 
-Document in `.env.example`:
-
-```env
-EXPO_PUBLIC_API_URL=http://localhost:4000
-```
+API host is `API_ORIGIN` in `api/axios.js` (default `http://localhost:4000`).
 
 For physical devices, use your machine's LAN IP (e.g. `http://192.168.1.x:4000`).
 

@@ -32,17 +32,9 @@ Conventions for structure, auth, data flow, forms, and navigation: [ARCHITECTURE
 
 ```bash
 npm install
-cp .env.example .env
 ```
 
-Configure `.env`:
-
-```env
-EXPO_PUBLIC_API_URL=http://localhost:4000
-```
-
-For Android emulator use `http://10.0.2.2:4000` (default when unset).  
-For a physical device use your machine IP, e.g. `http://192.168.1.10:4000`.
+The API host is `API_ORIGIN` in `api/axios.js` (`http://localhost:4000` by default). There is no `.env` for that.
 
 ## Run
 
@@ -67,7 +59,6 @@ A standalone Home Screen IPA (TestFlight / ad hoc) is a different path and needs
 ```bash
 nvm use
 npm install
-cp .env.example .env
 ```
 
 ### Every time (including after a Mac restart)
@@ -80,10 +71,10 @@ cp .env.example .env
 ipconfig getifaddr en0
 ```
 
-Put that IP in `.env`. Expo loads `.env` only, not `.env.example`. `localhost` works on the iOS Simulator; it does **not** work on a phone.
+Set `API_ORIGIN` in `api/axios.js` to that URL. `localhost` works on the iOS Simulator; it does **not** work on a phone.
 
-```env
-EXPO_PUBLIC_API_URL=http://YOUR_MAC_LAN_IP:4000
+```js
+export const API_ORIGIN = 'http://YOUR_MAC_LAN_IP:4000';
 ```
 
 Example: `http://192.168.1.4:4000`.
@@ -118,7 +109,7 @@ If you see `127.0.0.1` or `localhost`, press `s` in that terminal until it is us
 
 Health Tracker loads inside Expo Go. Log in with an account that is **already email-verified**.
 
-If the JS bundle never loads, the QR / LAN / Wi‑Fi step is wrong. If the UI loads but login cannot reach the server, the phone cannot reach `EXPO_PUBLIC_API_URL` (wrong IP, API not running, or firewall).
+If the JS bundle never loads, the QR / LAN / Wi‑Fi step is wrong. If the UI loads but login cannot reach the server, the phone cannot reach `API_ORIGIN` (wrong IP, API not running, or firewall).
 
 ### New accounts
 

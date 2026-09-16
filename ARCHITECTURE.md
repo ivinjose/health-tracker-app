@@ -115,11 +115,11 @@ More stack (`app/(tabs)/more/_layout.tsx`): `index` (More), `profiles`, `investi
 
 ### Base URL
 
-`api/axios.js` `getBaseURL()`:
+`api/axios.js` `API_ORIGIN` (no trailing slash, no `/api` path):
 
-1. `process.env.EXPO_PUBLIC_API_URL` if set (see `.env.example`)
-2. Else Android → `http://10.0.2.2:4000`
-3. Else `http://localhost:4000` (iOS simulator and web)
+- Local simulator / web → `http://localhost:4000`
+- Live → `https://www.healthtracker.com`
+- Physical phone vs a laptop API → `http://<Mac LAN IP>:4000`
 
 Two Axios instances:
 

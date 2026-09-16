@@ -2,32 +2,27 @@ import axios from 'axios';
 import { Platform } from 'react-native';
 
 /**
- * Base URL for API requests. Uses platform-specific defaults for local dev:
- * - Web / iOS Simulator: http://localhost:4000
- * - Android Emulator: http://10.0.2.2:4000 (10.0.2.2 = host machine's localhost)
- * - Physical devices: Set EXPO_PUBLIC_API_URL in .env (e.g. http://192.168.1.x:4000)
+ * Axios origin: protocol + host [+ port]. No trailing slash, no `/api` path.
+ * Request paths stay `/api/login`, `/api/reports`, and so on.
+ *
+ * Local:  'http://localhost:4000'
+ * Live:   'https://www.healthtracker.com'
+ *
+ * Verification emails and CORS use the *web* origin on the server
+ * (`CLIENT_APP_URL` in health-tracker-server `config/serverConfig.js`),
+ * which is `http://localhost:8081` locally and the same https host in production.
  */
-const getBaseURL = () => {
-  if (typeof process !== 'undefined' && process.env.EXPO_PUBLIC_API_URL) {
-    return process.env.EXPO_PUBLIC_API_URL;
-  }
-  if (Platform.OS === 'android') {
-    return 'http://10.0.2.2:4000';
-  }
-  return 'http://localhost:4000';
-};
-
-const BASE_URL = getBaseURL();
+export const API_ORIGIN = 'http://localhost:4000';
 
 export default axios.create({
-  baseURL: BASE_URL,
+  baseURL: API_ORIGIN,
   headers: {
     'Content-Type': 'application/json',
   },
 });
 
 export const axiosPrivate = axios.create({
-  baseURL: BASE_URL,
+  baseURL: API_ORIGIN,
   headers: {
     'Content-Type': 'application/json',
   },
