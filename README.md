@@ -34,7 +34,13 @@ Conventions for structure, auth, data flow, forms, and navigation: [ARCHITECTURE
 npm install
 ```
 
-The API host is `API_ORIGIN` in `api/axios.js` (`http://localhost:4000` by default). There is no `.env` for that.
+Create `.env` with `EXPO_PUBLIC_API_HOST` (no trailing slash, no `/api` path):
+
+```env
+EXPO_PUBLIC_API_HOST=http://localhost:4000
+```
+
+On a physical phone use the Mac LAN IP instead of `localhost`. Restart Metro after changing `.env`.
 
 ## Run
 
@@ -71,10 +77,10 @@ npm install
 ipconfig getifaddr en0
 ```
 
-Set `API_ORIGIN` in `api/axios.js` to that URL. `localhost` works on the iOS Simulator; it does **not** work on a phone.
+Put that IP in `.env`. `localhost` works on the iOS Simulator; it does **not** work on a phone.
 
-```js
-export const API_ORIGIN = 'http://YOUR_MAC_LAN_IP:4000';
+```env
+EXPO_PUBLIC_API_HOST=http://YOUR_MAC_LAN_IP:4000
 ```
 
 Example: `http://192.168.1.4:4000`.
@@ -109,7 +115,7 @@ If you see `127.0.0.1` or `localhost`, press `s` in that terminal until it is us
 
 Health Tracker loads inside Expo Go. Log in with an account that is **already email-verified**.
 
-If the JS bundle never loads, the QR / LAN / Wi‑Fi step is wrong. If the UI loads but login cannot reach the server, the phone cannot reach `API_ORIGIN` (wrong IP, API not running, or firewall).
+If the JS bundle never loads, the QR / LAN / Wi‑Fi step is wrong. If the UI loads but login cannot reach the server, the phone cannot reach `EXPO_PUBLIC_API_HOST` (wrong IP, API not running, or firewall).
 
 ### New accounts
 

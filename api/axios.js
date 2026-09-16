@@ -2,27 +2,25 @@ import axios from 'axios';
 import { Platform } from 'react-native';
 
 /**
- * Axios origin: protocol + host [+ port]. No trailing slash, no `/api` path.
- * Request paths stay `/api/login`, `/api/reports`, and so on.
+ * API origin from `.env` (`EXPO_PUBLIC_API_HOST`). No trailing slash, no `/api`.
  *
- * Local:  'http://localhost:4000'
- * Live:   'https://www.healthtracker.com'
+ * Simulator / web: http://localhost:4000
+ * Expo Go on a phone: http://<Mac LAN IP>:4000  (localhost is the phone)
+ * Production: https://www.healthtracker.com
  *
- * Verification emails and CORS use the *web* origin on the server
- * (`CLIENT_APP_URL` in health-tracker-server `config/serverConfig.js`),
- * which is `http://localhost:8081` locally and the same https host in production.
+ * Restart Metro after changing `.env`.
  */
-export const API_ORIGIN = 'http://localhost:4000';
+const BASE_URL = process.env.EXPO_PUBLIC_API_HOST;
 
 export default axios.create({
-  baseURL: API_ORIGIN,
+  baseURL: BASE_URL,
   headers: {
     'Content-Type': 'application/json',
   },
 });
 
 export const axiosPrivate = axios.create({
-  baseURL: API_ORIGIN,
+  baseURL: BASE_URL,
   headers: {
     'Content-Type': 'application/json',
   },

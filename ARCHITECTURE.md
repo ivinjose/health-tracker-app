@@ -115,7 +115,7 @@ More stack (`app/(tabs)/more/_layout.tsx`): `index` (More), `profiles`, `investi
 
 ### Base URL
 
-`api/axios.js` `API_ORIGIN` (no trailing slash, no `/api` path):
+`api/axios.js` reads `EXPO_PUBLIC_API_HOST` from `.env` (no trailing slash, no `/api` path):
 
 - Local simulator / web → `http://localhost:4000`
 - Live → `https://www.healthtracker.com`
