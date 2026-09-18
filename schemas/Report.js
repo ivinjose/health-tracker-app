@@ -5,6 +5,13 @@ import {
     isWithinUploadLimit,
 } from "../lib/reportUpload";
 
+export const reportFileSchema = z
+    .any()
+    .optional()
+    .nullable()
+    .refine((file) => isMissingReportFile(file) || isWithinUploadLimit(file), 'Max file size is 3MB.')
+    .refine((file) => isMissingReportFile(file) || isPdfOrImage(file), 'Report must be a PDF or image');
+
 const formSchema = z.object({
     investigation: z.string().min(1, "Investigation is required."),
     value: z.string().min(1, "Report value is required."),
@@ -16,12 +23,7 @@ const formSchema = z.object({
         .optional()
         .transform((value) => value || undefined),
     remarks: z.string().optional(),
-    report: z
-        .any()
-        .optional()
-        .nullable()
-        .refine((file) => isMissingReportFile(file) || isWithinUploadLimit(file), 'Max file size is 3MB.')
-        .refine((file) => isMissingReportFile(file) || isPdfOrImage(file), 'Report must be a PDF or image'),
+    report: reportFileSchema,
 });
 
 export function isEmptyDraft(row = {}) {

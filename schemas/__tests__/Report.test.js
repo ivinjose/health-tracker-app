@@ -1,4 +1,4 @@
-import formSchema, { isEmptyDraft } from '../Report';
+import formSchema, { isEmptyDraft, reportFileSchema } from '../Report';
 
 describe('isEmptyDraft', () => {
 	it('is empty when investigation and value are missing', () => {
@@ -98,6 +98,32 @@ describe('report form schema', () => {
 					size: 12,
 					type: 'text/plain',
 				},
+			}).success
+		).toBe(false);
+	});
+});
+
+describe('reportFileSchema', () => {
+	it('accepts a missing file', () => {
+		expect(reportFileSchema.safeParse(undefined).success).toBe(true);
+		expect(reportFileSchema.safeParse(null).success).toBe(true);
+	});
+
+	it('rejects an oversized or unsupported file', () => {
+		expect(
+			reportFileSchema.safeParse({
+				uri: 'file:///tmp/a.pdf',
+				name: 'a.pdf',
+				size: 1024 * 1024 * 4,
+				type: 'application/pdf',
+			}).success
+		).toBe(false);
+		expect(
+			reportFileSchema.safeParse({
+				uri: 'file:///tmp/a.txt',
+				name: 'a.txt',
+				size: 12,
+				type: 'text/plain',
 			}).success
 		).toBe(false);
 	});

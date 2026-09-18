@@ -1,5 +1,6 @@
 import useInvestigationsApiManager from '@/api-managers/InvestigationsApiManager';
 import useReportsApiManager from '@/api-managers/ReportsApiManager';
+import FormFieldFile from '@/components/FormFieldFile';
 import FormSheetModal from '@/components/FormSheetModal';
 import ReportFormFields from '@/components/ReportFormFields';
 import { Expanding } from '@/components/ui/expanding';
@@ -9,13 +10,13 @@ import { Text } from '@/components/ui/text';
 import { useToast } from '@/hooks/use-toast';
 import { getDateWithoutTime } from '@/lib/helpers';
 import { getInvestigationLabel } from '@/lib/reportUtils';
-import formSchema, { isEmptyDraft } from '@/schemas/Report';
+import formSchema, { isEmptyDraft, reportFileSchema } from '@/schemas/Report';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
 import { ChevronDown, ChevronUp } from 'lucide-react-native';
 import { useEffect, useState } from 'react';
 import { useFieldArray, useForm, useWatch } from 'react-hook-form';
-import { Pressable, View } from 'react-native';
+import { Keyboard, Pressable, View } from 'react-native';
 
 function todayAtLocalMidnight() {
 	return getDateWithoutTime(new Date());
@@ -27,6 +28,13 @@ function emptyDraft(date) {
 		value: '',
 		date: date ?? todayAtLocalMidnight(),
 		remarks: '',
+	};
+}
+
+function emptyForm(date) {
+	return {
+		reports: [emptyDraft(date)],
+		report: undefined,
 	};
 }
 
@@ -50,20 +58,23 @@ export default function NewMultiReportDialog({ open, onOpenChange }) {
 	const [collapsedIds, setCollapsedIds] = useState(() => new Set());
 
 	const form = useForm({
-		defaultValues: { reports: [emptyDraft()] },
+		defaultValues: emptyForm(),
 	});
 	const { fields, append, remove } = useFieldArray({
 		control: form.control,
 		name: 'reports',
 	});
 	const watchedReports = useWatch({ control: form.control, name: 'reports' });
-	const canSubmit = (watchedReports ?? []).some((row) => formSchema.safeParse(row).success);
+	const watchedReport = useWatch({ control: form.control, name: 'report' });
+	const canSubmit =
+		(watchedReports ?? []).some((row) => formSchema.safeParse(row).success) &&
+		reportFileSchema.safeParse(watchedReport).success;
 
 	useEffect(() => {
 		if (!open) return;
 		setSaveErrors([]);
 		setCollapsedIds(new Set());
-		form.reset({ reports: [emptyDraft()] });
+		form.reset(emptyForm());
 	}, [open, form]);
 
 	const { data: investigations = [], isLoading: isInvestigationLoading } = useQuery({
@@ -78,18 +89,17 @@ export default function NewMultiReportDialog({ open, onOpenChange }) {
 	const { mutate: saveReports, isPending } = useMutation({
 		mutationFn: async () => {
 			const reports = form.getValues('reports') ?? [];
-			const leftover = [];
+			const report = form.getValues('report');
 			const listErrors = [];
 			const fieldErrors = [];
 			const validRows = [];
 
-			for (const row of reports) {
+			for (let index = 0; index < reports.length; index += 1) {
+				const row = reports[index];
 				if (isEmptyDraft(row)) continue;
 
 				const parsed = formSchema.safeParse(row);
 				if (!parsed.success) {
-					const leftoverIndex = leftover.length;
-					leftover.push(row);
 					listErrors.push({
 						label: draftLabel(row, investigations),
 						message: parsed.error.issues[0]?.message ?? 'Please complete this report.',
@@ -98,7 +108,7 @@ export default function NewMultiReportDialog({ open, onOpenChange }) {
 						const name = issue.path[0];
 						if (typeof name === 'string') {
 							fieldErrors.push({
-								index: leftoverIndex,
+								index,
 								name,
 								message: issue.message,
 							});
@@ -110,41 +120,48 @@ export default function NewMultiReportDialog({ open, onOpenChange }) {
 				validRows.push(row);
 			}
 
-			let savedCount = 0;
-			if (validRows.length > 0) {
-				const results = await reportsApiManager.createReports(validRows);
-				results.forEach((result) => {
-					if (result.status === 'fulfilled') {
-						savedCount += 1;
-						return;
-					}
-					leftover.push(result.row);
-					listErrors.push({
-						label: draftLabel(result.row, investigations),
-						message: result.error?.message ?? 'Could not create report.',
-					});
+			const parsedFile = reportFileSchema.safeParse(report);
+			if (!parsedFile.success) {
+				const message =
+					parsedFile.error.issues[0]?.message ?? 'Please attach a valid report file.';
+				listErrors.push({
+					label: 'Report file',
+					message,
+				});
+				fieldErrors.push({
+					name: 'report',
+					message,
 				});
 			}
 
+			if (listErrors.length > 0 || validRows.length === 0) {
+				return {
+					listErrors,
+					fieldErrors,
+					savedCount: 0,
+					posted: false,
+				};
+			}
+
+			await reportsApiManager.createReports(validRows, report);
+
 			return {
-				leftover,
-				listErrors,
-				fieldErrors,
-				savedCount,
-				posted: validRows.length > 0,
+				listErrors: [],
+				fieldErrors: [],
+				savedCount: validRows.length,
+				posted: true,
 			};
 		},
-		onSuccess: async ({ leftover, listErrors, fieldErrors, savedCount, posted }) => {
-			setCollapsedIds(new Set());
-
+		onSuccess: async ({ listErrors, fieldErrors, savedCount, posted }) => {
 			if (posted) {
 				await queryClient.invalidateQueries({ queryKey: ['reports'] });
 				await queryClient.invalidateQueries({ queryKey: ['latest'] });
 			}
 
-			if (listErrors.length === 0) {
+			if (listErrors.length === 0 && posted) {
 				setSaveErrors([]);
-				form.reset({ reports: [emptyDraft()] });
+				setCollapsedIds(new Set());
+				form.reset(emptyForm());
 				onOpenChange(false);
 				toast({
 					description:
@@ -155,11 +172,16 @@ export default function NewMultiReportDialog({ open, onOpenChange }) {
 				return;
 			}
 
-			form.reset({
-				reports: leftover.length > 0 ? leftover : [emptyDraft()],
-			});
+			if (listErrors.length === 0) {
+				return;
+			}
+
 			setSaveErrors(listErrors);
 			fieldErrors.forEach(({ index, name, message }) => {
+				if (name === 'report' && index == null) {
+					form.setError('report', { type: 'manual', message });
+					return;
+				}
 				form.setError(`reports.${index}.${name}`, { type: 'manual', message });
 			});
 		},
@@ -177,6 +199,7 @@ export default function NewMultiReportDialog({ open, onOpenChange }) {
 	const canRemove = fields.length > 1 && !isPending;
 
 	const addAnother = () => {
+		Keyboard.dismiss();
 		const reports = form.getValues('reports') ?? [];
 		const previous = reports[reports.length - 1];
 		setCollapsedIds(new Set(fields.map((field) => field.id)));
@@ -199,7 +222,7 @@ export default function NewMultiReportDialog({ open, onOpenChange }) {
 		<FormSheetModal
 			open={open}
 			onOpenChange={onOpenChange}
-			title="Report details"
+			title="Multiple Reports"
 			onConfirm={() => saveReports()}
 			confirmDisabled={!canSubmit || isPending}
 			confirmLoading={isPending}
@@ -219,34 +242,27 @@ export default function NewMultiReportDialog({ open, onOpenChange }) {
 					</View>
 				) : null}
 
+				<FormFieldFile
+					formControl={form.control}
+					schemaProperty="report"
+					labelText="Report file"
+					// helperText="Attached to every report in this list."
+					disabled={isPending}
+				/>
+
 				{fields.map((field, index) => {
 					const showHeader = fields.length > 1;
 					const isExpanded = !showHeader || !collapsedIds.has(field.id);
 					const row = watchedReports?.[index];
 					const headerTitle = formSchema.safeParse(row).success
 						? getInvestigationLabel(investigations, row.investigation)
-						: `Report ${index + 1}`;
-					const formFields = (
-						<ReportFormFields
-							form={form}
-							namePrefix={`reports.${index}`}
-							investigations={investigations}
-							isInvestigationLoading={isInvestigationLoading}
-							maxDate={maxDate}
-						/>
-					);
+						: `Investigation ${index + 1}`;
 
 					return (
-						<View key={field.id}>
+						<View key={field.id} className="shrink-0">
 							{index > 0 ? <View className="mb-4 mt-1 h-px bg-border" /> : null}
 							{showHeader ? (
-								<View
-									className={
-										isExpanded
-											? 'mb-4 flex-row items-center justify-between'
-											: 'mb-1 flex-row items-center justify-between'
-									}
-								>
+								<View className="mb-4 flex-row items-center justify-between">
 									<Pressable
 										onPress={() => toggleCollapsed(field.id)}
 										hitSlop={8}
@@ -287,13 +303,15 @@ export default function NewMultiReportDialog({ open, onOpenChange }) {
 									</Pressable>
 								</View>
 							) : null}
-							{showHeader ? (
-								<Expanding open={isExpanded}>
-									<View>{formFields}</View>
-								</Expanding>
-							) : (
-								formFields
-							)}
+							<Expanding open={isExpanded}>
+								<ReportFormFields
+									form={form}
+									namePrefix={`reports.${index}`}
+									investigations={investigations}
+									isInvestigationLoading={isInvestigationLoading}
+									maxDate={maxDate}
+								/>
+							</Expanding>
 						</View>
 					);
 				})}
@@ -302,12 +320,12 @@ export default function NewMultiReportDialog({ open, onOpenChange }) {
 					onPress={addAnother}
 					disabled={isPending}
 					accessibilityRole="button"
-					accessibilityLabel="Add another report"
+					accessibilityLabel="Add another investigation"
 					accessibilityState={{ disabled: isPending }}
 					className="mt-1 py-2"
 				>
 					<Text className={isPending ? 'text-muted-foreground' : 'text-primary'}>
-						Add another report
+						Add another investigation
 					</Text>
 				</Pressable>
 			</Form>

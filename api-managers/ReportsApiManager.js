@@ -1,4 +1,4 @@
-import { buildCreateReportRequest, buildUpdateReportRequest } from "../lib/reportUpload";
+import { buildCreateReportRequest, buildCreateReportsRequest, buildUpdateReportRequest } from "../lib/reportUpload";
 import useAxiosPrivate from "../hooks/useAxiosPrivate";
 
 const getErrorMessage = (err, fallback) => err?.response?.data?.message || fallback;
@@ -67,19 +67,15 @@ const useReportsApiManager = () => {
         }
     };
 
-    const createReports = async (rows) => {
-        const results = await Promise.allSettled(rows.map((row) => createReport(row)));
-        return results.map((result, index) => ({
-            row: rows[index],
-            status: result.status,
-            value: result.status === 'fulfilled' ? result.value : undefined,
-            error:
-                result.status === 'rejected'
-                    ? result.reason instanceof Error
-                        ? result.reason
-                        : new Error(String(result.reason))
-                    : undefined,
-        }));
+    const createReports = async (rows, report) => {
+        const { body, config } = buildCreateReportsRequest(rows, report);
+
+        try {
+            const response = await axiosPrivate.post(`${REPORTS_API}/bulk`, body, config);
+            return response.data.data;
+        } catch (err) {
+            throw new Error(getErrorMessage(err, 'Could not create reports.'));
+        }
     };
 
     const deleteReport = async (data) => {

@@ -232,8 +232,9 @@ function FormSheetBody({
 		? {
 			...contentStyle,
 			paddingBottom: 24 + keyboardHeight,
+			flexGrow: 0,
 		}
-		: { paddingBottom: keyboardHeight };
+		: { paddingBottom: keyboardHeight, flexGrow: 0 };
 
 	return (
 		<>

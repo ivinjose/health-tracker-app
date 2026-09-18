@@ -54,6 +54,7 @@ export default function FormFieldFile({
 	formControl,
 	schemaProperty,
 	labelText,
+	helperText,
 	disabled = false,
 }) {
 	const theme = useTheme();
@@ -118,6 +119,7 @@ export default function FormFieldFile({
 					error={error}
 					disabled={disabled}
 					labelText={labelText}
+					helperText={helperText}
 					theme={theme}
 					onChooseFile={onChooseFile}
 				/>
@@ -132,20 +134,21 @@ function ReportFileField({
 	error,
 	disabled,
 	labelText,
+	helperText,
 	theme,
 	onChooseFile,
 }) {
 	const [showViewer, setShowViewer] = useState(false);
 	const fileName = getReportFileLabel(value);
 	const attached = Boolean(fileName);
-	const fieldChrome = `min-w-0 flex-1 flex-row items-center gap-2 rounded-[10px] border border-input bg-card px-3 py-3 ${disabled ? 'opacity-50' : ''}`;
+	const fieldChrome = `w-full min-w-0 shrink-0 flex-row items-center gap-2 rounded-[10px] border border-input bg-card px-3 py-3 ${disabled ? 'opacity-50' : ''}`;
 
 	useEffect(() => {
 		if (!attached) setShowViewer(false);
 	}, [attached]);
 
 	return (
-		<View className="mb-4">
+		<View className="mb-4 shrink-0">
 			{labelText ? (
 				<Text className="mb-1 text-sm font-medium text-muted-foreground">
 					{labelText}
@@ -192,6 +195,10 @@ function ReportFileField({
 					</Text>
 				</Pressable>
 			)}
+
+			{helperText ? (
+				<Text className="mt-1 text-xs text-muted-foreground">{helperText}</Text>
+			) : null}
 
 			<Text className="mt-1 text-xs text-muted-foreground">
 				Optional · PDF or image · max {MAX_UPLOAD_MB}MB
