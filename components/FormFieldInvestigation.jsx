@@ -1,3 +1,6 @@
+import FormFieldLabel, {
+	requiredFieldAccessibilityLabel,
+} from '@/components/FormFieldLabel';
 import InvestigationPickerModal from '@/components/InvestigationPickerModal';
 import { Icon } from '@/components/ui/icon';
 import { Text } from '@/components/ui/text';
@@ -13,6 +16,7 @@ export default function FormFieldInvestigation({
 	placeholder = 'Choose from the list',
 	investigations = [],
 	disabled = false,
+	required = false,
 }) {
 	const [open, setOpen] = useState(false);
 
@@ -28,18 +32,17 @@ export default function FormFieldInvestigation({
 
 				return (
 					<View className="mb-4">
-						{labelText ? (
-							<Text className="mb-1 text-sm font-medium text-muted-foreground">
-								{labelText}
-							</Text>
-						) : null}
+						<FormFieldLabel labelText={labelText} required={required} />
 
 						<Pressable
 							onPress={() => setOpen(true)}
 							disabled={disabled}
 							className={`flex-row items-center justify-between gap-2 rounded-[10px] border border-input bg-card px-3 py-3 ${disabled ? 'opacity-50' : ''}`}
 							accessibilityRole="button"
-							accessibilityLabel={labelText}
+							accessibilityLabel={requiredFieldAccessibilityLabel(
+								labelText,
+								required
+							)}
 							accessibilityValue={{ text: selected?.label ?? placeholder }}
 							accessibilityState={{ disabled }}
 						>

@@ -1,3 +1,4 @@
+import FormFieldLabel from '@/components/FormFieldLabel';
 import { useTheme } from '@/components/ThemeProvider';
 import ViewReportDialog from '@/components/ViewReportDialog';
 import { Text } from '@/components/ui/text';
@@ -56,6 +57,7 @@ export default function FormFieldFile({
 	labelText,
 	helperText,
 	disabled = false,
+	required = false,
 }) {
 	const theme = useTheme();
 	const { toast } = useToast();
@@ -119,6 +121,7 @@ export default function FormFieldFile({
 					error={error}
 					disabled={disabled}
 					labelText={labelText}
+					required={required}
 					helperText={helperText}
 					theme={theme}
 					onChooseFile={onChooseFile}
@@ -134,6 +137,7 @@ function ReportFileField({
 	error,
 	disabled,
 	labelText,
+	required,
 	helperText,
 	theme,
 	onChooseFile,
@@ -149,11 +153,7 @@ function ReportFileField({
 
 	return (
 		<View className="mb-4 shrink-0">
-			{labelText ? (
-				<Text className="mb-1 text-sm font-medium text-muted-foreground">
-					{labelText}
-				</Text>
-			) : null}
+			<FormFieldLabel labelText={labelText} required={required} />
 
 			{attached ? (
 				<View className={fieldChrome}>

@@ -40,18 +40,18 @@ export default function NewReportDialog({ open, onOpenChange, appointmentId, rep
 		form.reset(
 			report
 				? {
-						investigation:
-							report.investigation != null ? String(report.investigation) : '',
-						value: report.value != null ? String(report.value) : '',
-						date: report.timestamp ? new Date(report.timestamp) : undefined,
-						appointment: report.appointment || undefined,
-						remarks: report.remarks ?? '',
-						report: existingReportFile(report.filename),
-					}
+					investigation:
+						report.investigation != null ? String(report.investigation) : '',
+					value: report.value != null ? String(report.value) : '',
+					date: report.timestamp ? new Date(report.timestamp) : undefined,
+					appointment: report.appointment || undefined,
+					remarks: report.remarks ?? '',
+					report: existingReportFile(report.filename),
+				}
 				: {
-						...EMPTY_VALUES,
-						appointment: appointmentId || undefined,
-					}
+					...EMPTY_VALUES,
+					appointment: appointmentId || undefined,
+				}
 		);
 	}, [open, report, appointmentId, form]);
 
@@ -110,7 +110,7 @@ export default function NewReportDialog({ open, onOpenChange, appointmentId, rep
 		<FormSheetModal
 			open={open}
 			onOpenChange={onOpenChange}
-			title={isEdit ? 'Edit report' : 'Report details'}
+			title={isEdit ? 'Edit Investigation' : 'Single Investigation'}
 			onConfirm={form.handleSubmit(saveReport)}
 			confirmDisabled={!canSubmit || isPending}
 			confirmLoading={isPending}

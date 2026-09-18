@@ -61,12 +61,14 @@ export default function NewAppointmentDialog({ open, onOpenChange }) {
 					schemaProperty="location"
 					placeholder="Dr. Jean Claude at Medical trust"
 					labelText="Where's the appointment at"
+					required
 				/>
 				<FormDateField
 					formControl={form.control}
 					name="date"
 					labelText="Date of appointment"
 					minDate={minDate}
+					required
 				/>
 				<FormFieldSelect
 					formControl={form.control}
@@ -74,6 +76,7 @@ export default function NewAppointmentDialog({ open, onOpenChange }) {
 					placeholder="Select time"
 					labelText="Time of appointment"
 					dropdownOptions={TIME_OPTIONS}
+					required
 				/>
 				<FormFieldTextarea
 					formControl={form.control}

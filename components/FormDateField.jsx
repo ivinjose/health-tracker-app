@@ -1,4 +1,7 @@
 import DatePickerSheet from '@/components/DatePickerSheet';
+import FormFieldLabel, {
+	requiredFieldAccessibilityLabel,
+} from '@/components/FormFieldLabel';
 import { Text } from '@/components/ui/text';
 import { useTheme } from '@/components/ThemeProvider';
 import { format } from 'date-fns';
@@ -13,6 +16,7 @@ export default function FormDateField({
 	labelText,
 	minDate,
 	maxDate,
+	required = false,
 }) {
 	const theme = useTheme();
 	const [open, setOpen] = useState(false);
@@ -23,16 +27,14 @@ export default function FormDateField({
 			name={name}
 			render={({ field: { onChange, value }, fieldState: { error } }) => (
 				<View className="mb-4">
-					{labelText ? (
-						<Text className="mb-1 text-sm font-medium text-muted-foreground">
-							{labelText}
-						</Text>
-					) : null}
+					<FormFieldLabel labelText={labelText} required={required} />
 					<Pressable
 						onPress={() => setOpen(true)}
 						className="flex-row items-center justify-start gap-2 rounded-[10px] border border-input bg-card px-3 py-3"
 						accessibilityRole="button"
-						accessibilityLabel={labelText ?? 'Date'}
+						accessibilityLabel={
+							requiredFieldAccessibilityLabel(labelText, required) ?? 'Date'
+						}
 						accessibilityValue={{
 							text: value ? format(value, 'PPP') : 'Pick a date',
 						}}

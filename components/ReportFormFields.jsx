@@ -36,6 +36,7 @@ export default function ReportFormFields({
 				labelText="Investigation"
 				investigations={isInvestigationLoading ? [] : investigations}
 				disabled={isInvestigationLoading}
+				required
 			/>
 			<FormFieldInput
 				formControl={form.control}
@@ -43,12 +44,14 @@ export default function ReportFormFields({
 				placeholder="Enter the test result value"
 				labelText="Value"
 				inputType="number"
+				required
 			/>
 			<FormDateField
 				formControl={form.control}
 				name={fieldName(namePrefix, 'date')}
 				labelText="Date of sample collection"
 				maxDate={maxDate}
+				required
 			/>
 			<FormFieldTextarea
 				formControl={form.control}

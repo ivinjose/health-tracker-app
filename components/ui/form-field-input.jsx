@@ -1,3 +1,4 @@
+import FormFieldLabel from '@/components/FormFieldLabel';
 import { useTheme } from '@/components/ThemeProvider';
 import { Controller } from 'react-hook-form';
 import { Text, TextInput, View } from 'react-native';
@@ -12,6 +13,7 @@ const FormFieldInput = ({
 	editable = true,
 	autoCapitalize,
 	onValueChange,
+	required = false,
 }) => {
 	const theme = useTheme();
 
@@ -21,16 +23,14 @@ const FormFieldInput = ({
 			name={schemaProperty}
 			render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
 				<View className="mb-4">
-					{!!labelText && (
-						<Text
-							className={
-								labelStyleClass ??
-								'mb-1 text-sm font-medium text-muted-foreground'
-							}
-						>
-							{labelText}
-						</Text>
-					)}
+					<FormFieldLabel
+						labelText={labelText}
+						required={required}
+						className={
+							labelStyleClass ??
+							'mb-1 text-sm font-medium text-muted-foreground'
+						}
+					/>
 
 					<TextInput
 						className={`rounded-[10px] border border-input bg-card px-3 py-3 text-base leading-tight text-foreground ${!editable ? 'opacity-50' : ''}`}

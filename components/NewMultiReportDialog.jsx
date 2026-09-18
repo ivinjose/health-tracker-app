@@ -125,7 +125,7 @@ export default function NewMultiReportDialog({ open, onOpenChange }) {
 				const message =
 					parsedFile.error.issues[0]?.message ?? 'Please attach a valid report file.';
 				listErrors.push({
-					label: 'Report file',
+					label: 'Upload report',
 					message,
 				});
 				fieldErrors.push({
@@ -222,7 +222,7 @@ export default function NewMultiReportDialog({ open, onOpenChange }) {
 		<FormSheetModal
 			open={open}
 			onOpenChange={onOpenChange}
-			title="Multiple Reports"
+			title="Multiple Investigations"
 			onConfirm={() => saveReports()}
 			confirmDisabled={!canSubmit || isPending}
 			confirmLoading={isPending}
@@ -245,7 +245,7 @@ export default function NewMultiReportDialog({ open, onOpenChange }) {
 				<FormFieldFile
 					formControl={form.control}
 					schemaProperty="report"
-					labelText="Report file"
+					labelText="Upload report"
 					disabled={isPending}
 				/>
 				<View className="mb-4 mt-1 h-px bg-border" />

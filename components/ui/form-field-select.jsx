@@ -1,3 +1,4 @@
+import FormFieldLabel from '@/components/FormFieldLabel';
 import {
 	Select,
 	SelectContent,
@@ -16,6 +17,7 @@ const FormFieldSelect = ({
 	labelStyleClass,
 	dropdownOptions,
 	disabled = false,
+	required = false,
 }) => {
 	return (
 		<Controller
@@ -38,15 +40,13 @@ const FormFieldSelect = ({
 
 				return (
 					<View className="mb-4 w-full">
-						{!!labelText && (
-							<Text
-								className={
-									labelStyleClass ?? 'text-sm font-medium text-muted-foreground'
-								}
-							>
-								{labelText}
-							</Text>
-						)}
+						<FormFieldLabel
+							labelText={labelText}
+							required={required}
+							className={
+								labelStyleClass ?? 'text-sm font-medium text-muted-foreground'
+							}
+						/>
 
 						<Select
 							value={selectValue}

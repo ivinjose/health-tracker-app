@@ -1,4 +1,5 @@
 import axios from '@/api/axios';
+import FormFieldLabel from '@/components/FormFieldLabel';
 import { useTheme } from '@/components/ThemeProvider';
 import { Button } from '@/components/ui/button';
 import { Text } from '@/components/ui/text';
@@ -161,6 +162,7 @@ export default function RegisterScreen() {
 					<View className="gap-4">
 						<Field
 							label="Profile Name"
+							required
 							input={
 								<TextInput
 									ref={profileNameRef}
@@ -181,6 +183,7 @@ export default function RegisterScreen() {
 
 						<Field
 							label="Email"
+							required
 							input={
 								<TextInput
 									value={username}
@@ -201,6 +204,7 @@ export default function RegisterScreen() {
 
 						<Field
 							label="Password"
+							required
 							input={
 								<TextInput
 									value={password}
@@ -219,6 +223,7 @@ export default function RegisterScreen() {
 
 						<Field
 							label="Confirm password"
+							required
 							input={
 								<TextInput
 									value={matchPassword}
@@ -269,10 +274,14 @@ export default function RegisterScreen() {
 	);
 }
 
-function Field({ label, input, icon }) {
+function Field({ label, required, input, icon }) {
 	return (
 		<View>
-			<Text className="mb-2 text-sm font-medium text-muted-foreground">{label}</Text>
+			<FormFieldLabel
+				labelText={label}
+				required={required}
+				className="mb-2 text-sm font-medium text-muted-foreground"
+			/>
 			<View className="flex-row items-center rounded-[10px] border border-input bg-background px-4 py-3">
 				{input}
 				{icon}
