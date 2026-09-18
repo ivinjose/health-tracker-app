@@ -201,7 +201,7 @@ function ReportFileField({
 			) : null}
 
 			<Text className="mt-1 text-xs text-muted-foreground">
-				Optional · PDF or image · max {MAX_UPLOAD_MB}MB
+				Max size: {MAX_UPLOAD_MB}MB
 			</Text>
 
 			{error ? (

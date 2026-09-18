@@ -19,6 +19,14 @@ export default function ReportFormFields({
 }) {
 	return (
 		<>
+			{showUpload ? (
+				<FormFieldFile
+					formControl={form.control}
+					schemaProperty={fieldName(namePrefix, 'report')}
+					labelText="Upload report"
+					disabled={uploadDisabled}
+				/>
+			) : null}
 			<FormFieldInvestigation
 				formControl={form.control}
 				schemaProperty={fieldName(namePrefix, 'investigation')}
@@ -33,7 +41,7 @@ export default function ReportFormFields({
 				formControl={form.control}
 				schemaProperty={fieldName(namePrefix, 'value')}
 				placeholder="Enter the test result value"
-				labelText="Report value"
+				labelText="Value"
 				inputType="number"
 			/>
 			<FormDateField
@@ -48,14 +56,6 @@ export default function ReportFormFields({
 				placeholder="Enter any details you want to remember or note"
 				labelText="Remarks"
 			/>
-			{showUpload ? (
-				<FormFieldFile
-					formControl={form.control}
-					schemaProperty={fieldName(namePrefix, 'report')}
-					labelText="Upload report"
-					disabled={uploadDisabled}
-				/>
-			) : null}
 		</>
 	);
 }
