@@ -1,4 +1,4 @@
-import formSchema, { isEmptyDraft, reportFileSchema } from '../Report';
+import formSchema, { isEmptyDraft, reportFileSchema, reportRowSchema } from '../Report';
 
 describe('isEmptyDraft', () => {
 	it('is empty when investigation and value are missing', () => {
@@ -98,6 +98,32 @@ describe('report form schema', () => {
 					size: 12,
 					type: 'text/plain',
 				},
+			}).success
+		).toBe(false);
+	});
+});
+
+describe('reportRowSchema', () => {
+	it('accepts investigation and value without date', () => {
+		expect(
+			reportRowSchema.safeParse({
+				investigation: '6a8962dd0274ed29b52dd702',
+				value: '6.5',
+			}).success
+		).toBe(true);
+	});
+
+	it('rejects a missing investigation or value', () => {
+		expect(
+			reportRowSchema.safeParse({
+				investigation: '',
+				value: '6.5',
+			}).success
+		).toBe(false);
+		expect(
+			reportRowSchema.safeParse({
+				investigation: '6a8962dd0274ed29b52dd702',
+				value: '',
 			}).success
 		).toBe(false);
 	});

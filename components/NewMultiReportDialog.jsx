@@ -1,16 +1,18 @@
 import useInvestigationsApiManager from '@/api-managers/InvestigationsApiManager';
 import useReportsApiManager from '@/api-managers/ReportsApiManager';
+import FormDateField from '@/components/FormDateField';
 import FormFieldFile from '@/components/FormFieldFile';
 import FormSheetModal from '@/components/FormSheetModal';
 import ReportFormFields from '@/components/ReportFormFields';
 import { Expanding } from '@/components/ui/expanding';
 import { Form } from '@/components/ui/form';
+import FormFieldTextarea from '@/components/ui/form-field-textarea';
 import { Icon } from '@/components/ui/icon';
 import { Text } from '@/components/ui/text';
 import { useToast } from '@/hooks/use-toast';
 import { getDateWithoutTime } from '@/lib/helpers';
 import { getInvestigationLabel } from '@/lib/reportUtils';
-import formSchema, { isEmptyDraft, reportFileSchema } from '@/schemas/Report';
+import formSchema, { isEmptyDraft, reportFileSchema, reportRowSchema } from '@/schemas/Report';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
 import { ChevronDown, ChevronUp } from 'lucide-react-native';
@@ -18,33 +20,35 @@ import { useEffect, useState } from 'react';
 import { useFieldArray, useForm, useWatch } from 'react-hook-form';
 import { Keyboard, Pressable, View } from 'react-native';
 
+const ROOT_FIELD_NAMES = new Set(['report', 'date', 'remarks']);
+
 function todayAtLocalMidnight() {
 	return getDateWithoutTime(new Date());
 }
 
-function emptyDraft(date) {
+function emptyDraft() {
 	return {
 		investigation: '',
 		value: '',
-		date: date ?? todayAtLocalMidnight(),
+	};
+}
+
+function emptyForm() {
+	return {
+		reports: [emptyDraft()],
+		report: undefined,
+		date: todayAtLocalMidnight(),
 		remarks: '',
 	};
 }
 
-function emptyForm(date) {
-	return {
-		reports: [emptyDraft(date)],
-		report: undefined,
-	};
-}
-
-function draftLabel(row, investigations) {
+function draftLabel(row, investigations, date) {
 	const name = row.investigation
 		? getInvestigationLabel(investigations, row.investigation)
 		: 'Report';
 	const datePart =
-		row.date instanceof Date && !Number.isNaN(row.date.valueOf())
-			? format(row.date, 'MMM dd, yyyy')
+		date instanceof Date && !Number.isNaN(date.valueOf())
+			? format(date, 'MMM dd, yyyy')
 			: '';
 	return datePart ? `${name} · ${datePart}` : name;
 }
@@ -66,8 +70,10 @@ export default function NewMultiReportDialog({ open, onOpenChange }) {
 	});
 	const watchedReports = useWatch({ control: form.control, name: 'reports' });
 	const watchedReport = useWatch({ control: form.control, name: 'report' });
+	const watchedDate = useWatch({ control: form.control, name: 'date' });
 	const canSubmit =
-		(watchedReports ?? []).some((row) => formSchema.safeParse(row).success) &&
+		(watchedReports ?? []).some((row) => reportRowSchema.safeParse(row).success) &&
+		formSchema.shape.date.safeParse(watchedDate).success &&
 		reportFileSchema.safeParse(watchedReport).success;
 
 	useEffect(() => {
@@ -90,18 +96,33 @@ export default function NewMultiReportDialog({ open, onOpenChange }) {
 		mutationFn: async () => {
 			const reports = form.getValues('reports') ?? [];
 			const report = form.getValues('report');
+			const date = form.getValues('date');
+			const remarks = form.getValues('remarks');
 			const listErrors = [];
 			const fieldErrors = [];
 			const validRows = [];
+
+			const parsedDate = formSchema.shape.date.safeParse(date);
+			if (!parsedDate.success) {
+				const message = parsedDate.error.issues[0]?.message ?? 'Date is required.';
+				listErrors.push({
+					label: 'Date of sample collection',
+					message,
+				});
+				fieldErrors.push({
+					name: 'date',
+					message,
+				});
+			}
 
 			for (let index = 0; index < reports.length; index += 1) {
 				const row = reports[index];
 				if (isEmptyDraft(row)) continue;
 
-				const parsed = formSchema.safeParse(row);
+				const parsed = reportRowSchema.safeParse(row);
 				if (!parsed.success) {
 					listErrors.push({
-						label: draftLabel(row, investigations),
+						label: draftLabel(row, investigations, date),
 						message: parsed.error.issues[0]?.message ?? 'Please complete this report.',
 					});
 					for (const issue of parsed.error.issues) {
@@ -117,7 +138,13 @@ export default function NewMultiReportDialog({ open, onOpenChange }) {
 					continue;
 				}
 
-				validRows.push(row);
+				if (parsedDate.success) {
+					validRows.push({
+						...parsed.data,
+						date: parsedDate.data,
+						remarks,
+					});
+				}
 			}
 
 			const parsedFile = reportFileSchema.safeParse(report);
@@ -178,8 +205,8 @@ export default function NewMultiReportDialog({ open, onOpenChange }) {
 
 			setSaveErrors(listErrors);
 			fieldErrors.forEach(({ index, name, message }) => {
-				if (name === 'report' && index == null) {
-					form.setError('report', { type: 'manual', message });
+				if (ROOT_FIELD_NAMES.has(name) && index == null) {
+					form.setError(name, { type: 'manual', message });
 					return;
 				}
 				form.setError(`reports.${index}.${name}`, { type: 'manual', message });
@@ -200,10 +227,8 @@ export default function NewMultiReportDialog({ open, onOpenChange }) {
 
 	const addAnother = () => {
 		Keyboard.dismiss();
-		const reports = form.getValues('reports') ?? [];
-		const previous = reports[reports.length - 1];
 		setCollapsedIds(new Set(fields.map((field) => field.id)));
-		append(emptyDraft(previous?.date));
+		append(emptyDraft());
 	};
 
 	const toggleCollapsed = (id) => {
@@ -248,13 +273,26 @@ export default function NewMultiReportDialog({ open, onOpenChange }) {
 					labelText="Upload report"
 					disabled={isPending}
 				/>
+				<FormDateField
+					formControl={form.control}
+					name="date"
+					labelText="Date of sample collection"
+					maxDate={maxDate}
+					required
+				/>
+				<FormFieldTextarea
+					formControl={form.control}
+					schemaProperty="remarks"
+					placeholder="Enter any details you want to remember or note"
+					labelText="Remarks"
+				/>
 				<View className="mb-4 mt-1 h-px bg-border" />
 
 				{fields.map((field, index) => {
 					const showHeader = fields.length > 1;
 					const isExpanded = !showHeader || !collapsedIds.has(field.id);
 					const row = watchedReports?.[index];
-					const headerTitle = formSchema.safeParse(row).success
+					const headerTitle = reportRowSchema.safeParse(row).success
 						? getInvestigationLabel(investigations, row.investigation)
 						: `Investigation ${index + 1}`;
 
@@ -309,7 +347,8 @@ export default function NewMultiReportDialog({ open, onOpenChange }) {
 									namePrefix={`reports.${index}`}
 									investigations={investigations}
 									isInvestigationLoading={isInvestigationLoading}
-									maxDate={maxDate}
+									showDate={false}
+									showRemarks={false}
 								/>
 							</Expanding>
 						</View>

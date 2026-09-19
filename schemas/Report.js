@@ -26,6 +26,11 @@ const formSchema = z.object({
     report: reportFileSchema,
 });
 
+export const reportRowSchema = formSchema.pick({
+    investigation: true,
+    value: true,
+});
+
 export function isEmptyDraft(row = {}) {
     const investigation = String(row.investigation ?? '').trim();
     const value = String(row.value ?? '').trim();

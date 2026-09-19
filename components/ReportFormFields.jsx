@@ -16,6 +16,8 @@ export default function ReportFormFields({
 	maxDate,
 	showUpload = false,
 	uploadDisabled = false,
+	showDate = true,
+	showRemarks = true,
 }) {
 	return (
 		<>
@@ -46,19 +48,23 @@ export default function ReportFormFields({
 				inputType="number"
 				required
 			/>
-			<FormDateField
-				formControl={form.control}
-				name={fieldName(namePrefix, 'date')}
-				labelText="Date of sample collection"
-				maxDate={maxDate}
-				required
-			/>
-			<FormFieldTextarea
-				formControl={form.control}
-				schemaProperty={fieldName(namePrefix, 'remarks')}
-				placeholder="Enter any details you want to remember or note"
-				labelText="Remarks"
-			/>
+			{showDate ? (
+				<FormDateField
+					formControl={form.control}
+					name={fieldName(namePrefix, 'date')}
+					labelText="Date of sample collection"
+					maxDate={maxDate}
+					required
+				/>
+			) : null}
+			{showRemarks ? (
+				<FormFieldTextarea
+					formControl={form.control}
+					schemaProperty={fieldName(namePrefix, 'remarks')}
+					placeholder="Enter any details you want to remember or note"
+					labelText="Remarks"
+				/>
+			) : null}
 		</>
 	);
 }
