@@ -1,3 +1,8 @@
+/**
+ * Form control for a report’s file attachment (`report` / `filename` on the server).
+ *
+ * Picks a PDF or image; does not represent investigation or catalog labels.
+ */
 import FormFieldLabel from '@/components/FormFieldLabel';
 import { useTheme } from '@/components/ThemeProvider';
 import ViewReportDialog from '@/components/ViewReportDialog';
@@ -51,6 +56,17 @@ function chooseSource({ onPhoto, onFiles }) {
 	]);
 }
 
+/**
+ * Upload-report field: attach, preview, or clear a PDF/image on a report form.
+ *
+ * @param {object} props
+ * @param {object} props.formControl - react-hook-form `control`.
+ * @param {string} props.schemaProperty - Form path for the picked file (`report`).
+ * @param {string} [props.labelText]
+ * @param {string} [props.helperText]
+ * @param {boolean} [props.disabled]
+ * @param {boolean} [props.required]
+ */
 export default function FormFieldFile({
 	formControl,
 	schemaProperty,

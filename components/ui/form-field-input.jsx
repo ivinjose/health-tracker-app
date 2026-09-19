@@ -1,8 +1,25 @@
+/**
+ * Generic single-line text (or numeric keyboard) form control.
+ *
+ * Used for values such as report `value`, profile name, and label `name`.
+ * Not a catalog Labels picker — that is {@link FormFieldLabels}.
+ */
 import FormFieldLabel from '@/components/FormFieldLabel';
 import { useTheme } from '@/components/ThemeProvider';
 import { Controller } from 'react-hook-form';
 import { Text, TextInput, View } from 'react-native';
 
+/**
+ * Text input bound to a react-hook-form string field.
+ *
+ * @param {object} props
+ * @param {object} props.formControl - react-hook-form `control`.
+ * @param {string} props.schemaProperty - Form path for the string.
+ * @param {string} [props.labelText]
+ * @param {string} [props.placeholder]
+ * @param {string} [props.inputType] - `'number'` uses a numeric keyboard.
+ * @param {boolean} [props.required]
+ */
 const FormFieldInput = ({
 	formControl,
 	schemaProperty,

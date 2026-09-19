@@ -1,3 +1,9 @@
+/**
+ * Generic short dropdown for a fixed option list (profile gender, appointment slot).
+ *
+ * Do not use for long catalogs: investigations use {@link FormFieldInvestigation},
+ * report tags use {@link FormFieldLabels}.
+ */
 import FormFieldLabel from '@/components/FormFieldLabel';
 import {
 	Select,
@@ -9,6 +15,17 @@ import {
 import { Controller } from 'react-hook-form';
 import { Text, View } from 'react-native';
 
+/**
+ * Select bound to a react-hook-form string, with options `{ label, value }`.
+ *
+ * @param {object} props
+ * @param {object} props.formControl - react-hook-form `control`.
+ * @param {string} props.schemaProperty - Form path for the selected value.
+ * @param {string} [props.labelText]
+ * @param {string} [props.placeholder]
+ * @param {Array<{ label: string, value: string }>} props.dropdownOptions
+ * @param {boolean} [props.required]
+ */
 const FormFieldSelect = ({
 	formControl,
 	schemaProperty,

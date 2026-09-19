@@ -1,3 +1,10 @@
+/**
+ * Form control for a report’s `labels` field: optional catalog tag ids.
+ *
+ * Value is a `string[]` of Label `_id`s. Distinct from {@link FormFieldLabel},
+ * which only draws a caption, and from {@link FormFieldInvestigation}, which
+ * stores one investigation id.
+ */
 import FormFieldLabel, {
 	requiredFieldAccessibilityLabel,
 } from '@/components/FormFieldLabel';
@@ -13,6 +20,17 @@ import { Pressable, View } from 'react-native';
 
 const MAX_REPORT_LABELS = 20;
 
+/**
+ * Multi-select Labels field: chips for attached ids, searchable picker to add more.
+ *
+ * @param {object} props
+ * @param {object} props.formControl - react-hook-form `control`.
+ * @param {string} props.schemaProperty - Form path for the id array (`labels`).
+ * @param {string} [props.labelText]
+ * @param {string} [props.placeholder]
+ * @param {Array<{ _id: string, name?: string, color?: string }>} [props.labels] - Catalog from GET `/api/labels`.
+ * @param {boolean} [props.disabled]
+ */
 export default function FormFieldLabels({
 	formControl,
 	schemaProperty,

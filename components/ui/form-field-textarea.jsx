@@ -1,8 +1,21 @@
+/**
+ * Generic multiline text form control (typically report or appointment `remarks`).
+ */
 import FormFieldLabel from '@/components/FormFieldLabel';
 import { useTheme } from '@/components/ThemeProvider';
 import { Controller } from 'react-hook-form';
 import { Text, TextInput, View } from 'react-native';
 
+/**
+ * Multiline text input bound to a react-hook-form string field.
+ *
+ * @param {object} props
+ * @param {object} props.formControl - react-hook-form `control`.
+ * @param {string} props.schemaProperty - Form path for the string.
+ * @param {string} [props.labelText]
+ * @param {string} [props.placeholder]
+ * @param {boolean} [props.required]
+ */
 const FormFieldTextarea = ({
 	formControl,
 	schemaProperty,

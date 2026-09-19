@@ -1,3 +1,8 @@
+/**
+ * Form control for a date value (typically a report’s sample-collection `date`).
+ *
+ * Value is a `Date`. Not used for investigation or catalog labels.
+ */
 import DatePickerSheet from '@/components/DatePickerSheet';
 import FormFieldLabel, {
 	requiredFieldAccessibilityLabel,
@@ -10,6 +15,17 @@ import { useState } from 'react';
 import { Controller } from 'react-hook-form';
 import { Pressable, View } from 'react-native';
 
+/**
+ * Date field: opens {@link DatePickerSheet} and stores a `Date` on the form.
+ *
+ * @param {object} props
+ * @param {object} props.formControl - react-hook-form `control`.
+ * @param {string} props.name - Form path (`date`).
+ * @param {string} [props.labelText]
+ * @param {string} [props.minDate]
+ * @param {string} [props.maxDate]
+ * @param {boolean} [props.required]
+ */
 export default function FormDateField({
 	formControl,
 	name,

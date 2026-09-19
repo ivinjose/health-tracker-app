@@ -1,3 +1,8 @@
+/**
+ * Form control for a report’s `investigation` field: one catalog investigation id.
+ *
+ * Value is a string `_id`. For several optional tag ids, use {@link FormFieldLabels}.
+ */
 import FormFieldLabel, {
 	requiredFieldAccessibilityLabel,
 } from '@/components/FormFieldLabel';
@@ -9,6 +14,18 @@ import { useState } from 'react';
 import { Controller } from 'react-hook-form';
 import { Pressable, View } from 'react-native';
 
+/**
+ * Single-select Investigation field: searchable overlay, selected name in the row.
+ *
+ * @param {object} props
+ * @param {object} props.formControl - react-hook-form `control`.
+ * @param {string} props.schemaProperty - Form path for the investigation id.
+ * @param {string} [props.labelText]
+ * @param {string} [props.placeholder]
+ * @param {Array<{ _id: string, label?: string }>} [props.investigations] - Catalog from GET `/api/investigations`.
+ * @param {boolean} [props.disabled]
+ * @param {boolean} [props.required]
+ */
 export default function FormFieldInvestigation({
 	formControl,
 	schemaProperty,

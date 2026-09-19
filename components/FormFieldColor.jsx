@@ -1,3 +1,8 @@
+/**
+ * Form control for a catalog label’s `color` field (`#RRGGBB` from the allowlist).
+ *
+ * Used on create/edit label (More → Labels), not on report forms.
+ */
 import FormFieldLabel from '@/components/FormFieldLabel';
 import { useTheme } from '@/components/ThemeProvider';
 import { LABEL_COLORS } from '@/constants/labels';
@@ -6,6 +11,15 @@ import { Pressable, Text, View } from 'react-native';
 
 const SWATCH_SIZE = 32;
 
+/**
+ * Color swatch row for choosing a label color.
+ *
+ * @param {object} props
+ * @param {object} props.formControl - react-hook-form `control`.
+ * @param {string} props.schemaProperty - Form path for the hex string (`color`).
+ * @param {string} [props.labelText]
+ * @param {boolean} [props.required]
+ */
 export default function FormFieldColor({
 	formControl,
 	schemaProperty,
