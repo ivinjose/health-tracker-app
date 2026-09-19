@@ -385,7 +385,7 @@ export default function NewMultiReportDialog({ open, onOpenChange }) {
 					accessibilityRole="button"
 					accessibilityLabel="Add another investigation"
 					accessibilityState={{ disabled: isPending }}
-					className="mt-1 py-2"
+					className="mt-1 self-start py-2"
 				>
 					<Text className={isPending ? 'text-muted-foreground' : 'text-primary'}>
 						Add another investigation
