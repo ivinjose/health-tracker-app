@@ -17,6 +17,10 @@ const MENU_ITEMS = [
 		href: '/(tabs)/more/investigations',
 	},
 	{
+		label: 'Manage Labels',
+		href: '/(tabs)/more/labels',
+	},
+	{
 		label: 'Settings',
 		href: '/(tabs)/more/settings',
 	},
