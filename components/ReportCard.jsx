@@ -1,9 +1,11 @@
 import CardView from '@/components/CardView';
 import ConfirmDialog from '@/components/ConfirmDialog';
+import LabelChip from '@/components/LabelChip';
 import ViewReportDialog from '@/components/ViewReportDialog';
 import { Button } from '@/components/ui/button';
 import { Text } from '@/components/ui/text';
 import { formatInvestigationReading } from '@/lib/investigationUtils';
+import { getLabelsByIds } from '@/lib/labelUtils';
 import { getDisplayDate, getInvestigationLabel, getInvestigationUnit } from '@/lib/reportUtils';
 import { useCallback, useMemo, useState } from 'react';
 import { View } from 'react-native';
@@ -21,7 +23,9 @@ export default function ReportCard({
 	appointment,
 	remarks,
 	filename,
+	labels: labelIds = [],
 	investigations = [],
+	labelCatalog = [],
 }) {
 	const [showConfirm, setShowConfirm] = useState(false);
 	const [showViewer, setShowViewer] = useState(false);
@@ -37,11 +41,20 @@ export default function ReportCard({
 			{
 				label: 'Edit',
 				action: () =>
-					onEditCb({ _id, investigation, value, timestamp, remarks, appointment, filename }),
+					onEditCb({
+						_id,
+						investigation,
+						value,
+						timestamp,
+						remarks,
+						appointment,
+						filename,
+						labels: labelIds,
+					}),
 			},
 			{ label: 'Delete', action: () => setShowConfirm(true), variant: 'destructive' },
 		];
-	}, [isReadOnly, _id, investigation, value, timestamp, remarks, appointment, filename, onEditCb]);
+	}, [isReadOnly, _id, investigation, value, timestamp, remarks, appointment, filename, labelIds, onEditCb]);
 
 	const investigationMeta = useMemo(
 		() => ({
@@ -49,6 +62,11 @@ export default function ReportCard({
 			unit: getInvestigationUnit(investigations, investigation),
 		}),
 		[investigation, investigations]
+	);
+
+	const attachedLabels = useMemo(
+		() => getLabelsByIds(labelCatalog, labelIds),
+		[labelCatalog, labelIds]
 	);
 
 	const dateLabel = getDisplayDate({ displayDate, timestamp });
@@ -68,6 +86,17 @@ export default function ReportCard({
 							)}
 						</Text>
 						{remarks ? <Text className="text-sm text-foreground">{remarks}</Text> : null}
+						{attachedLabels.length > 0 ? (
+							<View className="mt-1 flex-row flex-wrap gap-2">
+								{attachedLabels.map((item) => (
+									<LabelChip
+										key={String(item._id)}
+										name={item.name}
+										color={item.color}
+									/>
+								))}
+							</View>
+						) : null}
 						{appointments.length > 0 ? (
 							<Text className="text-sm text-muted-foreground">
 								Appointment - {appointments[0].location}

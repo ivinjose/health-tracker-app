@@ -1,4 +1,5 @@
 import useInvestigationsApiManager from '@/api-managers/InvestigationsApiManager';
+import useLabelsApiManager from '@/api-managers/LabelsApiManager';
 import useReportsApiManager from '@/api-managers/ReportsApiManager';
 import NewMultiReportDialog from '@/components/NewMultiReportDialog';
 import NewReportDialog from '@/components/NewReportDialog';
@@ -27,6 +28,7 @@ export default function ReportsScreen() {
 	const { toast } = useToast();
 	const reportsApiManager = useReportsApiManager();
 	const investigationsApiManager = useInvestigationsApiManager();
+	const labelsApiManager = useLabelsApiManager();
 	const queryClient = useQueryClient();
 
 	useEffect(() => {
@@ -53,6 +55,14 @@ export default function ReportsScreen() {
 	const { data: investigations = [] } = useQuery({
 		queryKey: ['investigations'],
 		queryFn: () => investigationsApiManager.readInvestigations(),
+	});
+
+	const { data: labelCatalog = [] } = useQuery({
+		queryKey: ['labels'],
+		queryFn: async () => {
+			const result = await labelsApiManager.readLabels();
+			return result ?? [];
+		},
 	});
 
 	const { mutateAsync: removeReport } = useMutation({
@@ -125,6 +135,7 @@ export default function ReportsScreen() {
 							onEditCb={openEdit}
 							onDeleteCb={removeReport}
 							investigations={investigations}
+							labelCatalog={labelCatalog}
 							{...report}
 						/>
 					))}

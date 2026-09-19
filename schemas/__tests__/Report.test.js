@@ -37,6 +37,18 @@ describe('report form schema', () => {
 		expect(formSchema.safeParse({ ...validRow, report: null }).success).toBe(true);
 	});
 
+	it('accepts missing, empty, or several label ids', () => {
+		expect(formSchema.safeParse(validRow).success).toBe(true);
+		expect(formSchema.safeParse({ ...validRow, labels: [] }).success).toBe(true);
+		expect(
+			formSchema.safeParse({
+				...validRow,
+				labels: ['aaaaaaaaaaaaaaaaaaaaaaaa', 'bbbbbbbbbbbbbbbbbbbbbbbb'],
+			}).success
+		).toBe(true);
+		expect(formSchema.safeParse(validRow).data.labels).toEqual([]);
+	});
+
 	it('rejects a missing investigation, value, or date', () => {
 		expect(formSchema.safeParse({ ...validRow, investigation: '' }).success).toBe(false);
 		expect(formSchema.safeParse({ ...validRow, value: '' }).success).toBe(false);

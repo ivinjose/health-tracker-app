@@ -23,6 +23,7 @@ const formSchema = z.object({
         .optional()
         .transform((value) => value || undefined),
     remarks: z.string().optional(),
+    labels: z.array(z.string()).optional().default([]),
     report: reportFileSchema,
 });
 

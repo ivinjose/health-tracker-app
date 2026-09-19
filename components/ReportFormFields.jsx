@@ -1,6 +1,7 @@
 import FormDateField from '@/components/FormDateField';
 import FormFieldFile from '@/components/FormFieldFile';
 import FormFieldInvestigation from '@/components/FormFieldInvestigation';
+import FormFieldLabels from '@/components/FormFieldLabels';
 import FormFieldInput from '@/components/ui/form-field-input';
 import FormFieldTextarea from '@/components/ui/form-field-textarea';
 
@@ -13,11 +14,14 @@ export default function ReportFormFields({
 	namePrefix = '',
 	investigations = [],
 	isInvestigationLoading = false,
+	labels = [],
+	isLabelLoading = false,
 	maxDate,
 	showUpload = false,
 	uploadDisabled = false,
 	showDate = true,
 	showRemarks = true,
+	showLabels = true,
 }) {
 	return (
 		<>
@@ -40,6 +44,15 @@ export default function ReportFormFields({
 				disabled={isInvestigationLoading}
 				required
 			/>
+			{showLabels ? (
+				<FormFieldLabels
+					formControl={form.control}
+					schemaProperty={fieldName(namePrefix, 'labels')}
+					placeholder={isLabelLoading ? 'Loading labels…' : 'Choose from the list'}
+					labels={isLabelLoading ? [] : labels}
+					disabled={isLabelLoading}
+				/>
+			) : null}
 			<FormFieldInput
 				formControl={form.control}
 				schemaProperty={fieldName(namePrefix, 'value')}

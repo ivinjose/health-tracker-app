@@ -12,6 +12,7 @@ import {
 	withDisplayDates,
 } from '@/lib/reportUtils';
 import useInvestigationsApiManager from '@/api-managers/InvestigationsApiManager';
+import useLabelsApiManager from '@/api-managers/LabelsApiManager';
 import useReportsApiManager from '@/api-managers/ReportsApiManager';
 import { useQuery } from '@tanstack/react-query';
 import { useLocalSearchParams, useRouter } from 'expo-router';
@@ -29,6 +30,7 @@ export default function AnalyseScreen() {
 	const fromDate = fromParam ? Number(fromParam) : undefined;
 	const toDate = toParam ? Number(toParam) : undefined;
 	const investigationsApiManager = useInvestigationsApiManager();
+	const labelsApiManager = useLabelsApiManager();
 	const reportsApiManager = useReportsApiManager();
 
 	const updateParams = useCallback(
@@ -70,6 +72,14 @@ export default function AnalyseScreen() {
 	const { data: investigations = [], isLoading: isInvestigationLoading } = useQuery({
 		queryKey: ['investigations'],
 		queryFn: () => investigationsApiManager.readInvestigations(),
+	});
+
+	const { data: labelCatalog = [] } = useQuery({
+		queryKey: ['labels'],
+		queryFn: async () => {
+			const result = await labelsApiManager.readLabels();
+			return result ?? [];
+		},
 	});
 
 	const { data: reports = [], isLoading: isReportsLoading } = useQuery({
@@ -144,6 +154,7 @@ export default function AnalyseScreen() {
 								key={report._id}
 								isReadOnly
 								investigations={investigations}
+								labelCatalog={labelCatalog}
 								{...report}
 							/>
 						))}

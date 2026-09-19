@@ -288,7 +288,7 @@ Create/edit sheets:
 4. Submit: `form.handleSubmit(mutationFn)`
 5. On success: reset form, `onOpenChange(false)`, invalidate query keys, `toast({ description })`
 
-Field components: `form-field-input`, `form-field-select`, `form-field-textarea`, `FormDateField`, `FormFieldInvestigation`. Select options are `{ label, value }` arrays.
+Field components: `form-field-input`, `form-field-select`, `form-field-textarea`, `FormDateField`, `FormFieldInvestigation`, `FormFieldLabels`. Select options are `{ label, value }` arrays.
 
 Auth screens (login/register) are **not** on this stack; they use raw `TextInput` + regex/required checks.
 
@@ -322,6 +322,8 @@ Selecting a day closes the sheet. `onClear` is optional and only renders the Cle
 ### Investigation picking
 
 Every investigation picker opens **`InvestigationPickerModal`** — a searchable `FlatList` in a `FormSheetModal` — never `form-field-select`. On full screens (Analyse / Compare) go through `InvestigationSelect`; in report form sheets go through `FormFieldInvestigation`, which adds the `Controller` binding and error line. The catalog can be long, and a portaled `SelectContent` inside a `FormSheetModal` renders into the root `PortalHost`, which sits outside that native modal window.
+
+Report labels use the same overlay pattern via **`LabelPickerModal`** / **`FormFieldLabels`**: multi-select of catalog `_id`s, chips with remove, no create-from-picker (catalog CRUD is More → Labels).
 
 `form-field-select` stays for short fixed option sets (profile gender, appointment time slot).
 

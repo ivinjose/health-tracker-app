@@ -1,4 +1,5 @@
 import useInvestigationsApiManager from '@/api-managers/InvestigationsApiManager';
+import useLabelsApiManager from '@/api-managers/LabelsApiManager';
 import useReportsApiManager from '@/api-managers/ReportsApiManager';
 import FormSheetModal from '@/components/FormSheetModal';
 import ReportFormFields from '@/components/ReportFormFields';
@@ -17,6 +18,7 @@ const EMPTY_VALUES = {
 	date: undefined,
 	appointment: undefined,
 	remarks: '',
+	labels: [],
 	report: undefined,
 };
 
@@ -25,6 +27,7 @@ export default function NewReportDialog({ open, onOpenChange, appointmentId, rep
 	const queryClient = useQueryClient();
 	const reportsApiManager = useReportsApiManager();
 	const investigationsApiManager = useInvestigationsApiManager();
+	const labelsApiManager = useLabelsApiManager();
 	const isEdit = Boolean(report);
 
 	const { form, canSubmit } = useValidatedForm({
@@ -46,6 +49,7 @@ export default function NewReportDialog({ open, onOpenChange, appointmentId, rep
 					date: report.timestamp ? new Date(report.timestamp) : undefined,
 					appointment: report.appointment || undefined,
 					remarks: report.remarks ?? '',
+					labels: Array.isArray(report.labels) ? report.labels.map(String) : [],
 					report: existingReportFile(report.filename),
 				}
 				: {
@@ -71,6 +75,15 @@ export default function NewReportDialog({ open, onOpenChange, appointmentId, rep
 		enabled: open,
 	});
 
+	const { data: labels = [], isLoading: isLabelLoading } = useQuery({
+		queryKey: ['labels'],
+		queryFn: async () => {
+			const result = await labelsApiManager.readLabels();
+			return result ?? [];
+		},
+		enabled: open,
+	});
+
 	const { mutate: saveReport, isPending } = useMutation({
 		mutationFn: (data) => {
 			if (isEdit) {
@@ -80,6 +93,7 @@ export default function NewReportDialog({ open, onOpenChange, appointmentId, rep
 					value: data.value,
 					date: data.date,
 					remarks: data.remarks,
+					labels: data.labels,
 					report: data.report,
 				});
 			}
@@ -121,6 +135,8 @@ export default function NewReportDialog({ open, onOpenChange, appointmentId, rep
 					form={form}
 					investigations={investigations}
 					isInvestigationLoading={isInvestigationLoading}
+					labels={labels}
+					isLabelLoading={isLabelLoading}
 					maxDate={maxDate}
 					showUpload
 					uploadDisabled={isPending}

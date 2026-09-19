@@ -1,7 +1,9 @@
 import useInvestigationsApiManager from '@/api-managers/InvestigationsApiManager';
+import useLabelsApiManager from '@/api-managers/LabelsApiManager';
 import useReportsApiManager from '@/api-managers/ReportsApiManager';
 import FormDateField from '@/components/FormDateField';
 import FormFieldFile from '@/components/FormFieldFile';
+import FormFieldLabels from '@/components/FormFieldLabels';
 import FormSheetModal from '@/components/FormSheetModal';
 import ReportFormFields from '@/components/ReportFormFields';
 import { Expanding } from '@/components/ui/expanding';
@@ -39,6 +41,7 @@ function emptyForm() {
 		report: undefined,
 		date: todayAtLocalMidnight(),
 		remarks: '',
+		labels: [],
 	};
 }
 
@@ -58,6 +61,7 @@ export default function NewMultiReportDialog({ open, onOpenChange }) {
 	const queryClient = useQueryClient();
 	const reportsApiManager = useReportsApiManager();
 	const investigationsApiManager = useInvestigationsApiManager();
+	const labelsApiManager = useLabelsApiManager();
 	const [saveErrors, setSaveErrors] = useState([]);
 	const [collapsedIds, setCollapsedIds] = useState(() => new Set());
 
@@ -92,12 +96,22 @@ export default function NewMultiReportDialog({ open, onOpenChange }) {
 		enabled: open,
 	});
 
+	const { data: labels = [], isLoading: isLabelLoading } = useQuery({
+		queryKey: ['labels'],
+		queryFn: async () => {
+			const result = await labelsApiManager.readLabels();
+			return result ?? [];
+		},
+		enabled: open,
+	});
+
 	const { mutate: saveReports, isPending } = useMutation({
 		mutationFn: async () => {
 			const reports = form.getValues('reports') ?? [];
 			const report = form.getValues('report');
 			const date = form.getValues('date');
 			const remarks = form.getValues('remarks');
+			const labels = form.getValues('labels');
 			const listErrors = [];
 			const fieldErrors = [];
 			const validRows = [];
@@ -143,6 +157,7 @@ export default function NewMultiReportDialog({ open, onOpenChange }) {
 						...parsed.data,
 						date: parsedDate.data,
 						remarks,
+						labels,
 					});
 				}
 			}
@@ -286,6 +301,13 @@ export default function NewMultiReportDialog({ open, onOpenChange }) {
 					placeholder="Enter any details you want to remember or note"
 					labelText="Remarks"
 				/>
+				<FormFieldLabels
+					formControl={form.control}
+					schemaProperty="labels"
+					placeholder={isLabelLoading ? 'Loading labels…' : 'Choose from the list'}
+					labels={isLabelLoading ? [] : labels}
+					disabled={isLabelLoading || isPending}
+				/>
 				<View className="mb-4 mt-1 h-px bg-border" />
 
 				{fields.map((field, index) => {
@@ -349,6 +371,7 @@ export default function NewMultiReportDialog({ open, onOpenChange }) {
 									isInvestigationLoading={isInvestigationLoading}
 									showDate={false}
 									showRemarks={false}
+									showLabels={false}
 								/>
 							</Expanding>
 						</View>
