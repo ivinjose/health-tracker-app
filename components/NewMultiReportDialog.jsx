@@ -322,17 +322,17 @@ export default function NewMultiReportDialog({ open, onOpenChange }) {
 						<View key={field.id} className="shrink-0">
 							{index > 0 ? <View className="mb-4 mt-1 h-px bg-border/40" /> : null}
 							{showHeader ? (
-								<View className="mb-4 flex-row items-center justify-between">
+								<View className="mb-4 flex-row items-center">
 									<Pressable
 										onPress={() => toggleCollapsed(field.id)}
-										hitSlop={8}
-										className="min-w-0 flex-1 flex-row items-center gap-1.5 pr-3"
+										hitSlop={{ top: 8, bottom: 8, left: 8 }}
+										className="min-w-0 shrink flex-row items-center gap-1.5"
 										accessibilityRole="button"
 										accessibilityState={{ expanded: isExpanded }}
 										accessibilityLabel={headerTitle}
 									>
 										<Text
-											className="min-w-0 flex-1 text-sm font-medium text-muted-foreground"
+											className="min-w-0 shrink text-sm font-medium text-muted-foreground"
 											numberOfLines={1}
 										>
 											{headerTitle}
@@ -343,10 +343,11 @@ export default function NewMultiReportDialog({ open, onOpenChange }) {
 											size={16}
 										/>
 									</Pressable>
+									<View className="min-w-4 flex-1" />
 									<Pressable
 										onPress={() => remove(index)}
 										disabled={!canRemove}
-										hitSlop={8}
+										hitSlop={{ top: 8, bottom: 8, right: 8 }}
 										accessibilityRole="button"
 										accessibilityLabel={`Remove ${headerTitle}`}
 										accessibilityState={{ disabled: !canRemove }}
