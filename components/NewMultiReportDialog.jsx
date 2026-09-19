@@ -295,18 +295,18 @@ export default function NewMultiReportDialog({ open, onOpenChange }) {
 					maxDate={maxDate}
 					required
 				/>
-				<FormFieldTextarea
-					formControl={form.control}
-					schemaProperty="remarks"
-					placeholder="Enter any details you want to remember or note"
-					labelText="Remarks"
-				/>
 				<FormFieldLabels
 					formControl={form.control}
 					schemaProperty="labels"
 					placeholder={isLabelLoading ? 'Loading labels…' : 'Choose from the list'}
 					labels={isLabelLoading ? [] : labels}
 					disabled={isLabelLoading || isPending}
+				/>
+				<FormFieldTextarea
+					formControl={form.control}
+					schemaProperty="remarks"
+					placeholder="Enter any details you want to remember or note"
+					labelText="Remarks"
 				/>
 				<View className="mb-4 mt-1 h-px bg-border" />
 
