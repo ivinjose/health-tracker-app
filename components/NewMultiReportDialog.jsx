@@ -6,10 +6,12 @@ import FormFieldFile from '@/components/FormFieldFile';
 import FormFieldLabels from '@/components/FormFieldLabels';
 import FormSheetModal from '@/components/FormSheetModal';
 import ReportFormFields from '@/components/ReportFormFields';
+import { useTheme } from '@/components/ThemeProvider';
 import { Expanding } from '@/components/ui/expanding';
 import { Form } from '@/components/ui/form';
 import FormFieldTextarea from '@/components/ui/form-field-textarea';
 import { Icon } from '@/components/ui/icon';
+import { IconSymbol } from '@/components/ui/icon-symbol';
 import { Text } from '@/components/ui/text';
 import { useToast } from '@/hooks/use-toast';
 import { getDateWithoutTime } from '@/lib/helpers';
@@ -17,10 +19,13 @@ import { getInvestigationLabel } from '@/lib/reportUtils';
 import formSchema, { isEmptyDraft, reportFileSchema, reportRowSchema } from '@/schemas/Report';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
+import { SymbolView } from 'expo-symbols';
 import { ChevronDown, ChevronUp } from 'lucide-react-native';
 import { useEffect, useState } from 'react';
 import { useFieldArray, useForm, useWatch } from 'react-hook-form';
 import { Keyboard, Pressable, View } from 'react-native';
+
+const DELETE_ICON_SIZE = 22;
 
 const ROOT_FIELD_NAMES = new Set(['report', 'date', 'remarks']);
 
@@ -57,6 +62,7 @@ function draftLabel(row, investigations, date) {
 }
 
 export default function NewMultiReportDialog({ open, onOpenChange }) {
+	const theme = useTheme();
 	const { toast } = useToast();
 	const queryClient = useQueryClient();
 	const reportsApiManager = useReportsApiManager();
@@ -348,19 +354,26 @@ export default function NewMultiReportDialog({ open, onOpenChange }) {
 										onPress={() => remove(index)}
 										disabled={!canRemove}
 										hitSlop={{ top: 8, bottom: 8, right: 8 }}
+										style={({ pressed }) =>
+											pressed || !canRemove ? { opacity: 0.6 } : undefined
+										}
 										accessibilityRole="button"
 										accessibilityLabel={`Remove ${headerTitle}`}
 										accessibilityState={{ disabled: !canRemove }}
 									>
-										<Text
-											className={
-												canRemove
-													? 'text-sm text-destructive'
-													: 'text-sm text-muted-foreground'
+										<SymbolView
+											name="trash.fill"
+											size={DELETE_ICON_SIZE}
+											tintColor={theme.colors.destructive}
+											type="hierarchical"
+											fallback={
+												<IconSymbol
+													name="trash.fill"
+													size={DELETE_ICON_SIZE}
+													color={theme.colors.destructive}
+												/>
 											}
-										>
-											Remove
-										</Text>
+										/>
 									</Pressable>
 								</View>
 							) : null}
