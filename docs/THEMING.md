@@ -222,7 +222,7 @@ Use context hex/enums only where `className` cannot be used. Current call sites:
 | `form-field-input.jsx` | `colors.placeholder`, `keyboardAppearance`, `colors.tint` (`selectionColor`) |
 | `form-field-textarea.jsx` | same |
 | `InvestigationSelect.jsx` | same |
-| `FormDateField.jsx` | `colors.tint` (calendar icon) |
+| `FormFieldDate.jsx` | `colors.tint` (calendar icon) |
 | `DatePickerCalendar.jsx` | `calendar`, `colors.background` (`Calendar` `style`), `colors.tint` / `tintDisabled` / `foreground` / `primaryForeground` (year picker) |
 | `DateRange.jsx` | `colors.mutedForeground`; nested `ThemeProvider` inside calendar `Modal` |
 | `CardView.jsx` | `colors.mutedForeground` (ellipsis icon) |

@@ -1,4 +1,4 @@
-import FormDateField from '@/components/FormDateField';
+import FormFieldDate from '@/components/FormFieldDate';
 import FormFieldFile from '@/components/FormFieldFile';
 import FormFieldInvestigation from '@/components/FormFieldInvestigation';
 import FormFieldLabels from '@/components/FormFieldLabels';
@@ -62,7 +62,7 @@ export default function ReportFormFields({
 				required
 			/>
 			{showDate ? (
-				<FormDateField
+				<FormFieldDate
 					formControl={form.control}
 					name={fieldName(namePrefix, 'date')}
 					labelText="Date of sample collection"

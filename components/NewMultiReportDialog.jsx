@@ -1,7 +1,7 @@
 import useInvestigationsApiManager from '@/api-managers/InvestigationsApiManager';
 import useLabelsApiManager from '@/api-managers/LabelsApiManager';
 import useReportsApiManager from '@/api-managers/ReportsApiManager';
-import FormDateField from '@/components/FormDateField';
+import FormFieldDate from '@/components/FormFieldDate';
 import FormFieldFile from '@/components/FormFieldFile';
 import FormFieldLabels from '@/components/FormFieldLabels';
 import FormSheetModal from '@/components/FormSheetModal';
@@ -288,7 +288,7 @@ export default function NewMultiReportDialog({ open, onOpenChange }) {
 					labelText="Upload report"
 					disabled={isPending}
 				/>
-				<FormDateField
+				<FormFieldDate
 					formControl={form.control}
 					name="date"
 					labelText="Date of sample collection"

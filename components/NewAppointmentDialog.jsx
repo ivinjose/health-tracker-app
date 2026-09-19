@@ -1,4 +1,4 @@
-import FormDateField from '@/components/FormDateField';
+import FormFieldDate from '@/components/FormFieldDate';
 import FormSheetModal from '@/components/FormSheetModal';
 import { Button } from '@/components/ui/button';
 import { Form } from '@/components/ui/form';
@@ -63,7 +63,7 @@ export default function NewAppointmentDialog({ open, onOpenChange }) {
 					labelText="Where's the appointment at"
 					required
 				/>
-				<FormDateField
+				<FormFieldDate
 					formControl={form.control}
 					name="date"
 					labelText="Date of appointment"

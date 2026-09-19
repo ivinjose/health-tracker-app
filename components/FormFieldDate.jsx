@@ -26,7 +26,7 @@ import { Pressable, View } from 'react-native';
  * @param {string} [props.maxDate]
  * @param {boolean} [props.required]
  */
-export default function FormDateField({
+export default function FormFieldDate({
 	formControl,
 	name,
 	labelText,

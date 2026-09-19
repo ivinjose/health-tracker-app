@@ -213,7 +213,7 @@ Server stores numeric timestamps. The client:
 - Appointments: date at 00:00 plus `TIME_SLOTS` (`constants/appointments.js`, 30-minute `HH:mm` strings) via `add({ hours, minutes })`.
 - Displays with `date-fns` (`MMM dd, yyyy`, etc.) in `lib/reportUtils.js`.
 - Analyse / Compare persist `from` / `to` in **route params** as `String(date.valueOf())`.
-- `FormDateField` sets `new Date(day.dateString)` from `react-native-calendars` (ISO date string, not the calendar `timestamp` field).
+- `FormFieldDate` sets `new Date(day.dateString)` from `react-native-calendars` (ISO date string, not the calendar `timestamp` field).
 - `getDateWithoutTime` (`lib/helpers.js`) subtracts H:M:S of the local day; used by `AppointmentsWidget` for from/to bounds.
 
 `SORT_ORDER.ASC` / `DESC` in `constants/sort.js` is sent as the reports `order` query param and used client-side in `sortReportsByTimestamp`.
@@ -288,7 +288,7 @@ Create/edit sheets:
 4. Submit: `form.handleSubmit(mutationFn)`
 5. On success: reset form, `onOpenChange(false)`, invalidate query keys, `toast({ description })`
 
-Field components: `form-field-input`, `form-field-select`, `form-field-textarea`, `FormDateField`, `FormFieldInvestigation`, `FormFieldLabels`. Select options are `{ label, value }` arrays.
+Field components: `form-field-input`, `form-field-select`, `form-field-textarea`, `FormFieldDate`, `FormFieldInvestigation`, `FormFieldLabels`. Select options are `{ label, value }` arrays.
 
 Auth screens (login/register) are **not** on this stack; they use raw `TextInput` + regex/required checks.
 
@@ -309,7 +309,7 @@ All create/edit flows use `components/FormSheetModal.jsx`: React Native `Modal`,
 
 ### Date picking
 
-Every calendar opens **`DatePickerSheet`** — a transparent bottom-sheet `Modal` (scrim + Clear/Done header + `DatePickerCalendar`) that nests `ThemeProvider`. In forms go through **`FormDateField`** (adds the `Controller` binding and error line); on full screens go through **`DateRange`**. Do not re-implement the sheet: `DateRange` used to own a private copy.
+Every calendar opens **`DatePickerSheet`** — a transparent bottom-sheet `Modal` (scrim + Clear/Done header + `DatePickerCalendar`) that nests `ThemeProvider`. In forms go through **`FormFieldDate`** (adds the `Controller` binding and error line); on full screens go through **`DateRange`**. Do not re-implement the sheet: `DateRange` used to own a private copy.
 
 Render these sheets unconditionally with `open` passed as `visible`. RN's `Modal.render()` already returns `null` while hidden (and on iOS stays rendered until the native dismiss event), so gating the element on a "has opened" flag buys nothing and risks cutting the dismiss animation.
 
@@ -374,7 +374,7 @@ No screen, API-manager, or auth integration tests.
 2. **Private HTTP goes through `useAxiosPrivate`.** Using the public axios instance on a protected route skips the Bearer interceptor and the 401 retry.
 3. **`req.user` vs `req.profile` on the server:** this client’s `auth.id` after login is the account id (primary profile). Reports/appointments the server returns are for the **access token’s `profile` claim**. Switching profiles without updating `auth` (current `User.jsx`) leaves the old claim in memory.
 4. **Investigation identity is `_id`**, stored on reports and used as Compare series keys and Analyse/Compare URL params. Do not display it as the title when a `label` exists (`getInvestigationLabel`).
-5. **Form create/edit = `FormSheetModal` + Zod + `useValidatedForm`.** Deletes = `AlertDialog`. Form dates = `FormDateField` (→ `DatePickerSheet`).
+5. **Form create/edit = `FormSheetModal` + Zod + `useValidatedForm`.** Deletes = `AlertDialog`. Form dates = `FormFieldDate` (→ `DatePickerSheet`).
 6. **`@/` imports from nested `app/` routes.** Especially `app/(auth)/verify/[emailToken].jsx`.
 7. **Do not wrap screens in `ThemeProvider`.** Only root, Modals, and portal roots.
 8. **Keep `/download` and file/OCR work in Phase 4.** Wiring a file input into `createReport` as JSON will not match the server’s multer field `report`.
