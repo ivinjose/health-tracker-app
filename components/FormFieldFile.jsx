@@ -169,7 +169,16 @@ function ReportFileField({
 
 	return (
 		<View className="mb-4 shrink-0">
-			<FormFieldLabel labelText={labelText} required={required} />
+			<View className="mb-1 flex-row items-baseline gap-2">
+				<FormFieldLabel
+					labelText={labelText}
+					required={required}
+					className="text-sm font-medium text-muted-foreground"
+				/>
+				<Text className="text-xs text-muted-foreground">
+					(Max size: {MAX_UPLOAD_MB}MB)
+				</Text>
+			</View>
 
 			{attached ? (
 				<View className={fieldChrome}>
@@ -215,10 +224,6 @@ function ReportFileField({
 			{helperText ? (
 				<Text className="mt-1 text-xs text-muted-foreground">{helperText}</Text>
 			) : null}
-
-			<Text className="mt-1 text-xs text-muted-foreground">
-				Max size: {MAX_UPLOAD_MB}MB
-			</Text>
 
 			{error ? (
 				<Text className="mt-1 text-sm text-destructive">{error.message}</Text>
