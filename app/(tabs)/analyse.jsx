@@ -22,9 +22,10 @@ import { ScrollView, View } from 'react-native';
 export default function AnalyseScreen() {
 	const router = useRouter();
 	const params = useLocalSearchParams();
-	const investigation = Array.isArray(params.investigation)
+	const investigationParam = Array.isArray(params.investigation)
 		? params.investigation[0]
 		: params.investigation;
+	const investigation = investigationParam || undefined;
 	const fromParam = Array.isArray(params.from) ? params.from[0] : params.from;
 	const toParam = Array.isArray(params.to) ? params.to[0] : params.to;
 	const fromDate = fromParam ? Number(fromParam) : undefined;
@@ -42,7 +43,7 @@ export default function AnalyseScreen() {
 
 	const onInvestigationChange = useCallback(
 		(newInvestigation) => {
-			updateParams({ investigation: newInvestigation });
+			updateParams({ investigation: newInvestigation || '' });
 		},
 		[updateParams]
 	);
@@ -85,7 +86,6 @@ export default function AnalyseScreen() {
 	const { data: reports = [], isLoading: isReportsLoading } = useQuery({
 		queryKey: ['reports', fromDate, toDate, investigation],
 		queryFn: async () => {
-			if (!investigation) return [];
 			const response = await reportsApiManager.readReports({
 				investigation,
 				from: fromDate,
@@ -94,7 +94,6 @@ export default function AnalyseScreen() {
 			});
 			return withDisplayDates(response ?? []);
 		},
-		enabled: Boolean(investigation),
 	});
 
 	const chartData = useMemo(
@@ -113,38 +112,39 @@ export default function AnalyseScreen() {
 				showsVerticalScrollIndicator={false}
 			>
 				<Text className="text-muted-foreground">
-					Choose an investigation to view trends and history.
+					All reports for this profile are shown below. Select an investigation to
+					filter.
 				</Text>
 				<InvestigationSelect
 					results={isInvestigationLoading ? [] : investigations}
 					onSelectCb={onInvestigationChange}
 					currentValue={investigation}
 					labelText="Investigation"
+					placeholder="All investigations"
+					allowClear
 				/>
 
-				{investigation ? (
-					<View className="z-10">
-						<DateRange
-							fromDate={fromDate}
-							onFromDateSelect={setFromDate}
-							onFromDateReset={clearFromDate}
-							toDate={toDate}
-							onToDateSelect={setToDate}
-							onToDateReset={clearToDate}
-						/>
-					</View>
-				) : null}
+				<View className="z-10">
+					<DateRange
+						fromDate={fromDate}
+						onFromDateSelect={setFromDate}
+						onFromDateReset={clearFromDate}
+						toDate={toDate}
+						onToDateSelect={setToDate}
+						onToDateReset={clearToDate}
+					/>
+				</View>
 
 				{isReportsLoading ? (
 					<Text className="text-muted-foreground">Loading reports…</Text>
-				) : reports.length > 0 ? (
+				) : reports.length === 0 ? (
+					<Text className="text-muted-foreground">No reports in this range.</Text>
+				) : investigation ? (
 					<ExpandableChart
 						data={chartData}
 						unit={investigationUnit}
 						expandTitle={investigationLabel}
 					/>
-				) : investigation ? (
-					<Text className="text-muted-foreground">No reports in this range.</Text>
 				) : null}
 
 				{reports.length > 0 ? (
