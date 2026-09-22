@@ -6,7 +6,7 @@ import FormSheetModal from '@/components/FormSheetModal';
 import { useTheme } from '@/components/ThemeProvider';
 import { Icon } from '@/components/ui/icon';
 import { Text } from '@/components/ui/text';
-import { ChevronRight } from 'lucide-react-native';
+import { ChevronDown } from 'lucide-react-native';
 import { useEffect, useRef, useState } from 'react';
 import { Controller } from 'react-hook-form';
 import { Keyboard, Pressable, TextInput, View } from 'react-native';
@@ -50,7 +50,7 @@ export default function FormFieldRemarks({
 			name={schemaProperty}
 			render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => {
 				const text = typeof value === 'string' ? value : '';
-				const preview = text.trim();
+				const preview = text.replace(/\s+/g, ' ').trim();
 
 				const handleOpenChange = (nextOpen) => {
 					setOpen(nextOpen);
@@ -71,14 +71,20 @@ export default function FormFieldRemarks({
 							accessibilityValue={{ text: preview || labelText }}
 							accessibilityState={{ disabled }}
 						>
-							<Text
-								className="min-w-0 flex-1 text-foreground"
-								numberOfLines={1}
-							>
-								{preview || labelText}
-							</Text>
+							<Text className="shrink-0 text-muted-foreground">{labelText}</Text>
+							<View className="min-w-0 flex-1 flex-row items-center justify-end">
+								{preview ? (
+									<Text
+										className="min-w-0 shrink text-foreground"
+										numberOfLines={1}
+										ellipsizeMode="tail"
+									>
+										{preview}
+									</Text>
+								) : null}
+							</View>
 							<Icon
-								as={ChevronRight}
+								as={ChevronDown}
 								className="shrink-0 text-muted-foreground"
 								size={16}
 							/>
