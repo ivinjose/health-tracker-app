@@ -4,12 +4,12 @@ import useReportsApiManager from '@/api-managers/ReportsApiManager';
 import FormFieldDate from '@/components/FormFieldDate';
 import FormFieldFile from '@/components/FormFieldFile';
 import FormFieldLabels from '@/components/FormFieldLabels';
+import FormFieldRemarks from '@/components/FormFieldRemarks';
 import FormSheetModal from '@/components/FormSheetModal';
 import ReportFormFields from '@/components/ReportFormFields';
 import { useTheme } from '@/components/ThemeProvider';
 import { Expanding } from '@/components/ui/expanding';
 import { Form } from '@/components/ui/form';
-import FormFieldTextarea from '@/components/ui/form-field-textarea';
 import { Icon } from '@/components/ui/icon';
 import { Text } from '@/components/ui/text';
 import { useToast } from '@/hooks/use-toast';
@@ -304,11 +304,9 @@ export default function NewMultiReportDialog({ open, onOpenChange }) {
 					labels={isLabelLoading ? [] : labels}
 					disabled={isLabelLoading || isPending}
 				/>
-				<FormFieldTextarea
+				<FormFieldRemarks
 					formControl={form.control}
 					schemaProperty="remarks"
-					placeholder="Enter any details you want to remember or note"
-					labelText="Remarks"
 				/>
 				<View className="mb-4 mt-1 h-px bg-border" />
 

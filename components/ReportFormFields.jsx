@@ -2,8 +2,8 @@ import FormFieldDate from '@/components/FormFieldDate';
 import FormFieldFile from '@/components/FormFieldFile';
 import FormFieldInvestigation from '@/components/FormFieldInvestigation';
 import FormFieldLabels from '@/components/FormFieldLabels';
+import FormFieldRemarks from '@/components/FormFieldRemarks';
 import FormFieldInput from '@/components/ui/form-field-input';
-import FormFieldTextarea from '@/components/ui/form-field-textarea';
 
 function fieldName(namePrefix, name) {
 	return namePrefix ? `${namePrefix}.${name}` : name;
@@ -71,11 +71,9 @@ export default function ReportFormFields({
 				/>
 			) : null}
 			{showRemarks ? (
-				<FormFieldTextarea
+				<FormFieldRemarks
 					formControl={form.control}
 					schemaProperty={fieldName(namePrefix, 'remarks')}
-					placeholder="Enter any details you want to remember or note"
-					labelText="Remarks"
 				/>
 			) : null}
 		</>

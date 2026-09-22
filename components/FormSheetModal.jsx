@@ -16,6 +16,7 @@ import {
 } from 'react-native';
 
 const CLOSE_ICON_SIZE = 36;
+const BACK_ICON_SIZE = 22;
 
 function useKeyboardHeight(enabled) {
 	const [height, setHeight] = useState(0);
@@ -44,7 +45,11 @@ function useKeyboardHeight(enabled) {
 	return height;
 }
 
-function CloseControl({ onCancel, color, className }) {
+function DismissControl({ onCancel, color, className, icon = 'close' }) {
+	const isBack = icon === 'back';
+	const symbolName = isBack ? 'chevron.left' : 'xmark.circle.fill';
+	const size = isBack ? BACK_ICON_SIZE : CLOSE_ICON_SIZE;
+
 	return (
 		<Pressable
 			onPress={onCancel}
@@ -52,17 +57,17 @@ function CloseControl({ onCancel, color, className }) {
 			hitSlop={8}
 			style={({ pressed }) => (pressed ? { opacity: 0.6 } : undefined)}
 			accessibilityRole="button"
-			accessibilityLabel="Close"
+			accessibilityLabel={isBack ? 'Back' : 'Close'}
 		>
 			<SymbolView
-				name="xmark.circle.fill"
-				size={CLOSE_ICON_SIZE}
+				name={symbolName}
+				size={size}
 				tintColor={color}
 				type="hierarchical"
 				fallback={
 					<IconSymbol
-						name="xmark.circle.fill"
-						size={CLOSE_ICON_SIZE}
+						name={symbolName}
+						size={size}
 						color={color}
 					/>
 				}
@@ -146,6 +151,8 @@ export default function FormSheetModal({
 	scrollViewRef,
 	scrollable = true,
 	padded = true,
+	dismissIcon = 'close',
+	avoidKeyboard = false,
 }) {
 	const theme = useTheme();
 
@@ -176,6 +183,8 @@ export default function FormSheetModal({
 					scrollViewRef={scrollViewRef}
 					scrollable={scrollable}
 					padded={padded}
+					dismissIcon={dismissIcon}
+					avoidKeyboard={avoidKeyboard}
 				>
 					{children}
 				</FormSheetBody>
@@ -200,9 +209,11 @@ function FormSheetBody({
 	scrollViewRef,
 	scrollable,
 	padded,
+	dismissIcon,
+	avoidKeyboard,
 }) {
 	const theme = useTheme();
-	const keyboardHeight = useKeyboardHeight(open);
+	const keyboardHeight = useKeyboardHeight(open && (scrollable || avoidKeyboard));
 	const confirmInactive = confirmDisabled || confirmLoading;
 	const confirmColor = confirmInactive ? theme.colors.tintDisabled : theme.colors.tint;
 	const useToolbar = theme.layout.header === 'toolbar';
@@ -223,16 +234,23 @@ function FormSheetBody({
 			flexGrow: 0,
 		}
 		: { paddingBottom: keyboardHeight, flexGrow: 0 };
+	const bodyStyle = avoidKeyboard
+		? {
+			...(contentStyle ?? {}),
+			paddingBottom: (contentStyle?.paddingBottom ?? 0) + keyboardHeight,
+		}
+		: contentStyle;
 
 	return (
 		<>
 			{useToolbar ? (
 				<View className="flex-row items-center px-4 pb-3 pt-4">
 					<View className="min-w-[48px] flex-1 items-start">
-						<CloseControl
+						<DismissControl
 							onCancel={onCancel}
 							color={theme.colors.close}
 							className="h-8 w-8 items-center justify-center"
+							icon={dismissIcon}
 						/>
 					</View>
 					<View className="min-w-0 max-w-[55%] px-2">
@@ -271,10 +289,11 @@ function FormSheetBody({
 				</View>
 			) : (
 				<>
-					<CloseControl
+					<DismissControl
 						onCancel={onCancel}
 						color={theme.colors.close}
 						className="absolute left-4 top-4 z-10 h-8 w-8 items-center justify-center"
+						icon={dismissIcon}
 					/>
 
 					{onConfirm ? (
@@ -317,7 +336,7 @@ function FormSheetBody({
 					{children}
 				</ScrollView>
 			) : (
-				<View className="flex-1" style={contentStyle}>
+				<View className="flex-1" style={bodyStyle}>
 					{children}
 				</View>
 			)}
