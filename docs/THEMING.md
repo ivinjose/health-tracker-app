@@ -20,7 +20,7 @@ The replacement is:
 4. Leaves always use semantic classes (`bg-background`, `text-foreground`, `bg-card`, `text-muted-foreground`, `text-destructive`, `border-input`, `bg-primary`).
 5. `useTheme()` only for React Native props that cannot take a `className` (placeholder color, keyboard, calendar theme, lucide `color`, `RefreshControl` tint, SVG strokes).
 
-There is **no** `isDark` / `appearance === 'dark'` branch in leaf UI. The only remaining appearance-driven **structure** branch is in `components/FormSheetModal.jsx` (`theme.layout.header === 'toolbar'` vs stacked title).
+There is **no** `isDark` / `appearance === 'dark'` branch in leaf UI. Sheet chrome (header row, padding) is the same in both palettes.
 
 Do **not** wrap individual screens in `ThemeProvider`. Re-apply vars only on native `Modal` windows and portal roots.
 
@@ -88,7 +88,7 @@ Notable `colors` values from code:
 - `tintDisabled`: `#9ca3af`
 - `close`: `#4c4c4c`
 
-`layout.header` is `'stacked'`. Padding: `contentPadding: 40`, `contentPaddingTopWithTitle: 16`, `contentPaddingTopWithoutTitle: 56`.
+Sheet layout is shared with dark: `contentPadding: 20`, both top paddings `8`.
 
 `chart`: `line: '#30425f'`, `lineSecondary: '#e54d2e'`, `axis: '#b8c0d9'`, `label: '#6b7280'`.
 
@@ -107,7 +107,7 @@ Notable `colors` values from code:
 - `destructive`: `#FF453A`
 - `tintDisabled`: `#636366`
 
-`layout.header` is `'toolbar'`. Padding: `contentPadding: 20`, both top paddings `8`.
+Sheet layout is shared with light: `contentPadding: 20`, both top paddings `8`.
 
 `chart`: `line: '#0A84FF'`, `lineSecondary: '#FF453A'`, `axis: '#3A3A3C'`, `label: '#8E8E93'`.
 
@@ -267,10 +267,7 @@ Do not pass an `appearance` prop. Sheets follow `APP_APPEARANCE`.
 
 `DateRange` calendar is also a `Modal`; it nests `ThemeProvider appearance={theme.name}` the same way. The calendar grid itself is `DatePickerCalendar`, which reads `theme.calendar`.
 
-`FormSheetBody` (inside the provider) is the only place allowed to branch on **layout**:
-
-- `theme.layout.header === 'toolbar'` (`dark`): row with `CircleX` | centered title | optional `CircleCheck` confirm (or an empty `h-8 w-8` spacer if no `onConfirm`).
-- else (`light`): absolute `CircleX` top-left, optional confirm top-right, title below (`px-10 pt-14`).
+`FormSheetBody` (inside the provider) always uses the same header row in both palettes: Close/Back | centered title | optional Save/Delete (or an empty `h-8 w-8` spacer if none).
 
 Confirm control: `onConfirm` + `confirmDisabled` / `confirmLoading`. Loading shows `ActivityIndicator` with `theme.colors.tint`. Inactive confirm uses `theme.colors.tintDisabled`. `NewReportDialog` uses this instead of a footer Save button. Sheets that still pass `footer` keep the footer `View` (`px-10 p-4`).
 

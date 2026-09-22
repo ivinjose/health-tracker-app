@@ -216,7 +216,6 @@ function FormSheetBody({
 	const keyboardHeight = useKeyboardHeight(open && (scrollable || avoidKeyboard));
 	const confirmInactive = confirmDisabled || confirmLoading;
 	const confirmColor = confirmInactive ? theme.colors.tintDisabled : theme.colors.tint;
-	const useToolbar = theme.layout.header === 'toolbar';
 	const contentPaddingTop = title
 		? theme.layout.contentPaddingTopWithTitle
 		: theme.layout.contentPaddingTopWithoutTitle;
@@ -243,59 +242,26 @@ function FormSheetBody({
 
 	return (
 		<>
-			{useToolbar ? (
-				<View className="flex-row items-center px-4 pb-3 pt-4">
-					<View className="min-w-[48px] flex-1 items-start">
-						<DismissControl
-							onCancel={onCancel}
-							color={theme.colors.close}
-							className="h-8 w-8 items-center justify-center"
-							icon={dismissIcon}
-						/>
-					</View>
-					<View className="min-w-0 max-w-[55%] px-2">
-						{title ? (
-							<Text
-								className="text-center text-[17px] font-semibold text-foreground"
-								numberOfLines={1}
-							>
-								{title}
-							</Text>
-						) : null}
-					</View>
-					<View className="min-w-[48px] flex-1 items-end">
-						{onConfirm ? (
-							<ConfirmControl
-								onConfirm={onConfirm}
-								confirmInactive={confirmInactive}
-								confirmLoading={confirmLoading}
-								confirmColor={confirmColor}
-								confirmAccessibilityLabel={confirmAccessibilityLabel}
-								tintColor={theme.colors.tint}
-								className="h-8 items-center justify-center"
-							/>
-						) : onDelete ? (
-							<DeleteControl
-								onDelete={onDelete}
-								disabled={deleteDisabled}
-								accessibilityLabel={deleteAccessibilityLabel}
-								color={theme.colors.destructive}
-								className="h-8 w-8 items-center justify-center"
-							/>
-						) : (
-							<View className="h-8 w-8" />
-						)}
-					</View>
-				</View>
-			) : (
-				<>
+			<View className="flex-row items-center px-4 pb-3 pt-4">
+				<View className="min-w-[48px] flex-1 items-start">
 					<DismissControl
 						onCancel={onCancel}
 						color={theme.colors.close}
-						className="absolute left-4 top-4 z-10 h-8 w-8 items-center justify-center"
+						className="h-8 w-8 items-center justify-center"
 						icon={dismissIcon}
 					/>
-
+				</View>
+				<View className="min-w-0 max-w-[55%] px-2">
+					{title ? (
+						<Text
+							className="text-center text-[17px] font-semibold text-foreground"
+							numberOfLines={1}
+						>
+							{title}
+						</Text>
+					) : null}
+				</View>
+				<View className="min-w-[48px] flex-1 items-end">
 					{onConfirm ? (
 						<ConfirmControl
 							onConfirm={onConfirm}
@@ -304,7 +270,7 @@ function FormSheetBody({
 							confirmColor={confirmColor}
 							confirmAccessibilityLabel={confirmAccessibilityLabel}
 							tintColor={theme.colors.tint}
-							className="absolute right-4 top-4 z-10 h-8 items-center justify-center"
+							className="h-8 items-center justify-center"
 						/>
 					) : onDelete ? (
 						<DeleteControl
@@ -312,17 +278,13 @@ function FormSheetBody({
 							disabled={deleteDisabled}
 							accessibilityLabel={deleteAccessibilityLabel}
 							color={theme.colors.destructive}
-							className="absolute right-4 top-4 z-10 h-8 w-8 items-center justify-center"
+							className="h-8 w-8 items-center justify-center"
 						/>
-					) : null}
-
-					{title ? (
-						<View className="px-10 pt-14">
-							<Text className="text-lg font-semibold text-foreground">{title}</Text>
-						</View>
-					) : null}
-				</>
-			)}
+					) : (
+						<View className="h-8 w-8" />
+					)}
+				</View>
+			</View>
 
 			{scrollable ? (
 				<ScrollView
