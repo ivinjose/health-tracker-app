@@ -24,6 +24,14 @@ import {
 const TOOLTIP_WIDTH = 120;
 const MULTI_TOOLTIP_WIDTH = 160;
 
+/** Sample series so an empty chart uses the same axis layout as a real one. */
+const PLACEHOLDER_DATA = [
+	{ timestamp: new Date(2024, 0, 15).getTime(), value: 42 },
+	{ timestamp: new Date(2024, 3, 15).getTime(), value: 55 },
+	{ timestamp: new Date(2024, 6, 15).getTime(), value: 48 },
+	{ timestamp: new Date(2024, 9, 15).getTime(), value: 63 },
+];
+
 function getTooltipLeft(pointX, chartWidth, tooltipWidth) {
 	const margin = 4;
 	const left = pointX - tooltipWidth / 2;
@@ -41,6 +49,7 @@ export default function LineChart({
 	seriesLabels = [],
 	showNodeValues = true,
 	paddingTop,
+	emptyMessage = 'No chart data',
 }) {
 	const theme = useTheme();
 	const lineColors = getSeriesColors(theme);
@@ -67,16 +76,8 @@ export default function LineChart({
 		}
 	};
 
-	if (!data.length) {
-		return (
-			<View
-				style={{ height: chartHeight, width: width ?? '100%' }}
-				className="items-center justify-center"
-			>
-				<Text className="text-sm text-muted-foreground">No chart data</Text>
-			</View>
-		);
-	}
+	const isPlaceholder = data.length === 0;
+	const plotData = isPlaceholder ? PLACEHOLDER_DATA : data;
 
 	const padding = {
 		...CHART_PADDING,
@@ -86,7 +87,7 @@ export default function LineChart({
 	};
 	const { series, innerHeight, innerWidth } = chartWidth
 		? buildLinePoints({
-			data,
+			data: plotData,
 			yKeys: keys,
 			chartWidth,
 			height: chartHeight,
@@ -95,8 +96,8 @@ export default function LineChart({
 		: { series: [], innerHeight: 0, innerWidth: 0 };
 	const axisPoints = series[0]?.points ?? [];
 	const visibleTickIndices = getVisibleTickIndices(axisPoints.length, innerWidth);
-	const drawNodeValues = showNodeValues && shouldShowChartNodeValues(data.length, innerWidth);
-	const useNearestHit = shouldUseNearestPointHit(data.length, innerWidth);
+	const drawNodeValues = !isPlaceholder && showNodeValues && shouldShowChartNodeValues(plotData.length, innerWidth);
+	const useNearestHit = !isPlaceholder && shouldUseNearestPointHit(plotData.length, innerWidth);
 	const leftTicks = series[0]
 		? getYAxisTicks(
 			series[0].minY,
@@ -149,6 +150,8 @@ export default function LineChart({
 		<View
 			style={{ height: chartHeight, width: width ?? '100%' }}
 			onLayout={handleLayout}
+			accessibilityRole={isPlaceholder ? 'text' : undefined}
+			accessibilityLabel={isPlaceholder ? emptyMessage : undefined}
 		>
 			{chartWidth > 0 ? (
 				<>
@@ -237,7 +240,7 @@ export default function LineChart({
 								.join(' ');
 
 							return (
-								<G key={line.key}>
+								<G key={line.key} opacity={isPlaceholder ? 0.35 : 1}>
 									{polylinePoints ? (
 										<Polyline
 											points={polylinePoints}
@@ -301,7 +304,7 @@ export default function LineChart({
 							);
 						})}
 					</Svg>
-					{useNearestHit ? (
+					{isPlaceholder ? null : useNearestHit ? (
 						<Pressable
 							accessibilityRole="button"
 							accessibilityLabel="Show details for the nearest reading"
@@ -391,6 +394,35 @@ export default function LineChart({
 									{selectedItem.remarks}
 								</Text>
 							) : null}
+						</View>
+					) : null}
+					{isPlaceholder ? (
+						<View
+							pointerEvents="none"
+							style={{
+								position: 'absolute',
+								left: padding.left,
+								right: padding.right,
+								top: padding.top,
+								bottom: padding.bottom,
+								alignItems: 'center',
+								justifyContent: 'center',
+								paddingHorizontal: 12,
+							}}
+						>
+							<View
+								style={{
+									maxWidth: '100%',
+									borderRadius: 8,
+									backgroundColor: theme.colors.background,
+									paddingHorizontal: 12,
+									paddingVertical: 8,
+								}}
+							>
+								<Text className="text-center text-sm text-muted-foreground">
+									{emptyMessage}
+								</Text>
+							</View>
 						</View>
 					) : null}
 				</>

@@ -22,13 +22,14 @@ export default function ExpandableChart({
 	showLegend,
 	showExpandButton = true,
 	onExpandOpenChange,
+	emptyMessage,
 }) {
 	const [expandOpen, setExpandOpen] = useState(false);
 	const legendVisible = showLegend ?? seriesLabels.length > 1;
 	const canExpand = showExpandButton && data.length > 0;
 	const dialogTitle = expandTitle ?? title;
 	const dialogData = expandData ?? data;
-	const showHeader = Boolean(title || headerRight || canExpand);
+	const showHeader = Boolean(title || headerRight || showExpandButton);
 
 	const setOpen = (next) => {
 		setExpandOpen(next);
@@ -49,6 +50,8 @@ export default function ExpandableChart({
 					{headerRight}
 					{canExpand ? (
 						<ChartExpandButton onPress={() => setOpen(true)} />
+					) : showExpandButton ? (
+						<View className="h-8 w-8" />
 					) : null}
 				</View>
 			) : null}
@@ -67,6 +70,7 @@ export default function ExpandableChart({
 				units={units}
 				seriesLabels={seriesLabels}
 				showNodeValues={showNodeValues}
+				emptyMessage={emptyMessage}
 			/>
 
 			{canExpand ? (

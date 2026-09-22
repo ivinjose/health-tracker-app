@@ -135,16 +135,28 @@ export default function AnalyseScreen() {
 					/>
 				</View>
 
-				{isReportsLoading ? (
-					<Text className="text-muted-foreground">Loading reports…</Text>
-				) : reports.length === 0 ? (
-					<Text className="text-muted-foreground">No reports in this range.</Text>
-				) : investigation ? (
+				{investigation && !isReportsLoading && reports.length > 0 ? (
 					<ExpandableChart
 						data={chartData}
 						unit={investigationUnit}
 						expandTitle={investigationLabel}
 					/>
+				) : !investigation ? (
+					<ExpandableChart
+						data={[]}
+						emptyMessage="Select an investigation to see its trend here"
+					/>
+				) : isReportsLoading ? (
+					<Text className="text-muted-foreground">Loading reports…</Text>
+				) : (
+					<Text className="text-muted-foreground">No reports in this range.</Text>
+				)}
+
+				{!investigation && isReportsLoading ? (
+					<Text className="text-muted-foreground">Loading reports…</Text>
+				) : null}
+				{!investigation && !isReportsLoading && reports.length === 0 ? (
+					<Text className="text-muted-foreground">No reports in this range.</Text>
 				) : null}
 
 				{reports.length > 0 ? (
