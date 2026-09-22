@@ -32,12 +32,13 @@ function DatePickerField({
 			<View className="flex-row items-center rounded-lg border border-input">
 				<Pressable
 					onPress={openCalendar}
-					className="min-h-11 flex-1 justify-center px-3 py-3"
+					className="min-h-11 flex-1 flex-row items-center gap-2 px-3 py-3"
 					accessibilityRole="button"
 					accessibilityLabel={
 						dateValue ? `${label}, ${format(dateValue, 'PP')}` : `${label}, Pick a date`
 					}
 				>
+					<CalendarIcon size={24} color={theme.colors.tint} />
 					<Text className={dateValue ? 'text-foreground' : 'text-muted-foreground'}>
 						{dateValue ? format(dateValue, 'PP') : 'Pick a date'}
 					</Text>
@@ -53,15 +54,6 @@ function DatePickerField({
 						<CircleX size={18} color={theme.colors.close} />
 					</Pressable>
 				) : null}
-				<Pressable
-					onPress={openCalendar}
-					className="h-11 w-11 items-center justify-center"
-					hitSlop={8}
-					accessibilityRole="button"
-					accessibilityLabel={`${label} calendar`}
-				>
-					<CalendarIcon size={18} color={theme.colors.mutedForeground} />
-				</Pressable>
 			</View>
 
 			<DatePickerSheet
