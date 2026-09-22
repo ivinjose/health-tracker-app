@@ -25,6 +25,7 @@ import { Pressable, View } from 'react-native';
  * @param {string} [props.minDate]
  * @param {string} [props.maxDate]
  * @param {boolean} [props.required]
+ * @param {string} [props.dateFormat] - `date-fns` format for the closed field. Defaults to the long form (`PPP`).
  */
 export default function FormFieldDate({
 	formControl,
@@ -33,6 +34,7 @@ export default function FormFieldDate({
 	minDate,
 	maxDate,
 	required = false,
+	dateFormat = 'PPP',
 }) {
 	const theme = useTheme();
 	const [open, setOpen] = useState(false);
@@ -52,12 +54,12 @@ export default function FormFieldDate({
 							requiredFieldAccessibilityLabel(labelText, required) ?? 'Date'
 						}
 						accessibilityValue={{
-							text: value ? format(value, 'PPP') : 'Pick a date',
+							text: value ? format(value, dateFormat) : 'Pick a date',
 						}}
 					>
 						<CalendarIcon size={24} color={theme.colors.tint} />
 						<Text className={value ? 'text-foreground' : 'text-muted-foreground'}>
-							{value ? format(value, 'PPP') : 'Pick a date'}
+							{value ? format(value, dateFormat) : 'Pick a date'}
 						</Text>
 					</Pressable>
 

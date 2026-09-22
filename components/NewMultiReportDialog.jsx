@@ -13,7 +13,6 @@ import { Form } from '@/components/ui/form';
 import { Icon } from '@/components/ui/icon';
 import { Text } from '@/components/ui/text';
 import { useToast } from '@/hooks/use-toast';
-import { getDateWithoutTime } from '@/lib/helpers';
 import { getInvestigationLabel } from '@/lib/reportUtils';
 import formSchema, { isEmptyDraft, reportFileSchema, reportRowSchema } from '@/schemas/Report';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
@@ -24,10 +23,6 @@ import { useFieldArray, useForm, useWatch } from 'react-hook-form';
 import { Keyboard, Pressable, View } from 'react-native';
 
 const ROOT_FIELD_NAMES = new Set(['report', 'date', 'remarks']);
-
-function todayAtLocalMidnight() {
-	return getDateWithoutTime(new Date());
-}
 
 function emptyDraft() {
 	return {
@@ -40,7 +35,7 @@ function emptyForm() {
 	return {
 		reports: [emptyDraft()],
 		report: undefined,
-		date: todayAtLocalMidnight(),
+		date: undefined,
 		remarks: '',
 		labels: [],
 	};
@@ -295,6 +290,7 @@ export default function NewMultiReportDialog({ open, onOpenChange }) {
 					name="date"
 					labelText="Date of sample collection"
 					maxDate={maxDate}
+					dateFormat="PP"
 					required
 				/>
 				<FormFieldLabels

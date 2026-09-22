@@ -67,6 +67,7 @@ export default function ReportFormFields({
 					name={fieldName(namePrefix, 'date')}
 					labelText="Date of sample collection"
 					maxDate={maxDate}
+					dateFormat="PP"
 					required
 				/>
 			) : null}
