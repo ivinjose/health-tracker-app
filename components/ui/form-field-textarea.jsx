@@ -1,10 +1,11 @@
 /**
  * Generic multiline text form control (typically report or appointment `remarks`).
  */
-import FormFieldLabel from '@/components/FormFieldLabel';
+import { requiredFieldAccessibilityLabel } from '@/components/FormFieldLabel';
 import { useTheme } from '@/components/ThemeProvider';
+import { Text } from '@/components/ui/text';
 import { Controller } from 'react-hook-form';
-import { Text, TextInput, View } from 'react-native';
+import { Text as ErrorText, TextInput, View } from 'react-native';
 
 /**
  * Multiline text input bound to a react-hook-form string field.
@@ -12,8 +13,8 @@ import { Text, TextInput, View } from 'react-native';
  * @param {object} props
  * @param {object} props.formControl - react-hook-form `control`.
  * @param {string} props.schemaProperty - Form path for the string.
- * @param {string} [props.labelText]
- * @param {string} [props.placeholder]
+ * @param {string} [props.labelText] - Shown on the left. Typed text sits on the right.
+ * @param {string} [props.placeholder] - Overrides `labelText` when set.
  * @param {boolean} [props.required]
  */
 const FormFieldTextarea = ({
@@ -21,11 +22,11 @@ const FormFieldTextarea = ({
 	schemaProperty,
 	placeholder,
 	labelText,
-	labelStyleClass,
 	inputStyleClass,
 	required = false,
 }) => {
 	const theme = useTheme();
+	const hint = placeholder || labelText;
 
 	return (
 		<Controller
@@ -33,33 +34,28 @@ const FormFieldTextarea = ({
 			name={schemaProperty}
 			render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
 				<View className="mb-4">
-					<FormFieldLabel
-						labelText={labelText}
-						required={required}
-						className={
-							labelStyleClass ??
-							'mb-1 text-sm font-medium text-muted-foreground'
-						}
-					/>
-
-					<TextInput
-						className={
-							inputStyleClass ??
-							'min-h-[75px] rounded-[10px] border border-input bg-card px-3 py-3 text-base leading-tight text-foreground'
-						}
-						placeholder={placeholder}
-						placeholderTextColor={theme.colors.placeholder}
-						value={value}
-						onChangeText={onChange}
-						onBlur={onBlur}
-						multiline
-						textAlignVertical="top"
-						keyboardAppearance={theme.keyboardAppearance}
-						selectionColor={theme.colors.tint}
-					/>
+					<View className="min-h-[75px] flex-row items-start justify-between gap-2 rounded-[10px] border border-input bg-card px-3 py-3">
+						<Text className="shrink-0 text-muted-foreground">{hint}</Text>
+						<TextInput
+							className={
+								inputStyleClass ??
+								'min-h-[51px] min-w-0 flex-1 text-base leading-tight text-foreground'
+							}
+							style={{ textAlign: 'right' }}
+							placeholderTextColor={theme.colors.placeholder}
+							accessibilityLabel={requiredFieldAccessibilityLabel(labelText || hint, required)}
+							value={value}
+							onChangeText={onChange}
+							onBlur={onBlur}
+							multiline
+							textAlignVertical="top"
+							keyboardAppearance={theme.keyboardAppearance}
+							selectionColor={theme.colors.tint}
+						/>
+					</View>
 
 					{error && (
-						<Text className="mt-1 text-sm text-destructive">{error.message}</Text>
+						<ErrorText className="mt-1 text-sm text-destructive">{error.message}</ErrorText>
 					)}
 				</View>
 			)}

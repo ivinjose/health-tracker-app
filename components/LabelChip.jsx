@@ -22,7 +22,10 @@ export default function LabelChip({ name, color, onRemove }) {
 			</Text>
 			{onRemove ? (
 				<Pressable
-					onPress={onRemove}
+					onPress={(event) => {
+						event?.stopPropagation?.();
+						onRemove();
+					}}
 					hitSlop={8}
 					accessibilityRole="button"
 					accessibilityLabel={`Remove ${name}`}

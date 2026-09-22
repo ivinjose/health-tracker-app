@@ -5,9 +5,7 @@
  * which only draws a caption, and from {@link FormFieldInvestigation}, which
  * stores one investigation id.
  */
-import FormFieldLabel, {
-	requiredFieldAccessibilityLabel,
-} from '@/components/FormFieldLabel';
+import { requiredFieldAccessibilityLabel } from '@/components/FormFieldLabel';
 import LabelChip from '@/components/LabelChip';
 import LabelPickerModal from '@/components/LabelPickerModal';
 import { Icon } from '@/components/ui/icon';
@@ -26,8 +24,8 @@ const MAX_REPORT_LABELS = 20;
  * @param {object} props
  * @param {object} props.formControl - react-hook-form `control`.
  * @param {string} props.schemaProperty - Form path for the id array (`labels`).
- * @param {string} [props.labelText]
- * @param {string} [props.placeholder]
+ * @param {string} [props.labelText] - Shown on the left. Chosen labels sit on the right.
+ * @param {string} [props.placeholder] - Overrides `labelText` when set (for example a loading state).
  * @param {Array<{ _id: string, name?: string, color?: string }>} [props.labels] - Catalog from GET `/api/labels`.
  * @param {boolean} [props.disabled]
  */
@@ -35,7 +33,7 @@ export default function FormFieldLabels({
 	formControl,
 	schemaProperty,
 	labelText = 'Labels',
-	placeholder = 'Choose from the list',
+	placeholder,
 	labels = [],
 	disabled = false,
 }) {
@@ -61,35 +59,40 @@ export default function FormFieldLabels({
 					onChange([...selectedIds, next]);
 				};
 
+				const selectedNames = selected.map((item) => item.name).filter(Boolean).join(', ');
+
 				return (
 					<View className="mb-4">
-						<FormFieldLabel labelText={labelText} />
-
-						{selected.length > 0 ? (
-							<View className="mb-2 flex-row flex-wrap gap-2">
-								{selected.map((item) => (
-									<LabelChip
-										key={String(item._id)}
-										name={item.name}
-										color={item.color}
-										onRemove={disabled ? undefined : () => removeId(item._id)}
-									/>
-								))}
-							</View>
-						) : null}
-
 						<Pressable
 							onPress={() => setOpen(true)}
 							disabled={pickerDisabled}
 							className={`flex-row items-center justify-between gap-2 rounded-[10px] border border-input bg-card px-3 py-3 ${pickerDisabled ? 'opacity-50' : ''}`}
 							accessibilityRole="button"
 							accessibilityLabel={requiredFieldAccessibilityLabel(labelText, false)}
-							accessibilityValue={{ text: placeholder }}
+							accessibilityValue={{ text: selectedNames || placeholder || labelText }}
 							accessibilityState={{ disabled: pickerDisabled }}
 						>
-							<Text className="min-w-0 flex-1 text-muted-foreground" numberOfLines={1}>
-								{placeholder}
-							</Text>
+							<Text className="shrink-0 text-muted-foreground">{labelText}</Text>
+							<View className="min-w-0 flex-1 flex-row flex-wrap items-center justify-end gap-2">
+								{selected.length > 0 ? (
+									selected.map((item) => (
+										<LabelChip
+											key={String(item._id)}
+											name={item.name}
+											color={item.color}
+											onRemove={disabled ? undefined : () => removeId(item._id)}
+										/>
+									))
+								) : placeholder ? (
+									<Text
+										className="min-w-0 shrink text-muted-foreground"
+										numberOfLines={1}
+										ellipsizeMode="tail"
+									>
+										{placeholder}
+									</Text>
+								) : null}
+							</View>
 							<Icon
 								as={ChevronDown}
 								className="shrink-0 text-muted-foreground"

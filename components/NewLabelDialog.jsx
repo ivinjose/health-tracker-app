@@ -78,7 +78,6 @@ export default function NewLabelDialog({ open, onOpenChange, label }) {
 				<FormFieldInput
 					formControl={form.control}
 					schemaProperty="name"
-					placeholder="Fasting"
 					labelText="Name"
 					required
 				/>

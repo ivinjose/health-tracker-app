@@ -296,7 +296,7 @@ export default function NewMultiReportDialog({ open, onOpenChange }) {
 				<FormFieldLabels
 					formControl={form.control}
 					schemaProperty="labels"
-					placeholder={isLabelLoading ? 'Loading labels…' : 'Choose from the list'}
+					placeholder={isLabelLoading ? 'Loading labels…' : undefined}
 					labels={isLabelLoading ? [] : labels}
 					disabled={isLabelLoading || isPending}
 				/>

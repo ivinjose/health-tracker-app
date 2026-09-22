@@ -4,16 +4,16 @@
  * Do not use for long catalogs: investigations use {@link FormFieldInvestigation},
  * report tags use {@link FormFieldLabels}.
  */
-import FormFieldLabel from '@/components/FormFieldLabel';
+import { requiredFieldAccessibilityLabel } from '@/components/FormFieldLabel';
 import {
 	Select,
 	SelectContent,
 	SelectItem,
 	SelectTrigger,
-	SelectValue,
 } from '@/components/ui/select';
+import { Text } from '@/components/ui/text';
 import { Controller } from 'react-hook-form';
-import { Text, View } from 'react-native';
+import { Text as ErrorText, View } from 'react-native';
 
 /**
  * Select bound to a react-hook-form string, with options `{ label, value }`.
@@ -21,8 +21,8 @@ import { Text, View } from 'react-native';
  * @param {object} props
  * @param {object} props.formControl - react-hook-form `control`.
  * @param {string} props.schemaProperty - Form path for the selected value.
- * @param {string} [props.labelText]
- * @param {string} [props.placeholder]
+ * @param {string} [props.labelText] - Shown on the left. The chosen option sits on the right.
+ * @param {string} [props.placeholder] - Overrides `labelText` when set.
  * @param {Array<{ label: string, value: string }>} props.dropdownOptions
  * @param {boolean} [props.required]
  */
@@ -31,11 +31,12 @@ const FormFieldSelect = ({
 	schemaProperty,
 	placeholder,
 	labelText,
-	labelStyleClass,
 	dropdownOptions,
 	disabled = false,
 	required = false,
 }) => {
+	const hint = placeholder || labelText;
+
 	return (
 		<Controller
 			control={formControl}
@@ -57,21 +58,31 @@ const FormFieldSelect = ({
 
 				return (
 					<View className="mb-4 w-full">
-						<FormFieldLabel
-							labelText={labelText}
-							required={required}
-							className={
-								labelStyleClass ?? 'text-sm font-medium text-muted-foreground'
-							}
-						/>
-
 						<Select
 							value={selectValue}
 							onValueChange={(option) => onChange(option?.value ?? '')}
 							disabled={disabled}
 						>
-							<SelectTrigger className="mt-1 bg-card" disabled={disabled}>
-								<SelectValue placeholder={placeholder} />
+							<SelectTrigger
+								className="h-auto w-full rounded-[10px] bg-card px-3 py-3 shadow-none sm:h-auto"
+								disabled={disabled}
+								accessibilityLabel={requiredFieldAccessibilityLabel(
+									labelText || hint,
+									required
+								)}
+							>
+								<Text className="shrink-0 text-muted-foreground">{hint}</Text>
+								<View className="min-w-0 flex-1 flex-row items-center justify-end">
+									{selectValue ? (
+										<Text
+											className="min-w-0 shrink text-foreground"
+											numberOfLines={1}
+											ellipsizeMode="tail"
+										>
+											{selectValue.label}
+										</Text>
+									) : null}
+								</View>
 							</SelectTrigger>
 
 							<SelectContent>
@@ -86,7 +97,7 @@ const FormFieldSelect = ({
 						</Select>
 
 						{error && (
-							<Text className="mt-1 text-destructive">{error.message}</Text>
+							<ErrorText className="mt-1 text-destructive">{error.message}</ErrorText>
 						)}
 					</View>
 				);

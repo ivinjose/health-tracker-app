@@ -50,14 +50,12 @@ export default function NewProfileDialog({ open, onOpenChange }) {
 				<FormFieldInput
 					formControl={form.control}
 					schemaProperty="name"
-					placeholder="Enter the name"
 					labelText="Name"
 					required
 				/>
 				<FormFieldSelect
 					formControl={form.control}
 					schemaProperty="gender"
-					placeholder="Choose from the list"
 					labelText="Gender"
 					dropdownOptions={GENDER_OPTIONS}
 					required
@@ -65,7 +63,6 @@ export default function NewProfileDialog({ open, onOpenChange }) {
 				<FormFieldInput
 					formControl={form.control}
 					schemaProperty="age"
-					placeholder="Enter the age"
 					inputType="number"
 					labelText="Age"
 					required

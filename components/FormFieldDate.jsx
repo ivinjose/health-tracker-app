@@ -4,9 +4,7 @@
  * Value is a `Date`. Not used for investigation or catalog labels.
  */
 import DatePickerSheet from '@/components/DatePickerSheet';
-import FormFieldLabel, {
-	requiredFieldAccessibilityLabel,
-} from '@/components/FormFieldLabel';
+import { requiredFieldAccessibilityLabel } from '@/components/FormFieldLabel';
 import { Text } from '@/components/ui/text';
 import { useTheme } from '@/components/ThemeProvider';
 import { format } from 'date-fns';
@@ -21,7 +19,7 @@ import { Pressable, View } from 'react-native';
  * @param {object} props
  * @param {object} props.formControl - react-hook-form `control`.
  * @param {string} props.name - Form path (`date`).
- * @param {string} [props.labelText]
+ * @param {string} [props.labelText] - Shown on the left. The chosen date sits on the right.
  * @param {string} [props.minDate]
  * @param {string} [props.maxDate]
  * @param {boolean} [props.required]
@@ -43,42 +41,55 @@ export default function FormFieldDate({
 		<Controller
 			control={formControl}
 			name={name}
-			render={({ field: { onChange, value }, fieldState: { error } }) => (
-				<View className="mb-4">
-					<FormFieldLabel labelText={labelText} required={required} />
-					<Pressable
-						onPress={() => setOpen(true)}
-						className="flex-row items-center justify-start gap-2 rounded-[10px] border border-input bg-card px-3 py-3"
-						accessibilityRole="button"
-						accessibilityLabel={
-							requiredFieldAccessibilityLabel(labelText, required) ?? 'Date'
-						}
-						accessibilityValue={{
-							text: value ? format(value, dateFormat) : 'Pick a date',
-						}}
-					>
-						<CalendarIcon size={24} color={theme.colors.tint} />
-						<Text className={value ? 'text-foreground' : 'text-muted-foreground'}>
-							{value ? format(value, dateFormat) : 'Pick a date'}
-						</Text>
-					</Pressable>
+			render={({ field: { onChange, value }, fieldState: { error } }) => {
+				const hint = labelText || 'Pick a date';
+				const formatted = value ? format(value, dateFormat) : '';
 
-					{error ? (
-						<Text className="mt-1 text-sm text-destructive">{error.message}</Text>
-					) : null}
+				return (
+					<View className="mb-4">
+						<Pressable
+							onPress={() => setOpen(true)}
+							className="flex-row items-center justify-between gap-2 rounded-[10px] border border-input bg-card px-3 py-3"
+							accessibilityRole="button"
+							accessibilityLabel={
+								requiredFieldAccessibilityLabel(labelText, required) ?? 'Date'
+							}
+							accessibilityValue={{
+								text: formatted || hint,
+							}}
+						>
+							<Text className="shrink-0 text-muted-foreground">{hint}</Text>
+							<View className="min-w-0 flex-1 flex-row items-center justify-end">
+								{formatted ? (
+									<Text
+										className="min-w-0 shrink text-foreground"
+										numberOfLines={1}
+										ellipsizeMode="tail"
+									>
+										{formatted}
+									</Text>
+								) : null}
+							</View>
+							<CalendarIcon size={16} color={theme.colors.tint} />
+						</Pressable>
 
-					<DatePickerSheet
-						open={open}
-						onOpenChange={setOpen}
-						title={labelText ?? 'Pick a date'}
-						value={value}
-						minDate={minDate}
-						maxDate={maxDate}
-						onSelect={onChange}
-						enableSwipeMonths
-					/>
-				</View>
-			)}
+						{error ? (
+							<Text className="mt-1 text-sm text-destructive">{error.message}</Text>
+						) : null}
+
+						<DatePickerSheet
+							open={open}
+							onOpenChange={setOpen}
+							title={labelText ?? 'Pick a date'}
+							value={value}
+							minDate={minDate}
+							maxDate={maxDate}
+							onSelect={onChange}
+							enableSwipeMonths
+						/>
+					</View>
+				);
+			}}
 		/>
 	);
 }

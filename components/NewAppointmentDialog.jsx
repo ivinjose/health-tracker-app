@@ -59,7 +59,6 @@ export default function NewAppointmentDialog({ open, onOpenChange }) {
 				<FormFieldInput
 					formControl={form.control}
 					schemaProperty="location"
-					placeholder="Dr. Jean Claude at Medical trust"
 					labelText="Where's the appointment at"
 					required
 				/>
@@ -73,7 +72,6 @@ export default function NewAppointmentDialog({ open, onOpenChange }) {
 				<FormFieldSelect
 					formControl={form.control}
 					schemaProperty="time"
-					placeholder="Select time"
 					labelText="Time of appointment"
 					dropdownOptions={TIME_OPTIONS}
 					required
@@ -81,7 +79,6 @@ export default function NewAppointmentDialog({ open, onOpenChange }) {
 				<FormFieldTextarea
 					formControl={form.control}
 					schemaProperty="remarks"
-					placeholder="Remember to take the results from the blood work last week"
 					labelText="Remarks"
 				/>
 			</Form>

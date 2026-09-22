@@ -19,15 +19,15 @@ const FOCUS_DELAY_MS = 400;
  * @param {object} props
  * @param {object} props.formControl - react-hook-form `control`.
  * @param {string} props.schemaProperty - Form path for the string (`remarks`).
- * @param {string} [props.labelText]
- * @param {string} [props.placeholder]
+ * @param {string} [props.labelText] - Shown on the left of the field. The remarks preview sits on the right.
+ * @param {string} [props.placeholder] - Placeholder inside the remarks editor. Defaults to `labelText`.
  * @param {boolean} [props.disabled]
  */
 export default function FormFieldRemarks({
 	formControl,
 	schemaProperty,
 	labelText = 'Remarks',
-	placeholder = 'Enter any details you want to remember or note',
+	placeholder,
 	disabled = false,
 }) {
 	const theme = useTheme();
@@ -105,7 +105,7 @@ export default function FormFieldRemarks({
 								ref={inputRef}
 								className="text-base leading-tight text-foreground"
 								style={{ flex: 1 }}
-								placeholder={placeholder}
+								placeholder={placeholder || labelText}
 								placeholderTextColor={theme.colors.placeholder}
 								value={text}
 								onChangeText={onChange}

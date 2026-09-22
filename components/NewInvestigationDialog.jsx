@@ -76,14 +76,12 @@ export default function NewInvestigationDialog({ open, onOpenChange, investigati
 				<FormFieldInput
 					formControl={form.control}
 					schemaProperty="label"
-					placeholder="HbA1C (Sugar)"
 					labelText="Label"
 					required
 				/>
 				<FormFieldInput
 					formControl={form.control}
 					schemaProperty="unit"
-					placeholder="mmol/mol (optional)"
 					labelText="Unit"
 				/>
 			</Form>

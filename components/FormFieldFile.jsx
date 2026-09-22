@@ -3,7 +3,7 @@
  *
  * Picks a PDF or image; does not represent investigation or catalog labels.
  */
-import FormFieldLabel from '@/components/FormFieldLabel';
+import { requiredFieldAccessibilityLabel } from '@/components/FormFieldLabel';
 import { useTheme } from '@/components/ThemeProvider';
 import ViewReportDialog from '@/components/ViewReportDialog';
 import { Text } from '@/components/ui/text';
@@ -62,7 +62,7 @@ function chooseSource({ onPhoto, onFiles }) {
  * @param {object} props
  * @param {object} props.formControl - react-hook-form `control`.
  * @param {string} props.schemaProperty - Form path for the picked file (`report`).
- * @param {string} [props.labelText]
+ * @param {string} [props.labelText] - Shown on the left. The attached file name sits on the right.
  * @param {string} [props.helperText]
  * @param {boolean} [props.disabled]
  * @param {boolean} [props.required]
@@ -161,27 +161,35 @@ function ReportFileField({
 	const [showViewer, setShowViewer] = useState(false);
 	const fileName = getReportFileLabel(value);
 	const attached = Boolean(fileName);
-	const fieldChrome = `w-full min-w-0 shrink-0 flex-row items-center gap-2 rounded-[10px] border border-input bg-card px-3 py-3 ${disabled ? 'opacity-50' : ''}`;
 
 	useEffect(() => {
 		if (!attached) setShowViewer(false);
 	}, [attached]);
 
+	const hint = labelText || PLACEHOLDER;
+	const rowClass = `w-full min-w-0 shrink-0 flex-row items-center justify-between gap-2 rounded-[10px] border border-input bg-card px-3 py-3 ${disabled ? 'opacity-50' : ''}`;
+
 	return (
 		<View className="mb-4 shrink-0">
-			<View className="mb-1 flex-row items-baseline gap-2">
-				<FormFieldLabel
-					labelText={labelText}
-					required={required}
-					className="text-sm font-medium text-muted-foreground"
-				/>
-				<Text className="text-xs text-muted-foreground">
-					(Max size: {MAX_UPLOAD_MB}MB)
-				</Text>
-			</View>
-
 			{attached ? (
-				<View className={fieldChrome}>
+				<View className={rowClass}>
+					<Text className="shrink-0 text-muted-foreground">{hint}</Text>
+					<Pressable
+						onPress={() => setShowViewer(true)}
+						disabled={disabled}
+						className="min-w-0 flex-1 flex-row items-center justify-end"
+						accessibilityRole="button"
+						accessibilityLabel="View attached report"
+						accessibilityState={{ disabled }}
+					>
+						<Text
+							className="min-w-0 shrink text-foreground"
+							numberOfLines={1}
+							ellipsizeMode="tail"
+						>
+							{fileName}
+						</Text>
+					</Pressable>
 					<Pressable
 						onPress={() => onChooseFile(onChange)}
 						disabled={disabled}
@@ -190,36 +198,27 @@ function ReportFileField({
 						accessibilityLabel="Replace attached report"
 						accessibilityState={{ disabled }}
 					>
-						<Paperclip size={20} color={theme.colors.tint} />
-					</Pressable>
-					<Pressable
-						onPress={() => setShowViewer(true)}
-						disabled={disabled}
-						className="min-w-0 flex-1"
-						accessibilityRole="button"
-						accessibilityLabel="View attached report"
-						accessibilityState={{ disabled }}
-					>
-						<Text className="min-w-0 flex-1 text-foreground" numberOfLines={1}>
-							{fileName}
-						</Text>
+						<Paperclip size={16} color={theme.colors.tint} />
 					</Pressable>
 				</View>
 			) : (
 				<Pressable
 					onPress={() => onChooseFile(onChange)}
 					disabled={disabled}
-					className={fieldChrome}
+					className={rowClass}
 					accessibilityRole="button"
-					accessibilityLabel={PLACEHOLDER}
+					accessibilityLabel={requiredFieldAccessibilityLabel(labelText || hint, required)}
 					accessibilityState={{ disabled }}
 				>
-					<Paperclip size={20} color={theme.colors.tint} />
-					<Text className="text-muted-foreground" numberOfLines={1}>
-						{PLACEHOLDER}
-					</Text>
+					<Text className="shrink-0 text-muted-foreground">{hint}</Text>
+					<View className="min-w-0 flex-1" />
+					<Paperclip size={16} color={theme.colors.tint} />
 				</Pressable>
 			)}
+
+			<Text className="mt-1 text-xs text-muted-foreground">
+				Max size: {MAX_UPLOAD_MB}MB
+			</Text>
 
 			{helperText ? (
 				<Text className="mt-1 text-xs text-muted-foreground">{helperText}</Text>

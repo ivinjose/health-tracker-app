@@ -36,9 +36,7 @@ export default function ReportFormFields({
 			<FormFieldInvestigation
 				formControl={form.control}
 				schemaProperty={fieldName(namePrefix, 'investigation')}
-				placeholder={
-					isInvestigationLoading ? 'Loading investigations…' : 'Choose from the list'
-				}
+				placeholder={isInvestigationLoading ? 'Loading investigations…' : undefined}
 				labelText="Investigation"
 				investigations={isInvestigationLoading ? [] : investigations}
 				disabled={isInvestigationLoading}
@@ -48,7 +46,7 @@ export default function ReportFormFields({
 				<FormFieldLabels
 					formControl={form.control}
 					schemaProperty={fieldName(namePrefix, 'labels')}
-					placeholder={isLabelLoading ? 'Loading labels…' : 'Choose from the list'}
+					placeholder={isLabelLoading ? 'Loading labels…' : undefined}
 					labels={isLabelLoading ? [] : labels}
 					disabled={isLabelLoading}
 				/>
@@ -56,7 +54,6 @@ export default function ReportFormFields({
 			<FormFieldInput
 				formControl={form.control}
 				schemaProperty={fieldName(namePrefix, 'value')}
-				placeholder="Enter the test result value"
 				labelText="Value"
 				inputType="number"
 				required

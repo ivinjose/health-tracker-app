@@ -3,9 +3,7 @@
  *
  * Value is a string `_id`. For several optional tag ids, use {@link FormFieldLabels}.
  */
-import FormFieldLabel, {
-	requiredFieldAccessibilityLabel,
-} from '@/components/FormFieldLabel';
+import { requiredFieldAccessibilityLabel } from '@/components/FormFieldLabel';
 import InvestigationPickerModal from '@/components/InvestigationPickerModal';
 import { Icon } from '@/components/ui/icon';
 import { Text } from '@/components/ui/text';
@@ -20,8 +18,8 @@ import { Pressable, View } from 'react-native';
  * @param {object} props
  * @param {object} props.formControl - react-hook-form `control`.
  * @param {string} props.schemaProperty - Form path for the investigation id.
- * @param {string} [props.labelText]
- * @param {string} [props.placeholder]
+ * @param {string} [props.labelText] - Shown on the left. The chosen investigation sits on the right.
+ * @param {string} [props.placeholder] - Overrides `labelText` when set (for example a loading state).
  * @param {Array<{ _id: string, label?: string }>} [props.investigations] - Catalog from GET `/api/investigations`.
  * @param {boolean} [props.disabled]
  * @param {boolean} [props.required]
@@ -30,7 +28,7 @@ export default function FormFieldInvestigation({
 	formControl,
 	schemaProperty,
 	labelText = 'Investigation',
-	placeholder = 'Choose from the list',
+	placeholder,
 	investigations = [],
 	disabled = false,
 	required = false,
@@ -47,10 +45,10 @@ export default function FormFieldInvestigation({
 					(item) => String(item._id) === currentValue,
 				);
 
+				const selectedLabel = selected?.label;
+
 				return (
 					<View className="mb-4">
-						<FormFieldLabel labelText={labelText} required={required} />
-
 						<Pressable
 							onPress={() => setOpen(true)}
 							disabled={disabled}
@@ -60,19 +58,29 @@ export default function FormFieldInvestigation({
 								labelText,
 								required
 							)}
-							accessibilityValue={{ text: selected?.label ?? placeholder }}
+							accessibilityValue={{ text: selectedLabel ?? placeholder ?? labelText }}
 							accessibilityState={{ disabled }}
 						>
-							<Text
-								className={
-									selected
-										? 'min-w-0 flex-1 text-foreground'
-										: 'min-w-0 flex-1 text-muted-foreground'
-								}
-								numberOfLines={1}
-							>
-								{selected?.label ?? placeholder}
-							</Text>
+							<Text className="shrink-0 text-muted-foreground">{labelText}</Text>
+							<View className="min-w-0 flex-1 flex-row items-center justify-end">
+								{selectedLabel ? (
+									<Text
+										className="min-w-0 shrink text-foreground"
+										numberOfLines={1}
+										ellipsizeMode="tail"
+									>
+										{selectedLabel}
+									</Text>
+								) : placeholder ? (
+									<Text
+										className="min-w-0 shrink text-muted-foreground"
+										numberOfLines={1}
+										ellipsizeMode="tail"
+									>
+										{placeholder}
+									</Text>
+								) : null}
+							</View>
 							<Icon
 								as={ChevronDown}
 								className="shrink-0 text-muted-foreground"
