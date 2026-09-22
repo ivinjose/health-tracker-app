@@ -99,7 +99,6 @@ export default function FormFieldRemarks({
 							onOpenChange={handleOpenChange}
 							title={labelText}
 							scrollable={false}
-							dismissIcon="back"
 							avoidKeyboard
 						>
 							<TextInput

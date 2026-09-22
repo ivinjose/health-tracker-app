@@ -4,7 +4,7 @@ import { Text } from '@/components/ui/text';
 import { StatusBar } from 'expo-status-bar';
 import { SymbolView } from 'expo-symbols';
 import { Trash2 } from 'lucide-react-native';
-import { useEffect, useState } from 'react';
+import { createContext, useContext, useEffect, useState } from 'react';
 import {
 	ActivityIndicator,
 	Keyboard,
@@ -17,6 +17,7 @@ import {
 
 const CLOSE_ICON_SIZE = 36;
 const BACK_ICON_SIZE = 22;
+const FormSheetDepthContext = createContext(0);
 
 function useKeyboardHeight(enabled) {
 	const [height, setHeight] = useState(0);
@@ -151,10 +152,11 @@ export default function FormSheetModal({
 	scrollViewRef,
 	scrollable = true,
 	padded = true,
-	dismissIcon = 'close',
 	avoidKeyboard = false,
 }) {
 	const theme = useTheme();
+	const depth = useContext(FormSheetDepthContext);
+	const dismissIcon = depth > 0 ? 'back' : 'close';
 
 	return (
 		<Modal
@@ -168,26 +170,28 @@ export default function FormSheetModal({
 		>
 			<StatusBar style={theme.statusBarStyle} />
 			<ThemeProvider appearance={theme.name} className="flex-1 bg-background">
-				<FormSheetBody
-					open={open}
-					title={title}
-					footer={footer}
-					onConfirm={onConfirm}
-					confirmDisabled={confirmDisabled}
-					confirmLoading={confirmLoading}
-					confirmAccessibilityLabel={confirmAccessibilityLabel}
-					onDelete={onDelete}
-					deleteDisabled={deleteDisabled}
-					deleteAccessibilityLabel={deleteAccessibilityLabel}
-					onCancel={() => onOpenChange(false)}
-					scrollViewRef={scrollViewRef}
-					scrollable={scrollable}
-					padded={padded}
-					dismissIcon={dismissIcon}
-					avoidKeyboard={avoidKeyboard}
-				>
-					{children}
-				</FormSheetBody>
+				<FormSheetDepthContext.Provider value={depth + 1}>
+					<FormSheetBody
+						open={open}
+						title={title}
+						footer={footer}
+						onConfirm={onConfirm}
+						confirmDisabled={confirmDisabled}
+						confirmLoading={confirmLoading}
+						confirmAccessibilityLabel={confirmAccessibilityLabel}
+						onDelete={onDelete}
+						deleteDisabled={deleteDisabled}
+						deleteAccessibilityLabel={deleteAccessibilityLabel}
+						onCancel={() => onOpenChange(false)}
+						scrollViewRef={scrollViewRef}
+						scrollable={scrollable}
+						padded={padded}
+						dismissIcon={dismissIcon}
+						avoidKeyboard={avoidKeyboard}
+					>
+						{children}
+					</FormSheetBody>
+				</FormSheetDepthContext.Provider>
 			</ThemeProvider>
 		</Modal>
 	);
