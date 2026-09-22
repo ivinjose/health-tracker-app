@@ -11,7 +11,6 @@ import { Expanding } from '@/components/ui/expanding';
 import { Form } from '@/components/ui/form';
 import FormFieldTextarea from '@/components/ui/form-field-textarea';
 import { Icon } from '@/components/ui/icon';
-import { IconSymbol } from '@/components/ui/icon-symbol';
 import { Text } from '@/components/ui/text';
 import { useToast } from '@/hooks/use-toast';
 import { getDateWithoutTime } from '@/lib/helpers';
@@ -19,13 +18,10 @@ import { getInvestigationLabel } from '@/lib/reportUtils';
 import formSchema, { isEmptyDraft, reportFileSchema, reportRowSchema } from '@/schemas/Report';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
-import { SymbolView } from 'expo-symbols';
-import { ChevronDown, ChevronUp } from 'lucide-react-native';
+import { ChevronDown, ChevronUp, Trash2 } from 'lucide-react-native';
 import { useEffect, useState } from 'react';
 import { useFieldArray, useForm, useWatch } from 'react-hook-form';
 import { Keyboard, Pressable, View } from 'react-native';
-
-const DELETE_ICON_SIZE = 22;
 
 const ROOT_FIELD_NAMES = new Set(['report', 'date', 'remarks']);
 
@@ -361,19 +357,7 @@ export default function NewMultiReportDialog({ open, onOpenChange }) {
 										accessibilityLabel={`Remove ${headerTitle}`}
 										accessibilityState={{ disabled: !canRemove }}
 									>
-										<SymbolView
-											name="trash.fill"
-											size={DELETE_ICON_SIZE}
-											tintColor={theme.colors.destructive}
-											type="hierarchical"
-											fallback={
-												<IconSymbol
-													name="trash.fill"
-													size={DELETE_ICON_SIZE}
-													color={theme.colors.destructive}
-												/>
-											}
-										/>
+										<Trash2 size={18} color={theme.colors.destructive} />
 									</Pressable>
 								</View>
 							) : null}

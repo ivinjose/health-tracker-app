@@ -3,6 +3,7 @@ import { IconSymbol } from '@/components/ui/icon-symbol';
 import { Text } from '@/components/ui/text';
 import { StatusBar } from 'expo-status-bar';
 import { SymbolView } from 'expo-symbols';
+import { Trash2 } from 'lucide-react-native';
 import { useEffect, useState } from 'react';
 import {
 	ActivityIndicator,
@@ -15,7 +16,6 @@ import {
 } from 'react-native';
 
 const CLOSE_ICON_SIZE = 36;
-const DELETE_ICON_SIZE = 22;
 
 function useKeyboardHeight(enabled) {
 	const [height, setHeight] = useState(0);
@@ -89,19 +89,7 @@ function DeleteControl({
 			accessibilityLabel={accessibilityLabel}
 			accessibilityState={{ disabled }}
 		>
-			<SymbolView
-				name="trash.fill"
-				size={DELETE_ICON_SIZE}
-				tintColor={color}
-				type="hierarchical"
-				fallback={
-					<IconSymbol
-						name="trash.fill"
-						size={DELETE_ICON_SIZE}
-						color={color}
-					/>
-				}
-			/>
+			<Trash2 size={18} color={color} />
 		</Pressable>
 	);
 }

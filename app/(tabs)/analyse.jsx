@@ -1,3 +1,6 @@
+import useInvestigationsApiManager from '@/api-managers/InvestigationsApiManager';
+import useLabelsApiManager from '@/api-managers/LabelsApiManager';
+import useReportsApiManager from '@/api-managers/ReportsApiManager';
 import ExpandableChart from '@/components/charts/ExpandableChart';
 import DateRange from '@/components/DateRange';
 import InvestigationSelect from '@/components/InvestigationSelect';
@@ -11,9 +14,6 @@ import {
 	sortReportsByTimestamp,
 	withDisplayDates,
 } from '@/lib/reportUtils';
-import useInvestigationsApiManager from '@/api-managers/InvestigationsApiManager';
-import useLabelsApiManager from '@/api-managers/LabelsApiManager';
-import useReportsApiManager from '@/api-managers/ReportsApiManager';
 import { useQuery } from '@tanstack/react-query';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useCallback, useMemo } from 'react';
@@ -112,8 +112,7 @@ export default function AnalyseScreen() {
 				showsVerticalScrollIndicator={false}
 			>
 				<Text className="text-muted-foreground">
-					All reports for this profile are shown below. Select an investigation to
-					filter.
+					All reports for this profile are shown below. Use the filters below to analyse them better.
 				</Text>
 				<InvestigationSelect
 					results={isInvestigationLoading ? [] : investigations}

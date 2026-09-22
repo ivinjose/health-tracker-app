@@ -20,7 +20,6 @@ const MAPPING = {
   'chevron.right': 'chevron-right',
   'rectangle.portrait.and.arrow.right': 'logout',
   'xmark.circle.fill': 'cancel',
-  'trash.fill': 'delete',
 } as const satisfies Record<string, MaterialIconName>;
 
 /**

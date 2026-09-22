@@ -3,7 +3,7 @@ import { useTheme } from '@/components/ThemeProvider';
 import { Label } from '@/components/ui/label';
 import { Text } from '@/components/ui/text';
 import { format } from 'date-fns';
-import { Calendar as CalendarIcon, CircleX } from 'lucide-react-native';
+import { Calendar as CalendarIcon, Trash2 } from 'lucide-react-native';
 import { useState } from 'react';
 import { Pressable, View } from 'react-native';
 
@@ -51,7 +51,7 @@ function DatePickerField({
 						accessibilityRole="button"
 						accessibilityLabel={clearAccessibilityLabel}
 					>
-						<CircleX size={18} color={theme.colors.close} />
+						<Trash2 size={18} color={theme.colors.destructive} />
 					</Pressable>
 				) : null}
 			</View>
