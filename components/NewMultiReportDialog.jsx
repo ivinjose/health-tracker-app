@@ -304,7 +304,6 @@ export default function NewMultiReportDialog({ open, onOpenChange }) {
 					formControl={form.control}
 					schemaProperty="remarks"
 				/>
-				<View className="mb-4 mt-1 h-px bg-border" />
 
 				{fields.map((field, index) => {
 					const showHeader = fields.length > 1;
@@ -316,7 +315,6 @@ export default function NewMultiReportDialog({ open, onOpenChange }) {
 
 					return (
 						<View key={field.id} className="shrink-0">
-							{index > 0 ? <View className="mb-4 mt-1 h-px bg-border/40" /> : null}
 							{showHeader ? (
 								<View className="mb-4 flex-row items-center">
 									<Pressable

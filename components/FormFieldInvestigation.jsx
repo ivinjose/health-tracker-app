@@ -48,11 +48,11 @@ export default function FormFieldInvestigation({
 				const selectedLabel = selected?.label;
 
 				return (
-					<View className="mb-4">
+					<View className="border-b border-border">
 						<Pressable
 							onPress={() => setOpen(true)}
 							disabled={disabled}
-							className={`flex-row items-center justify-between gap-2 py-3 ${disabled ? 'opacity-50' : ''}`}
+							className={`flex-row items-center justify-between gap-2 py-4 ${disabled ? 'opacity-50' : ''}`}
 							accessibilityRole="button"
 							accessibilityLabel={requiredFieldAccessibilityLabel(
 								labelText,

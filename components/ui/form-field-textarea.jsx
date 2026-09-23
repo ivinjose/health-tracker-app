@@ -33,8 +33,8 @@ const FormFieldTextarea = ({
 			control={formControl}
 			name={schemaProperty}
 			render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
-				<View className="mb-4">
-					<View className="min-h-[75px] flex-row items-start justify-between gap-2 py-3">
+				<View className="border-b border-border">
+					<View className="min-h-[75px] flex-row items-start justify-between gap-2 py-4">
 						<Text className="shrink-0 text-muted-foreground">{hint}</Text>
 						<TextInput
 							className={

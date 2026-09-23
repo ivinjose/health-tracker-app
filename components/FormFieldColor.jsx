@@ -34,9 +34,9 @@ export default function FormFieldColor({
 			control={formControl}
 			name={schemaProperty}
 			render={({ field: { onChange, value }, fieldState: { error } }) => (
-				<View className="mb-4">
+				<View className="border-b border-border">
 					<View
-						className="flex-row items-center justify-between gap-2 py-3"
+						className="flex-row items-center justify-between gap-2 py-4"
 						accessibilityLabel={requiredFieldAccessibilityLabel(labelText, required)}
 					>
 						<Text className="shrink-0 text-muted-foreground">{labelText}</Text>

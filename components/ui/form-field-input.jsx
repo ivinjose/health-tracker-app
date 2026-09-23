@@ -40,9 +40,9 @@ const FormFieldInput = ({
 			control={formControl}
 			name={schemaProperty}
 			render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
-				<View className="mb-4">
+				<View className="border-b border-border">
 					<View
-						className={`flex-row items-center justify-between gap-2 py-3 ${!editable ? 'opacity-50' : ''}`}
+						className={`flex-row items-center justify-between gap-2 py-4 ${!editable ? 'opacity-50' : ''}`}
 					>
 						<Text className="shrink-0 text-muted-foreground">{hint}</Text>
 						<TextInput

@@ -58,14 +58,14 @@ export default function FormFieldRemarks({
 				};
 
 				return (
-					<View className="mb-4">
+					<View className="border-b border-border">
 						<Pressable
 							onPress={() => {
 								Keyboard.dismiss();
 								setOpen(true);
 							}}
 							disabled={disabled}
-							className={`flex-row items-center justify-between gap-2 py-3 ${disabled ? 'opacity-50' : ''}`}
+							className={`flex-row items-center justify-between gap-2 py-4 ${disabled ? 'opacity-50' : ''}`}
 							accessibilityRole="button"
 							accessibilityLabel={requiredFieldAccessibilityLabel(labelText, false)}
 							accessibilityValue={{ text: preview || labelText }}

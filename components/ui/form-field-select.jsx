@@ -57,14 +57,14 @@ const FormFieldSelect = ({
 					: undefined;
 
 				return (
-					<View className="mb-4 w-full">
+					<View className="w-full border-b border-border">
 						<Select
 							value={selectValue}
 							onValueChange={(option) => onChange(option?.value ?? '')}
 							disabled={disabled}
 						>
 							<SelectTrigger
-								className="h-auto w-full rounded-none border-0 bg-transparent px-0 py-3 shadow-none focus-visible:border-transparent focus-visible:ring-0 dark:bg-transparent dark:hover:bg-transparent dark:active:bg-transparent sm:h-auto"
+								className="h-auto w-full rounded-none border-0 bg-transparent px-0 py-4 shadow-none focus-visible:border-transparent focus-visible:ring-0 dark:bg-transparent dark:hover:bg-transparent dark:active:bg-transparent sm:h-auto"
 								disabled={disabled}
 								accessibilityLabel={requiredFieldAccessibilityLabel(
 									labelText || hint,
