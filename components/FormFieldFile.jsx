@@ -167,7 +167,7 @@ function ReportFileField({
 	}, [attached]);
 
 	const hint = labelText || PLACEHOLDER;
-	const rowClass = `w-full min-w-0 shrink-0 flex-row items-center justify-between gap-2 py-4 ${disabled ? 'opacity-50' : ''}`;
+	const rowClass = `w-full min-w-0 shrink-0 flex-row items-center justify-between gap-2 pt-4 ${disabled ? 'opacity-50' : ''}`;
 
 	return (
 		<View className="shrink-0 border-b border-border pb-3">
@@ -216,7 +216,7 @@ function ReportFileField({
 				</Pressable>
 			)}
 
-			<Text className="mt-1 text-xs text-muted-foreground">
+			<Text className="text-xs text-muted-foreground">
 				Max size: {MAX_UPLOAD_MB}MB
 			</Text>
 

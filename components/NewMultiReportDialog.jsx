@@ -23,6 +23,34 @@ import { useFieldArray, useForm, useWatch } from 'react-hook-form';
 import { Keyboard, Pressable, View } from 'react-native';
 
 const ROOT_FIELD_NAMES = new Set(['report', 'date', 'remarks']);
+const DASH_WIDTH = 6;
+const DASH_GAP = 4;
+
+function DashedDivider({ className }) {
+	const [dashCount, setDashCount] = useState(0);
+
+	return (
+		<View
+			className={className}
+			onLayout={(event) => {
+				const next = Math.floor(
+					event.nativeEvent.layout.width / (DASH_WIDTH + DASH_GAP)
+				);
+				setDashCount((current) => (current === next ? current : next));
+			}}
+		>
+			<View className="h-px flex-row overflow-hidden">
+				{Array.from({ length: dashCount }, (_, index) => (
+					<View
+						key={index}
+						className="h-px bg-border"
+						style={{ width: DASH_WIDTH, marginRight: DASH_GAP }}
+					/>
+				))}
+			</View>
+		</View>
+	);
+}
 
 function emptyDraft() {
 	return {
@@ -313,10 +341,18 @@ export default function NewMultiReportDialog({ open, onOpenChange }) {
 						? getInvestigationLabel(investigations, row.investigation)
 						: `Investigation ${index + 1}`;
 
+					const previousExpanded =
+						index > 0 && !collapsedIds.has(fields[index - 1].id);
+
 					return (
 						<View key={field.id} className="shrink-0">
+							{index > 0 ? (
+								<DashedDivider className={previousExpanded ? 'mt-4' : undefined} />
+							) : null}
 							{showHeader ? (
-								<View className="mb-4 flex-row items-center">
+								<View
+									className={`flex-row items-center pt-4 ${isExpanded ? 'mb-4' : 'pb-4'}`}
+								>
 									<Pressable
 										onPress={() => toggleCollapsed(field.id)}
 										hitSlop={{ top: 8, bottom: 8, left: 8 }}
