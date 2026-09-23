@@ -167,7 +167,7 @@ function ReportFileField({
 	}, [attached]);
 
 	const hint = labelText || PLACEHOLDER;
-	const rowClass = `w-full min-w-0 shrink-0 flex-row items-center justify-between gap-2 rounded-[10px] border border-input bg-card px-3 py-3 ${disabled ? 'opacity-50' : ''}`;
+	const rowClass = `w-full min-w-0 shrink-0 flex-row items-center justify-between gap-2 py-3 ${disabled ? 'opacity-50' : ''}`;
 
 	return (
 		<View className="mb-4 shrink-0">

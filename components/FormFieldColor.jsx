@@ -36,7 +36,7 @@ export default function FormFieldColor({
 			render={({ field: { onChange, value }, fieldState: { error } }) => (
 				<View className="mb-4">
 					<View
-						className="flex-row items-center justify-between gap-2 rounded-[10px] border border-input bg-card px-3 py-3"
+						className="flex-row items-center justify-between gap-2 py-3"
 						accessibilityLabel={requiredFieldAccessibilityLabel(labelText, required)}
 					>
 						<Text className="shrink-0 text-muted-foreground">{labelText}</Text>

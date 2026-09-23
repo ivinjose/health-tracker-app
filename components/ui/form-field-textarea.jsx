@@ -34,12 +34,12 @@ const FormFieldTextarea = ({
 			name={schemaProperty}
 			render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
 				<View className="mb-4">
-					<View className="min-h-[75px] flex-row items-start justify-between gap-2 rounded-[10px] border border-input bg-card px-3 py-3">
+					<View className="min-h-[75px] flex-row items-start justify-between gap-2 py-3">
 						<Text className="shrink-0 text-muted-foreground">{hint}</Text>
 						<TextInput
 							className={
 								inputStyleClass ??
-								'min-h-[51px] min-w-0 flex-1 text-base leading-tight text-foreground'
+								'min-h-[51px] min-w-0 flex-1 border-0 bg-transparent text-base leading-tight text-foreground outline-none'
 							}
 							style={{ textAlign: 'right' }}
 							placeholderTextColor={theme.colors.placeholder}

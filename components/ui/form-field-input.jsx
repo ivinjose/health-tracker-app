@@ -42,11 +42,11 @@ const FormFieldInput = ({
 			render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
 				<View className="mb-4">
 					<View
-						className={`flex-row items-center justify-between gap-2 rounded-[10px] border border-input bg-card px-3 py-3 ${!editable ? 'opacity-50' : ''}`}
+						className={`flex-row items-center justify-between gap-2 py-3 ${!editable ? 'opacity-50' : ''}`}
 					>
 						<Text className="shrink-0 text-muted-foreground">{hint}</Text>
 						<TextInput
-							className="min-w-0 flex-1 text-base leading-tight text-foreground"
+							className="min-w-0 flex-1 border-0 bg-transparent text-base leading-tight text-foreground outline-none"
 							style={{ textAlign: 'right' }}
 							placeholderTextColor={theme.colors.placeholder}
 							accessibilityLabel={requiredFieldAccessibilityLabel(labelText || hint, required)}
