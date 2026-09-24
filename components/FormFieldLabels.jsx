@@ -67,7 +67,7 @@ export default function FormFieldLabels({
 						<Pressable
 							onPress={() => setOpen(true)}
 							disabled={pickerDisabled}
-							className={`flex-row items-center justify-between gap-2 rounded-[10px] border border-input bg-card px-3 py-3 ${pickerDisabled ? 'opacity-50' : ''}`}
+							className={`flex-row items-center justify-between gap-2 rounded-lg border border-input bg-card px-3 py-3 ${pickerDisabled ? 'opacity-50' : ''}`}
 							accessibilityRole="button"
 							accessibilityLabel={requiredFieldAccessibilityLabel(labelText, false)}
 							accessibilityValue={{ text: placeholder }}

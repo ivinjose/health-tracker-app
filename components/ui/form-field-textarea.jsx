@@ -45,7 +45,7 @@ const FormFieldTextarea = ({
 					<TextInput
 						className={
 							inputStyleClass ??
-							'min-h-[75px] rounded-[10px] border border-input bg-card px-3 py-3 text-base leading-tight text-foreground'
+							'min-h-[75px] rounded-lg border border-input bg-card px-3 py-3 text-base leading-tight text-foreground'
 						}
 						placeholder={placeholder}
 						placeholderTextColor={theme.colors.placeholder}

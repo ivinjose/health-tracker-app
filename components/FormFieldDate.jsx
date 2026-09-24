@@ -48,7 +48,7 @@ export default function FormFieldDate({
 					<FormFieldLabel labelText={labelText} required={required} />
 					<Pressable
 						onPress={() => setOpen(true)}
-						className="flex-row items-center justify-start gap-2 rounded-[10px] border border-input bg-card px-3 py-3"
+						className="flex-row items-center justify-start gap-2 rounded-lg border border-input bg-card px-3 py-3"
 						accessibilityRole="button"
 						accessibilityLabel={
 							requiredFieldAccessibilityLabel(labelText, required) ?? 'Date'

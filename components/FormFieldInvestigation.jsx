@@ -54,7 +54,7 @@ export default function FormFieldInvestigation({
 						<Pressable
 							onPress={() => setOpen(true)}
 							disabled={disabled}
-							className={`flex-row items-center justify-between gap-2 rounded-[10px] border border-input bg-card px-3 py-3 ${disabled ? 'opacity-50' : ''}`}
+							className={`flex-row items-center justify-between gap-2 rounded-lg border border-input bg-card px-3 py-3 ${disabled ? 'opacity-50' : ''}`}
 							accessibilityRole="button"
 							accessibilityLabel={requiredFieldAccessibilityLabel(
 								labelText,

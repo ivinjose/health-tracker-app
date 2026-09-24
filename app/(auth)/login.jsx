@@ -99,7 +99,7 @@ export default function LoginScreen() {
 				keyboardShouldPersistTaps="handled"
 				showsVerticalScrollIndicator={false}
 			>
-				<View className="rounded-[10px] border border-border bg-card p-6">
+				<View className="rounded-lg border border-border bg-card p-6">
 					<Text variant="h1" className="mb-6 text-foreground">
 						Login
 					</Text>
@@ -139,7 +139,7 @@ export default function LoginScreen() {
 								keyboardAppearance={theme.keyboardAppearance}
 								selectionColor={theme.colors.tint}
 								editable={!isLoading}
-								className="rounded-[10px] border border-input bg-background px-4 py-3 text-base leading-tight text-foreground"
+								className="rounded-lg border border-input bg-background px-4 py-3 text-base leading-tight text-foreground"
 							/>
 						</View>
 
@@ -156,7 +156,7 @@ export default function LoginScreen() {
 								keyboardAppearance={theme.keyboardAppearance}
 								selectionColor={theme.colors.tint}
 								editable={!isLoading}
-								className="rounded-[10px] border border-input bg-background px-4 py-3 text-base leading-tight text-foreground"
+								className="rounded-lg border border-input bg-background px-4 py-3 text-base leading-tight text-foreground"
 							/>
 						</View>
 
@@ -182,7 +182,7 @@ export default function LoginScreen() {
 						<Button
 							onPress={handleSubmit}
 							disabled={!username || !password || isLoading}
-							className="mt-2 h-11 rounded-[10px] shadow-none"
+							className="mt-2 h-11 rounded-lg shadow-none"
 						>
 							{isLoading ? (
 								<ActivityIndicator color={theme.colors.primaryForeground} />

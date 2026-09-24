@@ -102,8 +102,8 @@ export default function ReportsScreen() {
 		<View className="flex-1 bg-background">
 			{isLoading ? (
 				<View className="p-4" style={{ gap: CARD_LIST_GAP }}>
-					<Skeleton className="h-24 w-full rounded-[10px] bg-card" />
-					<Skeleton className="h-24 w-full rounded-[10px] bg-card" />
+					<Skeleton className="h-24 w-full rounded-lg bg-card" />
+					<Skeleton className="h-24 w-full rounded-lg bg-card" />
 				</View>
 			) : isError ? (
 				<View className="flex-1 items-center justify-center gap-3 px-6">

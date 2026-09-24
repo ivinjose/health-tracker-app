@@ -50,7 +50,7 @@ const FormFieldInput = ({
 					/>
 
 					<TextInput
-						className={`rounded-[10px] border border-input bg-card px-3 py-3 text-base leading-tight text-foreground ${!editable ? 'opacity-50' : ''}`}
+						className={`rounded-lg border border-input bg-card px-3 py-3 text-base leading-tight text-foreground ${!editable ? 'opacity-50' : ''}`}
 						placeholder={placeholder}
 						placeholderTextColor={theme.colors.placeholder}
 						value={value ?? ''}

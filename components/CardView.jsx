@@ -14,7 +14,7 @@ const CardView = ({ children, actions = [] }) => {
 
 	return (
 		<>
-			<View className="flex-row items-start justify-between gap-0 overflow-hidden rounded-[10px] bg-card">
+			<View className="flex-row items-start justify-between gap-0 overflow-hidden rounded-lg bg-card">
 				<View className="min-w-0 flex-1">{children}</View>
 
 				{actions.length > 0 && (

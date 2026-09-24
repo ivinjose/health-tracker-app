@@ -161,7 +161,7 @@ function ReportFileField({
 	const [showViewer, setShowViewer] = useState(false);
 	const fileName = getReportFileLabel(value);
 	const attached = Boolean(fileName);
-	const fieldChrome = `w-full min-w-0 shrink-0 flex-row items-center gap-2 rounded-[10px] border border-input bg-card px-3 py-3 ${disabled ? 'opacity-50' : ''}`;
+	const fieldChrome = `w-full min-w-0 shrink-0 flex-row items-center gap-2 rounded-lg border border-input bg-card px-3 py-3 ${disabled ? 'opacity-50' : ''}`;
 
 	useEffect(() => {
 		if (!attached) setShowViewer(false);

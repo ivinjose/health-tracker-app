@@ -144,7 +144,7 @@ export default function RegisterScreen() {
 				keyboardShouldPersistTaps="handled"
 				showsVerticalScrollIndicator={false}
 			>
-				<View className="rounded-[10px] border border-border bg-card p-6">
+				<View className="rounded-lg border border-border bg-card p-6">
 					<Text variant="h1" className="mb-2 text-foreground">
 						Hello, {profileName || 'new user'}!
 					</Text>
@@ -248,7 +248,7 @@ export default function RegisterScreen() {
 						<Button
 							onPress={handleSubmit}
 							disabled={!canSubmit}
-							className="mt-2 h-11 rounded-[10px] shadow-none"
+							className="mt-2 h-11 rounded-lg shadow-none"
 						>
 							{isLoading ? (
 								<ActivityIndicator color={theme.colors.primaryForeground} />
@@ -282,7 +282,7 @@ function Field({ label, required, input, icon }) {
 				required={required}
 				className="mb-2 text-sm font-medium text-muted-foreground"
 			/>
-			<View className="flex-row items-center rounded-[10px] border border-input bg-background px-4 py-3">
+			<View className="flex-row items-center rounded-lg border border-input bg-background px-4 py-3">
 				{input}
 				{icon}
 			</View>
