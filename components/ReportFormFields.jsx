@@ -37,7 +37,7 @@ export default function ReportFormFields({
 				formControl={form.control}
 				schemaProperty={fieldName(namePrefix, 'investigation')}
 				placeholder={
-					isInvestigationLoading ? 'Loading investigations…' : 'Choose from the list'
+					isInvestigationLoading ? 'Loading investigations…' : 'Choose one investigation'
 				}
 				labelText="Investigation"
 				investigations={isInvestigationLoading ? [] : investigations}
@@ -48,7 +48,7 @@ export default function ReportFormFields({
 				<FormFieldLabels
 					formControl={form.control}
 					schemaProperty={fieldName(namePrefix, 'labels')}
-					placeholder={isLabelLoading ? 'Loading labels…' : 'Choose from the list'}
+					placeholder={isLabelLoading ? 'Loading labels…' : 'Choose one or more labels'}
 					labels={isLabelLoading ? [] : labels}
 					disabled={isLabelLoading}
 				/>

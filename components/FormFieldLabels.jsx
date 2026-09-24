@@ -13,7 +13,7 @@ import LabelPickerModal from '@/components/LabelPickerModal';
 import { Icon } from '@/components/ui/icon';
 import { Text } from '@/components/ui/text';
 import { getLabelsByIds } from '@/lib/labelUtils';
-import { ChevronDown } from 'lucide-react-native';
+import { Plus } from 'lucide-react-native';
 import { useState } from 'react';
 import { Controller } from 'react-hook-form';
 import { Pressable, View } from 'react-native';
@@ -64,20 +64,6 @@ export default function FormFieldLabels({
 				return (
 					<View className="mb-4">
 						<FormFieldLabel labelText={labelText} />
-
-						{selected.length > 0 ? (
-							<View className="mb-2 flex-row flex-wrap gap-2">
-								{selected.map((item) => (
-									<LabelChip
-										key={String(item._id)}
-										name={item.name}
-										color={item.color}
-										onRemove={disabled ? undefined : () => removeId(item._id)}
-									/>
-								))}
-							</View>
-						) : null}
-
 						<Pressable
 							onPress={() => setOpen(true)}
 							disabled={pickerDisabled}
@@ -91,11 +77,23 @@ export default function FormFieldLabels({
 								{placeholder}
 							</Text>
 							<Icon
-								as={ChevronDown}
+								as={Plus}
 								className="shrink-0 text-muted-foreground"
 								size={16}
 							/>
 						</Pressable>
+						{selected.length > 0 ? (
+							<View className="mt-2 flex-row flex-wrap gap-2">
+								{selected.map((item) => (
+									<LabelChip
+										key={String(item._id)}
+										name={item.name}
+										color={item.color}
+										onRemove={disabled ? undefined : () => removeId(item._id)}
+									/>
+								))}
+							</View>
+						) : null}
 
 						{error ? (
 							<Text className="mt-1 text-sm text-destructive">{error.message}</Text>
