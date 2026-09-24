@@ -25,7 +25,7 @@ function ValidationIcon({ value, isValid }) {
 	const theme = useTheme();
 	if (!value) return null;
 	return isValid ? (
-		<Check size={18} color={theme.colors.tint} />
+		<Check size={18} color={theme.colors.success} />
 	) : (
 		<X size={18} color={theme.colors.destructive} />
 	);
@@ -109,16 +109,16 @@ export default function RegisterScreen() {
 	if (isSuccess) {
 		return (
 			<View className="flex-1 items-center justify-center bg-background px-6">
-				<CircleCheckBig size={50} color={theme.colors.tint} />
+				<CircleCheckBig size={50} color={theme.colors.success} />
 				<Text className="mt-4 text-center text-lg font-semibold text-foreground">
-					Account has been created successfully.
+					Account has been created!
 				</Text>
 				<Text className="mt-2 text-center text-muted-foreground">
-					Please check your email for the verification email.
+					Please check your inbox for the verification mail.
 				</Text>
-				{successMessage ? (
+				{/* {successMessage ? (
 					<Text className="mt-2 text-center text-muted-foreground">{successMessage}</Text>
-				) : null}
+				) : null} */}
 				<Link href="/(auth)/login" asChild>
 					<Pressable className="mt-6">
 						<Text className="font-medium text-primary">Go to Login</Text>
@@ -145,10 +145,10 @@ export default function RegisterScreen() {
 				showsVerticalScrollIndicator={false}
 			>
 				<View className="rounded-lg border border-border bg-card p-6">
-					<Text variant="h1" className="mb-2 text-foreground">
+					<Text variant="h1" className="mb-2 text-left text-foreground">
 						Hello, {profileName || 'new user'}!
 					</Text>
-					<Text className="mb-6 text-muted-foreground">Create your account</Text>
+					<Text className="mb-6 text-muted-foreground">Create your account.</Text>
 
 					{errorMessage ? (
 						<Text
