@@ -39,7 +39,7 @@ export default function LabelsFilter({
 			<Pressable
 				onPress={() => setOpen(true)}
 				disabled={atCap}
-				className={`flex-row items-center justify-between gap-2 rounded-lg border border-input px-3 py-3 ${atCap ? 'opacity-50' : ''}`}
+				className={`flex-row items-center justify-between gap-2 rounded-lg border border-input bg-card px-3 py-3 ${atCap ? 'opacity-50' : ''}`}
 				accessibilityRole="button"
 				accessibilityLabel={requiredFieldAccessibilityLabel(labelText, false)}
 				accessibilityValue={{ text: placeholder }}

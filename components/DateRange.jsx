@@ -29,7 +29,7 @@ function DatePickerField({
 	return (
 		<View className="gap-2">
 			<Label>{label}</Label>
-			<View className="flex-row items-center rounded-lg border border-input">
+			<View className="flex-row items-center rounded-lg border border-input bg-card">
 				<Pressable
 					onPress={openCalendar}
 					className="min-h-11 flex-1 flex-row items-center gap-2 px-3 py-3"

@@ -25,7 +25,7 @@ export default function InvestigationSelect({
 	return (
 		<View className="gap-2">
 			{labelText ? <Text className="font-medium text-foreground">{labelText}</Text> : null}
-			<View className="flex-row items-center rounded-lg border border-input">
+			<View className="flex-row items-center rounded-lg border border-input bg-card">
 				<Pressable
 					onPress={() => setIsOpen(true)}
 					className="min-h-11 flex-1 justify-center px-3 py-3"
