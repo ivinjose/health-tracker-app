@@ -33,13 +33,14 @@ const useReportsApiManager = () => {
         }
     };
 
-    const readReports = async (filters) => {
+    const readReports = async (filters = {}) => {
         const {
             investigation,
             count,
             from,
             to,
-            order
+            order,
+            labels,
         } = filters;
 
         const searchParams = new URLSearchParams();
@@ -58,12 +59,17 @@ const useReportsApiManager = () => {
         if (order) {
             searchParams.set('order', order);
         }
+        if (Array.isArray(labels) && labels.length > 0) {
+            searchParams.set('labels', labels.join(','));
+        } else if (typeof labels === 'string' && labels) {
+            searchParams.set('labels', labels);
+        }
 
         try {
             const response = await axiosPrivate.get(`${REPORTS_API}?${searchParams}`);
             return response.data.data;
         } catch (err) {
-            console.log(err);
+            throw new Error(getErrorMessage(err, 'Could not load reports.'));
         }
     };
 

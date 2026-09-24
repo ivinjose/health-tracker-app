@@ -4,6 +4,7 @@ import useReportsApiManager from '@/api-managers/ReportsApiManager';
 import ExpandableChart from '@/components/charts/ExpandableChart';
 import DateRange from '@/components/DateRange';
 import InvestigationSelect from '@/components/InvestigationSelect';
+import LabelsFilter from '@/components/LabelsFilter';
 import ReportCard from '@/components/ReportCard';
 import { Text } from '@/components/ui/text';
 import { CARD_LIST_GAP } from '@/constants/layout';
@@ -19,6 +20,14 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useCallback, useMemo } from 'react';
 import { ScrollView, View } from 'react-native';
 
+const parseLabelIdsParam = (value) => {
+	const raw = Array.isArray(value) ? value.join(',') : value || '';
+	return raw
+		.split(',')
+		.map((id) => id.trim())
+		.filter(Boolean);
+};
+
 export default function AnalyseScreen() {
 	const router = useRouter();
 	const params = useLocalSearchParams();
@@ -30,6 +39,8 @@ export default function AnalyseScreen() {
 	const toParam = Array.isArray(params.to) ? params.to[0] : params.to;
 	const fromDate = fromParam ? Number(fromParam) : undefined;
 	const toDate = toParam ? Number(toParam) : undefined;
+	const selectedLabelIds = parseLabelIdsParam(params.labels);
+	const labelsQueryKey = selectedLabelIds.join(',');
 	const investigationsApiManager = useInvestigationsApiManager();
 	const labelsApiManager = useLabelsApiManager();
 	const reportsApiManager = useReportsApiManager();
@@ -44,6 +55,13 @@ export default function AnalyseScreen() {
 	const onInvestigationChange = useCallback(
 		(newInvestigation) => {
 			updateParams({ investigation: newInvestigation || '' });
+		},
+		[updateParams]
+	);
+
+	const onLabelsChange = useCallback(
+		(ids) => {
+			updateParams({ labels: ids.length ? ids.join(',') : '' });
 		},
 		[updateParams]
 	);
@@ -83,14 +101,20 @@ export default function AnalyseScreen() {
 		},
 	});
 
-	const { data: reports = [], isLoading: isReportsLoading } = useQuery({
-		queryKey: ['reports', fromDate, toDate, investigation],
+	const {
+		data: reports = [],
+		isLoading: isReportsLoading,
+		isError: isReportsError,
+		error: reportsError,
+	} = useQuery({
+		queryKey: ['reports', fromDate, toDate, investigation, labelsQueryKey],
 		queryFn: async () => {
 			const response = await reportsApiManager.readReports({
 				investigation,
 				from: fromDate,
 				to: toDate,
 				order: SORT_ORDER.DESC,
+				labels: selectedLabelIds,
 			});
 			return withDisplayDates(response ?? []);
 		},
@@ -102,6 +126,11 @@ export default function AnalyseScreen() {
 	);
 	const investigationLabel = getInvestigationLabel(investigations, investigation);
 	const investigationUnit = getInvestigationUnit(investigations, investigation);
+	const emptyReportsMessage =
+		selectedLabelIds.length > 0
+			? 'No reports match these filters.'
+			: 'No reports in this range.';
+	const reportsErrorMessage = reportsError?.message || 'Could not load reports.';
 
 	return (
 		<View className="flex-1 bg-background">
@@ -134,7 +163,15 @@ export default function AnalyseScreen() {
 					/>
 				</View>
 
-				{investigation && !isReportsLoading && reports.length > 0 ? (
+				<LabelsFilter
+					labels={labelCatalog}
+					selectedIds={selectedLabelIds}
+					onChange={onLabelsChange}
+				/>
+
+				{isReportsError ? (
+					<Text className="text-destructive">{reportsErrorMessage}</Text>
+				) : investigation && !isReportsLoading && reports.length > 0 ? (
 					<ExpandableChart
 						data={chartData}
 						unit={investigationUnit}
@@ -148,14 +185,14 @@ export default function AnalyseScreen() {
 				) : isReportsLoading ? (
 					<Text className="text-muted-foreground">Loading reports…</Text>
 				) : (
-					<Text className="text-muted-foreground">No reports in this range.</Text>
+					<Text className="text-muted-foreground">{emptyReportsMessage}</Text>
 				)}
 
-				{!investigation && isReportsLoading ? (
+				{!isReportsError && !investigation && isReportsLoading ? (
 					<Text className="text-muted-foreground">Loading reports…</Text>
 				) : null}
-				{!investigation && !isReportsLoading && reports.length === 0 ? (
-					<Text className="text-muted-foreground">No reports in this range.</Text>
+				{!isReportsError && !investigation && !isReportsLoading && reports.length === 0 ? (
+					<Text className="text-muted-foreground">{emptyReportsMessage}</Text>
 				) : null}
 
 				{reports.length > 0 ? (

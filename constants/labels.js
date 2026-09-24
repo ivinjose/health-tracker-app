@@ -15,6 +15,8 @@ export const LABEL_COLORS = [
 
 export const DEFAULT_LABEL_COLOR = '#3B82F6';
 
+export const LABEL_FILTER_MAX = 20;
+
 export const LABEL_COLOR_VALUES = LABEL_COLORS.map((item) => item.color);
 
 export const isAllowedLabelColor = (value) => LABEL_COLOR_VALUES.includes(value);
