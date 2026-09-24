@@ -126,6 +126,7 @@ export default function AnalyseScreen() {
 	);
 	const investigationLabel = getInvestigationLabel(investigations, investigation);
 	const investigationUnit = getInvestigationUnit(investigations, investigation);
+	const chartTitle = investigationLabel ? `Analyse ${investigationLabel}` : undefined;
 	const emptyReportsMessage =
 		selectedLabelIds.length > 0
 			? 'No reports match these filters.'
@@ -172,16 +173,20 @@ export default function AnalyseScreen() {
 				{isReportsError ? (
 					<Text className="text-destructive">{reportsErrorMessage}</Text>
 				) : investigation && !isReportsLoading && reports.length > 0 ? (
-					<ExpandableChart
-						data={chartData}
-						unit={investigationUnit}
-						expandTitle={investigationLabel}
-					/>
+					<View className="overflow-hidden rounded-lg border border-border bg-card p-4">
+						<ExpandableChart
+							data={chartData}
+							title={chartTitle}
+							unit={investigationUnit}
+						/>
+					</View>
 				) : !investigation ? (
-					<ExpandableChart
-						data={[]}
-						emptyMessage="Select an investigation to see its trend here"
-					/>
+					<View className="overflow-hidden rounded-lg border border-border bg-card p-4">
+						<ExpandableChart
+							data={[]}
+							emptyMessage="Select an investigation to see its trend here"
+						/>
+					</View>
 				) : isReportsLoading ? (
 					<Text className="text-muted-foreground">Loading reports…</Text>
 				) : (
