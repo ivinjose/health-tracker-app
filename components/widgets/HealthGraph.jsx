@@ -14,7 +14,7 @@ import {
 } from '@/lib/reportUtils';
 import { useQuery } from '@tanstack/react-query';
 import { Link } from 'expo-router';
-import { ArrowRight, X } from 'lucide-react-native';
+import { ChevronRight, X } from 'lucide-react-native';
 import { useState } from 'react';
 import { Pressable, View } from 'react-native';
 
@@ -58,7 +58,7 @@ export default function HealthGraph({ investigation, count, onRemove }) {
 		>
 			<Pressable className="flex-row items-center gap-1 self-end">
 				<Text className="text-sm text-primary">Analyse</Text>
-				<ArrowRight size={14} color={theme.colors.primary} />
+				<ChevronRight size={16} color={theme.colors.primary} />
 			</Pressable>
 		</Link>
 	);

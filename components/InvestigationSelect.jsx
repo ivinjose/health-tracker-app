@@ -1,3 +1,4 @@
+import FormFieldLabel from '@/components/FormFieldLabel';
 import InvestigationPickerModal from '@/components/InvestigationPickerModal';
 import { useTheme } from '@/components/ThemeProvider';
 import { Text } from '@/components/ui/text';
@@ -23,8 +24,8 @@ export default function InvestigationSelect({
 	}, [results, currentValue, placeholder]);
 
 	return (
-		<View className="gap-2">
-			{labelText ? <Text className="font-medium text-foreground">{labelText}</Text> : null}
+		<View>
+			<FormFieldLabel labelText={labelText} />
 			<View className="flex-row items-center rounded-lg border border-input bg-card">
 				<Pressable
 					onPress={() => setIsOpen(true)}

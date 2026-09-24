@@ -1,6 +1,6 @@
 import DatePickerSheet from '@/components/DatePickerSheet';
+import FormFieldLabel from '@/components/FormFieldLabel';
 import { useTheme } from '@/components/ThemeProvider';
-import { Label } from '@/components/ui/label';
 import { Text } from '@/components/ui/text';
 import { format } from 'date-fns';
 import { Calendar as CalendarIcon, Trash2 } from 'lucide-react-native';
@@ -27,8 +27,8 @@ function DatePickerField({
 	};
 
 	return (
-		<View className="gap-2">
-			<Label>{label}</Label>
+		<View>
+			<FormFieldLabel labelText={label} />
 			<View className="flex-row items-center rounded-lg border border-input bg-card">
 				<Pressable
 					onPress={openCalendar}
